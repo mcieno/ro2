@@ -12,6 +12,8 @@ CONCERTLIBDIR = $(CONCERTDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
 
 CONCERTINCDIR = $(CONCERTDIR)/include
 CPLEXINCDIR   = $(CPLEXDIR)/include
+LOCAL_INCDIR  = $(PWD)/include
+TSP_SRC_FILES = src/tsp_parser.c src/tsp.c
 
 CLNDIRS   = -L$(CPLEXLIBDIR)
 CLNFLAGS  = -lcplex -lm -lpthread -ldl
@@ -19,7 +21,7 @@ CLNFLAGS  = -lcplex -lm -lpthread -ldl
 CC         = gcc
 #COPT       = -O3 -m64 -fPIC
 COPT       = -g -O3 -m64  # Debug symbols
-CFLAGS     = $(COPT)  -I$(CPLEXINCDIR)
+CFLAGS     = $(COPT)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
 
 FANCYLOG   = \033[96m[*]\033[0m
 
@@ -39,7 +41,7 @@ config:
 all:
 	-@echo -e "$(FANCYLOG) Building all"
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(CLNDIRS) -o $(BUILD_DIR)/tsp_parser src/tsp_parser.c $(CLNFLAGS)
+	$(CC) $(CFLAGS) $(CLNDIRS) -o $(BUILD_DIR)/tsp $(TSP_SRC_FILES) $(CLNFLAGS)
 
 clean:
 	-@echo -e "$(FANCYLOG) Cleaning all"
