@@ -50,6 +50,17 @@ parse_opt ( int key, char *arg, struct argp_state *state );
 void
 _print_parsed_args ( instance *problem );
 
+/*!
+ * \fn    parse_tsp_file
+ * \brief Read input TSP file into instance data structure.
+ *
+ *
+ * \param problem
+ *     Pointer to the problem being parsed.
+ */
+void
+parse_tsp_file ( instance *problem );
+
 
 /* Argp setup */
 
@@ -82,8 +93,9 @@ main ( int argc, char *argv[] )
     init_instance( &problem );
 
     argp_parse( &argp, argc, argv, 0, 0, &problem );
-
     _print_parsed_args( &problem );
+
+    parse_tsp_file( &problem );
 
     // ...
 
@@ -214,4 +226,22 @@ parse_opt ( int key, char *arg, struct argp_state *state )
     }
 
     return 0;
+}
+
+
+void
+parse_tsp_file ( instance *problem )
+{
+    FILE *fin = fopen( problem->filename, "r" );
+
+    if ( fin == NULL ) {
+        perror( "parse_tsp_file" );
+        exit( EXIT_FAILURE );
+    }
+
+    problem->nnodes = 0ULL;
+
+    // TODO
+
+    fclose(fin);
 }
