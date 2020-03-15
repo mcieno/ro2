@@ -17,8 +17,8 @@ CLNDIRS   = -L$(CPLEXLIBDIR)
 CLNFLAGS  = -lcplex -lm -lpthread -ldl
 
 CC         = gcc
-#COPT       = -m64 -fPIC -fno-strict-aliasing
-COPT       = -O3 -m64 -fno-strict-aliasing
+#COPT       = -O3 -m64 -fPIC
+COPT       = -g -O3 -m64  # Debug symbols
 CFLAGS     = $(COPT)  -I$(CPLEXINCDIR)
 
 FANCYLOG   = \033[96m[*]\033[0m
@@ -43,5 +43,5 @@ all:
 
 clean:
 	-@echo -e "$(FANCYLOG) Cleaning all"
-	-@rm -f $(BUILD_DIR)/*
-	-@rmdir $(BUILD_DIR)
+	rm -f $(BUILD_DIR)/*
+	rmdir $(BUILD_DIR)
