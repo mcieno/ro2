@@ -141,7 +141,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || problem->cutoff == 0. ) {
                 argp_error(
                     state,
-                    "Bad value for option -c --cutoff: %s", strerror( errno ? errno : EDOM )
+                    "Bad value for option -c --cutoff: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -157,7 +157,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 if ( errno || problem->threads == 0U ) {
                     argp_error(
                         state,
-                        "Bad value for option -j --threads: %s", strerror( errno ? errno : EDOM )
+                        "Bad value for option -j --threads: %s.", strerror( errno ? errno : EDOM )
                     );
                 }
             }
@@ -170,7 +170,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || problem->memory == 0ULL ) {
                 argp_error(
                     state,
-                    "Bad value for option -m --memory: %s", strerror( errno ? errno : EDOM )
+                    "Bad value for option -m --memory: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -182,7 +182,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || problem->timelimit == 0ULL ) {
                 argp_error(
                     state,
-                    "Bad value for option -t --timelimit: %s", strerror( errno ? errno : EDOM )
+                    "Bad value for option -t --timelimit: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -213,7 +213,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_failure(
                     state,
                     1, errno,
-                    "Could store filename: %s", arg
+                    "Could not read filename: %s.", arg
                 );
             }
 
@@ -224,7 +224,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
         case ARGP_KEY_END:
             if ( problem->filename == NULL ) {
-                argp_error( state, "Missing TSP file name" );
+                argp_error( state, "Missing TSP file name." );
             }
 
             break;
