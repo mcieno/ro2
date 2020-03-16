@@ -8,6 +8,7 @@
 
 #include "logging.h"
 
+
 /*!
  * \struct arguments
  * \brief  Structure to store command line arguments.
@@ -53,8 +54,9 @@ typedef struct
     char *             filename;
     loglevel_t         loglevel;
     unsigned long long memory;
-    unsigned long long nnodes;
-    unsigned long int  threads;
+    char *             name;
+    unsigned long      nnodes;
+    unsigned int       threads;
     unsigned long long timelimit;
     double *           xcoord;
 	double *           ycoord;
@@ -87,5 +89,17 @@ init_instance ( instance *problem );
  */
 void
 destroy_instance ( instance *problem );
+
+
+/*!
+ * \fn    repr_instance
+ * \brief Pretty-print problem information to `stderr` according to \p loglevel verbosity.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+repr_instance ( instance *problem );
 
 #endif

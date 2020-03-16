@@ -14,6 +14,10 @@
 #include "logging.h"
 #include "tsp.h"
 
+/* Macro definitions */
+
+#define MAX_TSP_FILE_LINE_LENGTH 255  /*!< Maximum length a single line in a TSP file may have. */
+
 
 /* Function declarations */
 
@@ -57,6 +61,8 @@ _print_parsed_args ( instance *problem );
  *
  * \param problem
  *     Pointer to the problem being parsed.
+ *
+ * \warning \p problem should be initialized via a call to init_instance() *before* passing it to this function.
  */
 void
 parse_tsp_file ( instance *problem );
@@ -100,6 +106,10 @@ main ( int argc, char *argv[] )
 
     parse_tsp_file( &problem );
 
+    if ( problem.loglevel >= LOG_VBS ) {
+        repr_instance( &problem );
+    }
+
     // ...
 
     destroy_instance( &problem );
@@ -131,7 +141,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
     {
         case 'c':
             problem->cutoff = strtod( arg, NULL );
-            if ( errno != 0 || problem->cutoff == 0. ) {
+            if ( errno || problem->cutoff == 0. ) {
                 argp_error(
                     state,
                     "Bad value for option -c --cutoff: %s", strerror( errno ? errno : EDOM )
@@ -147,7 +157,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 problem->threads = 4UL;
             } else {
                 problem->threads = strtoul( arg, NULL, 10 );
-                if ( errno != 0 || problem->threads == 0UL ) {
+                if ( errno || problem->threads == 0U ) {
                     argp_error(
                         state,
                         "Bad value for option -j --threads: %s", strerror( errno ? errno : EDOM )
@@ -160,7 +170,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
         case 'm':
             problem->memory = strtoull( arg, NULL, 10 );
-            if ( errno != 0 || problem->timelimit == 0ULL ) {
+            if ( errno || problem->memory == 0ULL ) {
                 argp_error(
                     state,
                     "Bad value for option -m --memory: %s", strerror( errno ? errno : EDOM )
@@ -172,12 +182,11 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
         case 't':
             problem->timelimit = strtoull( arg, NULL, 10 );
-            if ( errno != 0 || problem->timelimit == 0ULL ) {
+            if ( errno || problem->timelimit == 0ULL ) {
                 argp_error(
                     state,
                     "Bad value for option -t --timelimit: %s", strerror( errno ? errno : EDOM )
                 );
-                return ERANGE;
             }
 
             break;
@@ -235,115 +244,178 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 void
 parse_tsp_file ( instance *problem )
 {
-    FILE *fin = fopen( problem->filename, "r" );
+    char errinfo[256] = "";
+    char line[MAX_TSP_FILE_LINE_LENGTH + 1] = "";
+	char *tok;
+	_Bool is_node_coord_section = false;
 
-    if ( fin == NULL ) {
-        perror( "parse_tsp_file" );
+    /* Reset global errno value. This step is mandatory to check
+       whether calls to strto[*] functions were successful or not
+    */
+    errno = 0;
+
+    FILE *fd = fopen( problem->filename, "r" );
+
+    if ( fd == NULL ) {
+        perror( "Parsing error" );
         exit( EXIT_FAILURE );
     }
 
-    problem->nnodes = 0;
-
-    // TODO
-    char line[180];
-	char *par_name;   
-	char *token1;
-	char *token2;
-	
-	int active_section = 0; // =1 NODE_COORD_SECTION 
-	
-
-	while ( fgets(line, sizeof(line), fin) != NULL ) 
+	while ( fgets( line, sizeof( line ), fd ) != NULL )
 	{
+        /* Remove trailing newlines, if any */
+        line[ strcspn( line, "\r\n" ) ] = 0;
+        tok = strtok( line, " :" );
 
-		if ( strlen(line) <= 1 ) continue; 
-	    par_name = strtok(line, " :");
-        
-		if ( strncmp(par_name, "NAME", 4) == 0 ) 
-		{
-			active_section = 0;
-			continue;
-		}
+        /* Ignore empty lines */
+		if ( tok == NULL ) continue;
 
-		if ( strncmp(par_name, "COMMENT", 7) == 0 ) 
-		{
-			active_section = 0;   
-			continue;
-		}   
-		
-		if ( strncmp(par_name, "TYPE", 4) == 0 ) 
-		{
-			token1 = strtok(NULL, " :");  
-            //fprintf(stderr, "TRESD: %d", *token1);
-			if ( strncmp(token1, "TSP",3) != 0 )  {perror( "format error: only TYPE == TSP \n"); exit( EXIT_FAILURE ); }
-			active_section = 0;
-			continue;
-		}
-		
-
-		if ( strncmp(par_name, "DIMENSION", 9) == 0 ) 
-		{
-			if ( problem->nnodes > 0 ) {perror( "Repeated DIMENSION error in file\n" ); exit( EXIT_FAILURE ); }
-			token1 = strtok(NULL, " :");
-			problem->nnodes = strtoull(token1, NULL, 0);	 
-			problem->xcoord = (double *) calloc(problem->nnodes, sizeof(double)); 	 
-			problem->ycoord = (double *) calloc(problem->nnodes, sizeof(double));    
-			active_section = 0;  
-			continue;
-		}
-
-
-		if ( strncmp(par_name, "EDGE_WEIGHT_TYPE", 16) == 0 ) 
-		{ 
-			active_section = 0;
-			continue;
-		}            
-		
-		if ( strncmp(par_name, "NODE_COORD_SECTION", 18) == 0 ) 
-		{
-			if ( problem->nnodes <= 0 ) {perror( "DIMENSION section should appear before NODE_COORD_SECTION\n" ); exit( EXIT_FAILURE ); }
-			active_section = 1;   
-			continue;
-		}
-		
-		if ( strncmp(par_name, "EOF", 3) == 0 ) 
-		{
-			active_section = 0;
+        if ( !strcmp( tok, "EOF" ) ) {
 			break;
 		}
-		
-			
-		if ( active_section == 1 ) // within NODE_COORD_SECTION
-		{
-			int i = atoi(par_name) - 1; 
-			if ( i < 0 || i >= problem->nnodes ) {perror( "node out of range in NODE_COORD_SECTION\n" ); exit( EXIT_FAILURE ); }     
-			token1 = strtok(NULL, " :,");
-			token2 = strtok(NULL, " :,");
-			problem->xcoord[i] = atof(token1);
-			problem->ycoord[i] = atof(token2);
+
+        if ( !strcmp( tok, "COMMENT" ) ) {
 			continue;
-		}    
-		  
-		
-        {perror( "UNKNOWN FORMAT ARGUMENT IN FILE\n" ); exit( EXIT_FAILURE ); }     
-		    
-	}                
+		}
+
+		if ( !strcmp( tok, "NAME" ) ) {
+			is_node_coord_section = false;
+
+            tok = strtok( NULL, " :" );
+            if ( tok == NULL ) {
+                strcpy( errinfo, "It looks like your file declares an empty NAME." );
+                goto PARSING_ERROR;
+            }
+
+            problem->name = malloc( strlen( tok ) * sizeof( *tok ) );
+            if ( problem->name == NULL ) {
+                strcpy( errinfo, "It looks like you are not allowed to allocate this much memory" );
+                goto PARSING_ERROR;
+            }
+
+            strcpy( problem->name, tok );
+
+			continue;
+		}
+
+		if ( !strcmp( tok, "TYPE" ) ) {
+			tok = strtok( NULL, " :" );
+
+			if ( tok == NULL || strcmp( tok, "TSP" ) ) {
+                strcpy( errinfo, "It looks like your file type is not TSP." );
+                goto PARSING_ERROR;
+            }
+
+			is_node_coord_section = false;
+			continue;
+		}
 
 
-    fclose(fin);
+		if ( !strcmp( tok, "DIMENSION" ) ) {
+            is_node_coord_section = false;
 
-    if(problem->loglevel >=LOG_VBS){
-        fprintf( stderr, "TSP file parameters: \n");
-        fprintf( stderr, "  * Number of nodes     : %llu\n\n", problem->nnodes );
+			if ( problem->nnodes > 0 ) {
+                strcpy( errinfo, "It looks like your file has multiple DIMENSION declaration." );
+                goto PARSING_ERROR;
+            }
 
+			tok = strtok( NULL, " :" );
+            if ( tok == NULL ) {
+
+            }
+			problem->nnodes = strtoull( tok, NULL, 10 );
+            if ( errno || problem->nnodes == 0 ) {
+                strcpy( errinfo, "It looks like your file has a bad DIMENSION declaration." );
+                goto PARSING_ERROR;
+            }
+
+			problem->xcoord = calloc( problem->nnodes, sizeof( *problem->xcoord ) );
+			problem->ycoord = calloc( problem->nnodes, sizeof( *problem->ycoord ) );
+            if (problem->xcoord == NULL || problem->ycoord == NULL) {
+                strcpy( errinfo, "It looks like you are not allowed to allocate this much memory" );
+                goto PARSING_ERROR;
+            }
+
+			continue;
+		}
+
+
+		if ( !strcmp( tok, "EDGE_WEIGHT_TYPE" ) ) {
+			is_node_coord_section = false;
+			continue;
+		}
+
+		if ( !strcmp( tok, "NODE_COORD_SECTION" ) ) {
+            is_node_coord_section = true;
+
+			if ( !problem->nnodes ) {
+                strcpy( errinfo,
+                    "It looks like your file starys the NODE_COORD_SECTION before declaring its DIMENSION." );
+                goto PARSING_ERROR;
+            }
+
+			continue;
+		}
+
+		if ( is_node_coord_section == 1 ) {
+            /* Index of current node being parsed. */
+			unsigned long i = strtoull( tok, NULL, 10 );
+            if ( errno || i == 0 || i > problem->nnodes ) {
+                strcpy( errinfo, "It looks like your file has a bad node index in NODE_COORD_SECTION." );
+                goto PARSING_ERROR;
+            }
+
+            /* Nodes in file are 1-indexed */
+            --i;
+
+            /* Read x-coordinate */
+			tok = strtok(NULL, " :,");
+            if ( tok == NULL ) {
+                strcpy( errinfo, "It looks like your file is missing a x-coordinate in NODE_COORD_SECTION." );
+                goto PARSING_ERROR;
+            }
+
+			problem->xcoord[i] = strtod(tok, NULL);
+            if ( errno && problem->xcoord[i] == 0 ) {
+                strcpy( errinfo, "It looks like your file has a bad x-coordinate in NODE_COORD_SECTION." );
+                goto PARSING_ERROR;
+            }
+
+            /* Read y-coordinate */
+			tok = strtok(NULL, " :,");
+            if ( tok == NULL ) {
+                strcpy( errinfo, "It looks like your file is missing a y-coordinate in NODE_COORD_SECTION." );
+                goto PARSING_ERROR;
+            }
+
+            problem->ycoord[i] = strtod(tok, NULL);
+            if ( errno && problem->ycoord[i] == 0 ) {
+                strcpy( errinfo, "It looks like your file has a bad y-coordinate in NODE_COORD_SECTION." );
+                goto PARSING_ERROR;
+            }
+
+			continue;
+		}
+
+        strcpy( errinfo, "It looks like your file has some unsupported options." );
+        goto PARSING_ERROR;
+	}
+
+    /* Successful parsing */
+    fclose( fd );
+    return;
+
+    /* Error while parsing */
+PARSING_ERROR:
+    errno = errno ? errno : EINVAL;
+    perror( "Parsing error" );
+
+    if ( problem->loglevel >= LOG_VBS ) {
+        fprintf( stderr, "%s\n", errinfo ? errinfo : "No further information." );
+        if ( problem->loglevel >= LOG_DBG ) {
+            fprintf( stderr, "The problem occured while parsing: \"%s\"\n", line );
+        }
     }
 
-    if(problem->loglevel >= LOG_DBG){
-        fprintf(stderr, "TSP nodes: \n");
-        fprintf(stderr, "  * node 1 : %f, %f \n", problem->xcoord[0], problem->ycoord[0]);
-        fprintf(stderr, "  * node 48: %f, %f \n\n", problem->xcoord[47], problem->ycoord[47]);
-    }
-
-
-
+    exit( EXIT_FAILURE );
 }
