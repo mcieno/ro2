@@ -88,7 +88,10 @@ static struct argp argp = { options, parse_opt, args_doc, doc, 0, 0, 0 };
 int
 main ( int argc, char *argv[] )
 {
+
+
     instance problem;
+
 
     init_instance( &problem );
 
@@ -239,9 +242,108 @@ parse_tsp_file ( instance *problem )
         exit( EXIT_FAILURE );
     }
 
-    problem->nnodes = 0ULL;
+    problem->nnodes = 0;
 
     // TODO
+    char line[180];
+	char *par_name;   
+	char *token1;
+	char *token2;
+	
+	int active_section = 0; // =1 NODE_COORD_SECTION 
+	
+
+	while ( fgets(line, sizeof(line), fin) != NULL ) 
+	{
+
+		if ( strlen(line) <= 1 ) continue; 
+	    par_name = strtok(line, " :");
+        
+		if ( strncmp(par_name, "NAME", 4) == 0 ) 
+		{
+			active_section = 0;
+			continue;
+		}
+
+		if ( strncmp(par_name, "COMMENT", 7) == 0 ) 
+		{
+			active_section = 0;   
+			continue;
+		}   
+		
+		if ( strncmp(par_name, "TYPE", 4) == 0 ) 
+		{
+			token1 = strtok(NULL, " :");  
+            //fprintf(stderr, "TRESD: %d", *token1);
+			if ( strncmp(token1, "TSP",3) != 0 )  {perror( "format error: only TYPE == TSP \n"); exit( EXIT_FAILURE ); }
+			active_section = 0;
+			continue;
+		}
+		
+
+		if ( strncmp(par_name, "DIMENSION", 9) == 0 ) 
+		{
+			if ( problem->nnodes > 0 ) {perror( "Repeated DIMENSION error in file\n" ); exit( EXIT_FAILURE ); }
+			token1 = strtok(NULL, " :");
+			problem->nnodes = strtoull(token1, NULL, 0);	 
+			problem->xcoord = (double *) calloc(problem->nnodes, sizeof(double)); 	 
+			problem->ycoord = (double *) calloc(problem->nnodes, sizeof(double));    
+			active_section = 0;  
+			continue;
+		}
+
+
+		if ( strncmp(par_name, "EDGE_WEIGHT_TYPE", 16) == 0 ) 
+		{ 
+			active_section = 0;
+			continue;
+		}            
+		
+		if ( strncmp(par_name, "NODE_COORD_SECTION", 18) == 0 ) 
+		{
+			if ( problem->nnodes <= 0 ) {perror( "DIMENSION section should appear before NODE_COORD_SECTION\n" ); exit( EXIT_FAILURE ); }
+			active_section = 1;   
+			continue;
+		}
+		
+		if ( strncmp(par_name, "EOF", 3) == 0 ) 
+		{
+			active_section = 0;
+			break;
+		}
+		
+			
+		if ( active_section == 1 ) // within NODE_COORD_SECTION
+		{
+			int i = atoi(par_name) - 1; 
+			if ( i < 0 || i >= problem->nnodes ) {perror( "node out of range in NODE_COORD_SECTION\n" ); exit( EXIT_FAILURE ); }     
+			token1 = strtok(NULL, " :,");
+			token2 = strtok(NULL, " :,");
+			problem->xcoord[i] = atof(token1);
+			problem->ycoord[i] = atof(token2);
+			continue;
+		}    
+		  
+		
+        {perror( "UNKNOWN FORMAT ARGUMENT IN FILE\n" ); exit( EXIT_FAILURE ); }     
+		    
+	}                
+
 
     fclose(fin);
+
+    if(problem->loglevel >=LOG_VBS){
+        fprintf( stderr, "TSP file parameters: \n");
+        fprintf( stderr, "  * Number of nodes     : %llu\n\n", problem->nnodes );
+
+    }
+
+    if(problem->loglevel >= LOG_DBG){
+        fprintf(stderr, "TSP nodes: \n");
+        fprintf(stderr, "  * node 1 : %f, %f \n", problem->xcoord[0], problem->ycoord[0]);
+        fprintf(stderr, "  * node 48: %f, %f \n\n", problem->xcoord[47], problem->ycoord[47]);
+    }
+
+
+
 }
