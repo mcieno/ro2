@@ -10,7 +10,7 @@
 
 
 /*!
- * \struct arguments
+ * \struct instance
  * \brief  Structure to store command line arguments.
  *
  * This structure is used by parse_opt() to store command line arguments as they are being parsed.
@@ -64,8 +64,7 @@ typedef struct
 } instance;
 
 
-/*!
- * \fn    init_instance
+/**
  * \brief Initialize the instance data structure with the default configuration.
  *
  *
@@ -76,8 +75,7 @@ void
 init_instance ( instance *problem );
 
 
-/*!
- * \fn    destroy_instance
+/**
  * \brief Free all the memory and destroy the instance.
  *
  *
@@ -92,7 +90,6 @@ destroy_instance ( instance *problem );
 
 
 /*!
- * \fn    repr_instance
  * \brief Pretty-print problem information to `stderr` according to \p loglevel verbosity.
  *
  *

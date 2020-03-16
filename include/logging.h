@@ -1,6 +1,6 @@
 /*!
- * \file    debug.h
- * \brief   Definitions of logging levels.
+ * \file    logging.h
+ * \brief   Define logging levels.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #ifndef LOGGING_H

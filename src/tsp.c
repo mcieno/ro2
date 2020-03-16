@@ -1,5 +1,4 @@
-/*!
- * \file    tsp.c
+/*
  * \brief   Implementation of tsp.h functions.
  * \authors Francesco Cazzaro, Marco Cieno
  */

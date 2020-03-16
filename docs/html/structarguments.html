@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.15"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSP Solver: src Directory Reference</title>
+<title>TSP Solver: arguments Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -60,23 +60,37 @@ $(function() {
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
-</div>
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">src Directory Reference</div>  </div>
+<div class="title">arguments Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
-Files</h2></td></tr>
-<tr class="memitem:tsp__parser_8c"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__parser_8c.html">tsp_parser.c</a></td></tr>
-<tr class="memdesc:tsp__parser_8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a TSP problem into a convenient datastructure. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
+
+<p>Structure to store command line arguments.  
+ <a href="structarguments.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="tsp_8h_source.html">tsp.h</a>&gt;</code></p>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Structure to store command line arguments. </p>
+<p>This structure is used by parse_opt() to store command line arguments as they are being parsed.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cutoff</td><td>Master cutoff value of the problem.</td></tr>
+    <tr><td class="paramname">filename</td><td>Name of the TSP file to be parsed.</td></tr>
+    <tr><td class="paramname">loglevel</td><td>Logging level setting the output verbosity.</td></tr>
+    <tr><td class="paramname">memory</td><td>Maximum amount of memory (in MB) the program may use. If the program cannot proceed without requesting more memory, it should be terminated. A meaningful value is between 1 and ULLONG_MAX. Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer.</td></tr>
+    <tr><td class="paramname">nnodes</td><td>Number of nodes.</td></tr>
+    <tr><td class="paramname">threads</td><td>Number of threads to use.</td></tr>
+    <tr><td class="paramname">timelimit</td><td>Maximum number of seconds the program may run. If the program does not terminate within this time, it should be terminated anyway. A meaningful value is between 1 and ULLONG_MAX.</td></tr>
+    <tr><td class="paramname">xcoord</td><td>Pointer to the array with the x coordinates.</td></tr>
+    <tr><td class="paramname">ycoord</td><td>Pointer to the array with the y coordinates. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<li>include/<a class="el" href="tsp_8h_source.html">tsp.h</a></li>
+</ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

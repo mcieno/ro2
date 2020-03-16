@@ -1,5 +1,5 @@
 /*!
- * \file    tsp.c
+ * \file    tsp_parser.c
  * \brief   Parse a TSP problem into a convenient datastructure.
  * \authors Francesco Cazzaro, Marco Cieno
  */
@@ -22,7 +22,6 @@
 /* Function declarations */
 
 /*!
- * \fn    parse_opt
  * \brief Option parser.
  *
  * This function will be the callback used by argp_parse() to check command line arguments consistency and populate
@@ -44,7 +43,6 @@ static error_t
 parse_opt ( int key, char *arg, struct argp_state *state );
 
 /*!
- * \fn    _print_parsed_args
  * \brief Debugging function to inspect parsed command line arguments.
  *
  *
@@ -55,7 +53,6 @@ void
 _print_parsed_args ( instance *problem );
 
 /*!
- * \fn    parse_tsp_file
  * \brief Read input TSP file into instance data structure.
  *
  *

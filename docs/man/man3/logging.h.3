@@ -1,0 +1,57 @@
+.TH "include/logging.h" 3 "Mon Mar 16 2020" "TSP Solver" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/logging.h \- Define logging levels\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBLOG_ERR\fP   600U"
+.br
+.ti -1c
+.RI "#define \fBLOG_VBS\fP   700U"
+.br
+.ti -1c
+.RI "#define \fBLOG_DBG\fP   800U"
+.br
+.ti -1c
+.RI "#define \fBLOG_HID\fP   900U"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef unsigned \fBloglevel_t\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Define logging levels\&. 
+
+
+.PP
+\fBAuthors:\fP
+.RS 4
+Francesco Cazzaro, Marco Cieno 
+.RE
+.PP
+
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define LOG_DBG   800U"
+Debug logging level\&. 
+.SS "#define LOG_ERR   600U"
+Errors-only logging level\&. 
+.SS "#define LOG_HID   900U"
+Highly verbose debug logging level\&. 
+.SS "#define LOG_VBS   700U"
+Verbose logging level\&. 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TSP Solver from the source code\&.
