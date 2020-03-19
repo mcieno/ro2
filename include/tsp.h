@@ -47,12 +47,14 @@
  *
  * \param ycoord:
  *      Pointer to the array with the y coordinates.
+ *
+ * \param solution:
+ *      Pointer to the current solution.
  */
 typedef struct
 {
     double             cutoff;
     char *             filename;
-    loglevel_t         loglevel;
     unsigned long long memory;
     char *             name;
     unsigned long      nnodes;
@@ -60,6 +62,7 @@ typedef struct
     unsigned long long timelimit;
     double *           xcoord;
     double *           ycoord;
+    unsigned long *    solution;
 
 } instance;
 
@@ -98,5 +101,27 @@ destroy_instance ( instance *problem );
  */
 void
 repr_instance ( instance *problem );
+
+
+/*!
+ * \brief Calculate the cost of the current solution.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+int
+solution_cost ( instance *problem );
+
+
+/*!
+ * \brief Generate a random solution for the instance.
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+dummy_solution ( instance *problem );
+
 
 #endif
