@@ -13,7 +13,7 @@ CONCERTLIBDIR = $(CONCERTDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
 CONCERTINCDIR = $(CONCERTDIR)/include
 CPLEXINCDIR   = $(CPLEXDIR)/include
 LOCAL_INCDIR  = $(PWD)/include
-TSP_SRC_FILES = src/tsp_parser.c src/tsp.c
+TSP_SRC_FILES = src/tsp_parser.c src/tsp.c src/tspplot.c
 
 CLNDIRS   = -L$(CPLEXLIBDIR)
 CLNFLAGS  = -lcplex -lm -lpthread -ldl
