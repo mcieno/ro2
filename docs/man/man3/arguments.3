@@ -1,0 +1,43 @@
+.TH "arguments" 3 "Mon Mar 16 2020" "TSP Solver" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+arguments \- Structure to store command line arguments\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <tsp\&.h>\fP
+.SH "Detailed Description"
+.PP 
+Structure to store command line arguments\&. 
+
+This structure is used by parse_opt() to store command line arguments as they are being parsed\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcutoff\fP Master cutoff value of the problem\&.
+.br
+\fIfilename\fP Name of the TSP file to be parsed\&.
+.br
+\fIloglevel\fP Logging level setting the output verbosity\&.
+.br
+\fImemory\fP Maximum amount of memory (in MB) the program may use\&. If the program cannot proceed without requesting more memory, it should be terminated\&. A meaningful value is between 1 and ULLONG_MAX\&. Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer\&.
+.br
+\fInnodes\fP Number of nodes\&.
+.br
+\fIthreads\fP Number of threads to use\&.
+.br
+\fItimelimit\fP Maximum number of seconds the program may run\&. If the program does not terminate within this time, it should be terminated anyway\&. A meaningful value is between 1 and ULLONG_MAX\&.
+.br
+\fIxcoord\fP Pointer to the array with the x coordinates\&.
+.br
+\fIycoord\fP Pointer to the array with the y coordinates\&. 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TSP Solver from the source code\&.

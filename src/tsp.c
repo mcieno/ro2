@@ -1,12 +1,11 @@
-/*!
- * \file    tsp.c
+/*
  * \brief   Implementation of tsp.h functions.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
 #include <limits.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "logging.h"
 #include "tsp.h"
@@ -78,11 +77,10 @@ repr_instance ( instance *problem )
         for ( unsigned long j = 0; j < problem->nnodes; ++j ) {
             fprintf( stderr, "        %04lu : %13.3f, %13.3f \n", j, problem->xcoord[j], problem->ycoord[j] );
             if ( problem->loglevel >= LOG_HID ) {
-                fprintf( stderr, "    x in *(%p)\n", &problem->xcoord[j] );
-                fprintf( stderr, "    y in *(%p)\n", &problem->ycoord[j] );
+                fprintf( stderr, "        x in *(%p)\n", &problem->xcoord[j] );
+                fprintf( stderr, "        y in *(%p)\n", &problem->ycoord[j] );
             }
         }
         fprintf( stderr, "    ]\n" );
-
     }
 }
