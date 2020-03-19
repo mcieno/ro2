@@ -154,3 +154,12 @@ compute_solution_cost ( instance *problem )
 
     return cost;
 }
+
+
+void
+dummy_solution ( instance *problem )
+{
+    for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
+        problem->solution[i] = i;
+    }
+}

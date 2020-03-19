@@ -96,11 +96,12 @@ main ( int argc, char *argv[] )
         repr_instance( &problem );
     }
 
+    plot_instance( &problem );
 
     // ...
 
-    plot_instance( &problem );
-    //plot_solution( &problem );
+    dummy_solution( &problem );
+    plot_solution( &problem );
 
     destroy_instance( &problem );
 }

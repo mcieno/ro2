@@ -113,9 +113,11 @@ parse_tsp_file ( instance *problem )
                 goto PARSING_ERROR;
             }
 
-            problem->xcoord = calloc( problem->nnodes, sizeof( *problem->xcoord ) );
-            problem->ycoord = calloc( problem->nnodes, sizeof( *problem->ycoord ) );
-            if (problem->xcoord == NULL || problem->ycoord == NULL) {
+            problem->xcoord   = calloc( problem->nnodes, sizeof( *problem->xcoord ) );
+            problem->ycoord   = calloc( problem->nnodes, sizeof( *problem->ycoord ) );
+            problem->solution = calloc( problem->nnodes, sizeof( *problem->solution ) );
+
+            if (problem->xcoord == NULL || problem->ycoord == NULL || problem->solution == NULL) {
                 strcpy( errinfo, "It looks like you are not allowed to allocate this much memory" );
                 goto PARSING_ERROR;
             }
