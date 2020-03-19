@@ -1,4 +1,4 @@
-.TH "include/logging.h" 3 "Mon Mar 16 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/logging.h" 3 "Thu Mar 19 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -11,16 +11,25 @@ include/logging.h \- Define logging levels\&.
 
 .in +1c
 .ti -1c
-.RI "#define \fBLOG_ERR\fP   600U"
+.RI "#define \fBLOG_OFF\fP   0U"
 .br
 .ti -1c
-.RI "#define \fBLOG_VBS\fP   700U"
+.RI "#define \fBLOG_FATAL\fP   100U"
 .br
 .ti -1c
-.RI "#define \fBLOG_DBG\fP   800U"
+.RI "#define \fBLOG_ERROR\fP   200U"
 .br
 .ti -1c
-.RI "#define \fBLOG_HID\fP   900U"
+.RI "#define \fBLOG_WARN\fP   300U"
+.br
+.ti -1c
+.RI "#define \fBLOG_INFO\fP   400U"
+.br
+.ti -1c
+.RI "#define \fBLOG_DEBUG\fP   500U"
+.br
+.ti -1c
+.RI "#define \fBLOG_TRACE\fP   600U"
 .br
 .in -1c
 .SS "Typedefs"
@@ -44,14 +53,20 @@ Francesco Cazzaro, Marco Cieno
 
 .SH "Macro Definition Documentation"
 .PP 
-.SS "#define LOG_DBG   800U"
-Debug logging level\&. 
-.SS "#define LOG_ERR   600U"
-Errors-only logging level\&. 
-.SS "#define LOG_HID   900U"
-Highly verbose debug logging level\&. 
-.SS "#define LOG_VBS   700U"
-Verbose logging level\&. 
+.SS "#define LOG_DEBUG   500U"
+Debug logging\&. 
+.SS "#define LOG_ERROR   200U"
+Errors logging\&. 
+.SS "#define LOG_FATAL   100U"
+Fatals-only logging\&. 
+.SS "#define LOG_INFO   400U"
+Informative logging\&. 
+.SS "#define LOG_OFF   0U"
+No logging\&. 
+.SS "#define LOG_TRACE   600U"
+Verbose debug logging\&. 
+.SS "#define LOG_WARN   300U"
+Verbose logging\&. 
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for TSP Solver from the source code\&.

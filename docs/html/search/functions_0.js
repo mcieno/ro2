@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['_5fprint_5fparsed_5fargs',['_print_parsed_args',['../tsp__parser_8c.html#a6d8ef77696cec66c3772a653bef596c6',1,'tsp_parser.c']]]
+  ['destroy_5finstance',['destroy_instance',['../tsp_8h.html#abc983799ba1837b747050699cf322d22',1,'tsp.c']]],
+  ['dummy_5fsolution',['dummy_solution',['../tsp_8h.html#ae0237ef33422d648108cfd48813021be',1,'tsp.c']]]
 ];

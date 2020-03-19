@@ -1,7 +1,10 @@
 var searchData=
 [
-  ['log_5fdbg',['LOG_DBG',['../logging_8h.html#a82193f01b56c77d97198ad1e55c0858c',1,'logging.h']]],
-  ['log_5ferr',['LOG_ERR',['../logging_8h.html#a96fad55b3f5adf08c39e4c877cf185e3',1,'logging.h']]],
-  ['log_5fhid',['LOG_HID',['../logging_8h.html#a32ba5c6e40fadd5d424a30b54b29826d',1,'logging.h']]],
-  ['log_5fvbs',['LOG_VBS',['../logging_8h.html#ab3c92c93f2b2ebe10ea8951336e2f811',1,'logging.h']]]
+  ['log_5fdebug',['LOG_DEBUG',['../logging_8h.html#a6ff63e8955665c4a58b1598f2b07c51a',1,'logging.h']]],
+  ['log_5ferror',['LOG_ERROR',['../logging_8h.html#aced66975c154ea0e2a8ec3bc818b4e08',1,'logging.h']]],
+  ['log_5ffatal',['LOG_FATAL',['../logging_8h.html#ac2164369b4d2bf72296f8ba6ea576ecf',1,'logging.h']]],
+  ['log_5finfo',['LOG_INFO',['../logging_8h.html#aeb4f36db01bd128c7afeac5889dac311',1,'logging.h']]],
+  ['log_5foff',['LOG_OFF',['../logging_8h.html#aa8bd3e9913d9068e20ef061a58672967',1,'logging.h']]],
+  ['log_5ftrace',['LOG_TRACE',['../logging_8h.html#af7abc145380f1916838e42f9272aa0f6',1,'logging.h']]],
+  ['log_5fwarn',['LOG_WARN',['../logging_8h.html#aea3f57d6dcc5b4ac957e2679e87dde27',1,'logging.h']]]
 ];

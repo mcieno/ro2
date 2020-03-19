@@ -1,4 +1,4 @@
-.TH "instance" 3 "Mon Mar 16 2020" "TSP Solver" \" -*- nroff -*-
+.TH "instance" 3 "Thu Mar 19 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -17,9 +17,6 @@ instance \- Structure to store command line arguments\&.
 .br
 .ti -1c
 .RI "char * \fBfilename\fP"
-.br
-.ti -1c
-.RI "loglevel_t \fBloglevel\fP"
 .br
 .ti -1c
 .RI "unsigned long long \fBmemory\fP"
@@ -41,6 +38,9 @@ instance \- Structure to store command line arguments\&.
 .br
 .ti -1c
 .RI "double * \fBycoord\fP"
+.br
+.ti -1c
+.RI "unsigned long * \fBsolution\fP"
 .br
 .in -1c
 .SH "Detailed Description"
@@ -67,7 +67,9 @@ This structure is used by parse_opt() to store command line arguments as they ar
 .br
 \fIxcoord\fP Pointer to the array with the x coordinates\&.
 .br
-\fIycoord\fP Pointer to the array with the y coordinates\&. 
+\fIycoord\fP Pointer to the array with the y coordinates\&.
+.br
+\fIsolution\fP Pointer to the current solution\&. 
 .RE
 .PP
 

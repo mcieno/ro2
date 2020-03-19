@@ -1,9 +1,9 @@
 var indexSectionsWithContent =
 {
-  0: "_dilmprt",
+  0: "dilmprst",
   1: "i",
   2: "lt",
-  3: "_dipr",
+  3: "diprs",
   4: "lm"
 };
 

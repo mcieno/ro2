@@ -97,6 +97,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a02a28b328856edb5be50a840d0bd2d7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp_8h.html#a02a28b328856edb5be50a840d0bd2d7b">repr_instance</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
 <tr class="memdesc:a02a28b328856edb5be50a840d0bd2d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pretty-print problem information to <code>stderr</code> according to <code>loglevel</code> verbosity.  <a href="#a02a28b328856edb5be50a840d0bd2d7b">More...</a><br /></td></tr>
 <tr class="separator:a02a28b328856edb5be50a840d0bd2d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39c2a6d0f7cad48dd189e71bd529dca4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp_8h.html#a39c2a6d0f7cad48dd189e71bd529dca4">solution_cost</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a39c2a6d0f7cad48dd189e71bd529dca4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the cost of the current solution.  <a href="#a39c2a6d0f7cad48dd189e71bd529dca4">More...</a><br /></td></tr>
+<tr class="separator:a39c2a6d0f7cad48dd189e71bd529dca4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0237ef33422d648108cfd48813021be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp_8h.html#ae0237ef33422d648108cfd48813021be">dummy_solution</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:ae0237ef33422d648108cfd48813021be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a random solution for the instance.  <a href="#ae0237ef33422d648108cfd48813021be">More...</a><br /></td></tr>
+<tr class="separator:ae0237ef33422d648108cfd48813021be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Type and function definitions for a TSP instance. </p>
@@ -126,6 +132,32 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section warning"><dt>Warning</dt><dd>Referencing to problem after calling this function might result in undefined behaviour. </dd></dl>
+
+</div>
+</div>
+<a id="ae0237ef33422d648108cfd48813021be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0237ef33422d648108cfd48813021be">&#9670;&nbsp;</a></span>dummy_solution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dummy_solution </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate a random solution for the instance. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -172,6 +204,32 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Pretty-print problem information to <code>stderr</code> according to <code>loglevel</code> verbosity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a39c2a6d0f7cad48dd189e71bd529dca4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39c2a6d0f7cad48dd189e71bd529dca4">&#9670;&nbsp;</a></span>solution_cost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int solution_cost </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculate the cost of the current solution. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
