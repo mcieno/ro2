@@ -6,11 +6,18 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#define LOG_ERR 600U  /*!< Errors-only logging level. */
-#define LOG_VBS 700U  /*!< Verbose logging level. */
-#define LOG_DBG 800U  /*!< Debug logging level. */
-#define LOG_HID 900U  /*!< Highly verbose debug logging level. */
+
+#define LOG_OFF   0U    /*!< No logging. */
+#define LOG_FATAL 100U  /*!< Fatals-only logging. */
+#define LOG_ERROR 200U  /*!< Errors logging. */
+#define LOG_WARN  300U  /*!< Verbose logging. */
+#define LOG_INFO  400U  /*!< Informative logging. */
+#define LOG_DEBUG 500U  /*!< Debug logging. */
+#define LOG_TRACE 600U  /*!< Verbose debug logging. */
 
 typedef unsigned loglevel_t;
+
+static loglevel_t loglevel = LOG_FATAL;  /*!< Global logging level.  */
+
 
 #endif

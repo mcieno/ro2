@@ -65,7 +65,6 @@ init_instance ( instance *problem )
 
     problem->filename  = NULL;
     problem->cutoff    = __DBL_MAX__;
-    problem->loglevel  = LOG_ERR;
     problem->memory    = ULLONG_MAX;
     problem->name      = NULL;
     problem->nnodes    = 0UL;
@@ -119,11 +118,11 @@ repr_instance ( instance *problem )
     fprintf( stderr, "  * Parsed from file    : %s\n", problem->filename );
     fprintf( stderr, "  * Number of nodes     : %llu\n\n", problem->nnodes );
 
-    if ( problem->loglevel >= LOG_DBG ) {
+    if ( loglevel >= LOG_DEBUG ) {
         fprintf( stderr, "  * List of nodes       : [\n" );
         for ( unsigned long j = 0; j < problem->nnodes; ++j ) {
             fprintf( stderr, "        %04lu : %13.3f, %13.3f \n", j, problem->xcoord[j], problem->ycoord[j] );
-            if ( problem->loglevel >= LOG_HID ) {
+            if ( loglevel >= LOG_TRACE ) {
                 fprintf( stderr, "        x in *(%p)\n", &problem->xcoord[j] );
                 fprintf( stderr, "        y in *(%p)\n", &problem->ycoord[j] );
             }

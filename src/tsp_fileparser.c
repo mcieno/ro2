@@ -195,9 +195,9 @@ PARSING_ERROR:
     errno = errno ? errno : EINVAL;
     perror( "Parsing error" );
 
-    if ( problem->loglevel >= LOG_VBS ) {
+    if ( loglevel >= LOG_INFO ) {
         fprintf( stderr, "%s\n", errinfo ? errinfo : "No further information." );
-        if ( problem->loglevel >= LOG_DBG ) {
+        if ( loglevel >= LOG_DEBUG ) {
             fprintf( stderr, "The problem occured while parsing: \"%s\"\n", line );
         }
     }

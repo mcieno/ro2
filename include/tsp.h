@@ -55,7 +55,6 @@ typedef struct
 {
     double             cutoff;
     char *             filename;
-    loglevel_t         loglevel;
     unsigned long long memory;
     char *             name;
     unsigned long      nnodes;
