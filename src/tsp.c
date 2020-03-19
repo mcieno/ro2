@@ -12,6 +12,47 @@
 #include "tsp.h"
 
 
+/* Utility functions */
+
+/*!
+ * \brief Calculate the Euclidean distance of two 2-dimensional points.
+ *
+ *
+ * \param x_a
+ *     X coordinate of first point.
+ *
+ * \param y_a
+ *     Y coordinate of first point.
+ *
+ * \param x_b
+ *     X coordinate of first point.
+ *
+ * \param y_a
+ *     X coordinate of first point.
+ */
+double
+_euclidean_distance ( double x_a, double y_a, double x_b, double y_b )
+{
+    return sqrt( pow( x_a - x_b, 2 ) + pow( y_a - y_b, 2 ) );
+}
+
+
+/*!
+ * \brief Round a double number to the nearest integer.
+ *
+ *
+ * \param x
+ *     Number to be rounded.
+ */
+int
+_round_double ( double x )
+{
+    return round(x);
+}
+
+
+/* Header functions implementation */
+
 void
 init_instance ( instance *problem )
 {
@@ -32,7 +73,7 @@ init_instance ( instance *problem )
     problem->timelimit = ULLONG_MAX;
     problem->xcoord    = NULL;
     problem->ycoord    = NULL;
-    problem->solution = NULL;
+    problem->solution  = NULL;
 
 }
 
@@ -60,6 +101,10 @@ destroy_instance ( instance *problem )
 
     if ( problem->ycoord != NULL ) {
         free( problem->ycoord );
+    }
+
+    if ( problem->solution != NULL ) {
+        free( problem->solution );
     }
 
     /* Reset default parameters */
@@ -91,35 +136,22 @@ repr_instance ( instance *problem )
 int
 compute_solution_cost ( instance *problem )
 {
-    if(problem->solution==NULL){
-        perror( "Cannot calculate cost of solution: solution is NULL\n" ); 
+    if ( problem->solution == NULL ) {
+        perror( "Cannot calculate cost of solution: solution is NULL\n" );
         exit( EXIT_FAILURE );
     }
 
     int cost = 0;
 
-    for(int i=0; i<problem->nnodes; i++){
-        int node_2 = i+1;
-        if(node_2%problem->nnodes ==0){
-            node_2 = 0;
-        }
-        double dst_cost = compute_euclidean_distance(problem->xcoord[i], problem->ycoord[i],
-                            problem->xcoord[node_2], problem->ycoord[node_2] );
-        int rounded_cost = round_double(dst_cost);                    
+    for ( int i = 0; i < problem->nnodes; ++i ) {
+        unsigned long node_2 = (i + 1) % problem->nnodes;
+
+        double dst_cost = _euclidean_distance(problem->xcoord[i], problem->ycoord[i],
+                                              problem->xcoord[node_2], problem->ycoord[node_2] );
+        int rounded_cost = _round_double(dst_cost);
         cost += rounded_cost;
 
     }
+
     return cost;
-}
-
-double
-compute_euclidean_distance(double x_a, double y_a, double x_b, double y_b)
-{
-    return sqrt(pow(x_a-x_b,2) + pow(y_a - y_b, 2));
-}
-
-int
-round_double(double x)
-{
-return round(x);
 }

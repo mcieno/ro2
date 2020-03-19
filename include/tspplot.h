@@ -27,4 +27,21 @@ static char tspplotfile[] = "tspplot.dat";  /*!< Temporary file to store the Gnu
 void
 plot_instance ( instance *problem );
 
+
+/**
+ * \brief Plot a solved TSP instance.
+ *
+ * This function will generate a file in the relative path defined by \p tspplotfile.
+ * It will then spawn a gnuplot process and draw on it.
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ *
+ * \note In order for this function to work properly, GnuPlot binary should be compiled with --enable-datastrings
+ *       and available in the system `PATH`.
+ */
+void
+plot_solution ( instance *problem );
+
+
 #endif
