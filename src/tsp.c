@@ -6,6 +6,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "logging.h"
 #include "tsp.h"
@@ -31,6 +32,7 @@ init_instance ( instance *problem )
     problem->timelimit = ULLONG_MAX;
     problem->xcoord    = NULL;
     problem->ycoord    = NULL;
+    problem->solution = NULL;
 
 }
 
@@ -70,7 +72,7 @@ repr_instance ( instance *problem )
 {
     fprintf( stdout, "Problem %s:\n", problem->name ? problem->name : "Unknown" );
     fprintf( stderr, "  * Parsed from file    : %s\n", problem->filename );
-    fprintf( stderr, "  * Number of nodes     : %llu\n", problem->nnodes );
+    fprintf( stderr, "  * Number of nodes     : %llu\n\n", problem->nnodes );
 
     if ( problem->loglevel >= LOG_DBG ) {
         fprintf( stderr, "  * List of nodes       : [\n" );
@@ -83,4 +85,41 @@ repr_instance ( instance *problem )
         }
         fprintf( stderr, "    ]\n" );
     }
+}
+
+
+int
+compute_solution_cost ( instance *problem )
+{
+    if(problem->solution==NULL){
+        perror( "Cannot calculate cost of solution: solution is NULL\n" ); 
+        exit( EXIT_FAILURE );
+    }
+
+    int cost = 0;
+
+    for(int i=0; i<problem->nnodes; i++){
+        int node_2 = i+1;
+        if(node_2%problem->nnodes ==0){
+            node_2 = 0;
+        }
+        double dst_cost = compute_euclidean_distance(problem->xcoord[i], problem->ycoord[i],
+                            problem->xcoord[node_2], problem->ycoord[node_2] );
+        int rounded_cost = round_double(dst_cost);                    
+        cost += rounded_cost;
+
+    }
+    return cost;
+}
+
+double
+compute_euclidean_distance(double x_a, double y_a, double x_b, double y_b)
+{
+    return sqrt(pow(x_a-x_b,2) + pow(y_a - y_b, 2));
+}
+
+int
+round_double(double x)
+{
+return round(x);
 }

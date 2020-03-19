@@ -16,7 +16,7 @@ LOCAL_INCDIR  = $(PWD)/include
 TSP_SRC_FILES = src/tsp_parser.c src/tsp.c
 
 CLNDIRS   = -L$(CPLEXLIBDIR)
-CLNFLAGS  = -lcplex -lm -lpthread -ldl
+CLNFLAGS  =  -lm -lpthread -ldl
 
 CC         = gcc
 #COPT       = -O3 -m64 -fPIC
