@@ -107,6 +107,7 @@ main ( int argc, char *argv[] )
         repr_instance( &problem );
     }
 
+
     // ...
 
     destroy_instance( &problem );
@@ -403,6 +404,7 @@ parse_tsp_file ( instance *problem )
     return;
 
     /* Error while parsing */
+    
 PARSING_ERROR:
     errno = errno ? errno : EINVAL;
     perror( "Parsing error" );

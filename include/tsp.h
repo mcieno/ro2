@@ -47,6 +47,9 @@
  *
  * \param ycoord:
  *      Pointer to the array with the y coordinates.
+ * 
+ * \param solution:
+ *      Pointer to the current solution.
  */
 typedef struct
 {
@@ -60,6 +63,7 @@ typedef struct
     unsigned long long timelimit;
     double *           xcoord;
     double *           ycoord;
+    int *           solution;
 
 } instance;
 
@@ -98,5 +102,45 @@ destroy_instance ( instance *problem );
  */
 void
 repr_instance ( instance *problem );
+
+/*!
+ * \brief Calculate the cost of the current solution.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+int
+solution_cost ( instance *problem );
+
+/*!
+ * \brief Calculate the Euclidean distance of two 2-dimensional points.
+ *
+ *
+ * \param x_a
+ *     X coordinate of first point.
+ * 
+ * \param y_a
+ *     Y coordinate of first point.
+ * 
+ * \param x_b
+ *     X coordinate of first point.
+ * 
+ * \param y_a
+ *     X coordinate of first point.
+ */
+double
+compute_euclidean_distance(double x_a, double y_a, double x_b, double y_b);
+
+/*!
+ * \brief Round a double number to the nearest integer.
+ *
+ *
+ * \param x
+ *     Number to be rounded.
+ */
+int
+round_double(double x);
+
 
 #endif
