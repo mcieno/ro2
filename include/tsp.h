@@ -59,7 +59,7 @@ typedef struct
     unsigned int       threads;
     unsigned long long timelimit;
     double *           xcoord;
-	double *           ycoord;
+    double *           ycoord;
 
 } instance;
 
