@@ -65,14 +65,14 @@ static char doc[]                    = "Parse a TSP problem file into a convenie
 static char args_doc[]               = "TSP_FILE";
 static struct argp_option options[]  =
 {
-    { "cutoff",    'c',     "VALUE",   OPTION_NO_USAGE,                       "Master cutoff value."              },
-    { "threads",   'j',     "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL, "Use multithread. Default 4."       },
-    { "memory",    'm',     "AVAIL",   OPTION_NO_USAGE,                       "Available memory (size in MB)."    },
-    { "timelimit", 't',     "SECONDS", OPTION_NO_USAGE,                       "Maximum time the program may run." },
+    { "cutoff",    'c',       "VALUE",   OPTION_NO_USAGE,                       "Master cutoff value."              },
+    { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL, "Use multithread. Default 4."       },
+    { "memory",    'm',       "AVAIL",   OPTION_NO_USAGE,                       "Available memory (size in MB)."    },
+    { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE,                       "Maximum time the program may run." },
 
-    { "verbose",   LOG_VBS, NULL,      OPTION_NO_USAGE,                       "Set program logging level."        },
-    { "debug",     LOG_DBG, NULL,      OPTION_ALIAS,                          NULL                                },
-    { "hidebug",   LOG_HID, NULL,      OPTION_ALIAS,                          NULL                                },
+    { "verbose",   LOG_INFO,  NULL,      OPTION_NO_USAGE,                       "Set program logging level."        },
+    { "debug",     LOG_DEBUG, NULL,      OPTION_ALIAS,                          NULL                                },
+    { "trace",     LOG_TRACE, NULL,      OPTION_ALIAS,                          NULL                                },
 
     { NULL },
 };
@@ -92,15 +92,16 @@ main ( int argc, char *argv[] )
 
     parse_tsp_file( &problem );
 
-    if ( problem.loglevel >= LOG_VBS ) {
+    if ( loglevel >= LOG_INFO ) {
         repr_instance( &problem );
     }
 
+    plot_instance( &problem );
 
     // ...
 
-    plot_instance( &problem );
-    //plot_solution( &problem );
+    dummy_solution( &problem );
+    plot_solution( &problem );
 
     destroy_instance( &problem );
 }
@@ -109,7 +110,7 @@ main ( int argc, char *argv[] )
 void
 _print_parsed_args ( instance *problem )
 {
-    if ( problem->loglevel >= LOG_VBS ) {
+    if ( loglevel >= LOG_INFO ) {
         fprintf( stderr, "Arguments parsed:\n" );
         fprintf( stderr, "  * TSP file            : %s\n",                                   problem->filename );
         fprintf( stderr, "  * Time limit          : %llu hours %llu minutes %llu seconds\n",
@@ -182,20 +183,20 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             break;
 
 
-        case LOG_VBS:
-            problem->loglevel = LOG_VBS;
+        case LOG_INFO:
+            loglevel = LOG_INFO;
 
             break;
 
 
-        case LOG_DBG:
-            problem->loglevel = LOG_DBG;
+        case LOG_DEBUG:
+            loglevel = LOG_DEBUG;
 
             break;
 
 
-        case LOG_HID:
-            problem->loglevel = LOG_HID;
+        case LOG_TRACE:
+            loglevel = LOG_TRACE;
 
             break;
 

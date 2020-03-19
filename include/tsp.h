@@ -55,7 +55,6 @@ typedef struct
 {
     double             cutoff;
     char *             filename;
-    loglevel_t         loglevel;
     unsigned long long memory;
     char *             name;
     unsigned long      nnodes;
@@ -113,6 +112,16 @@ repr_instance ( instance *problem );
  */
 int
 solution_cost ( instance *problem );
+
+
+/*!
+ * \brief Generate a random solution for the instance.
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+dummy_solution ( instance *problem );
 
 
 #endif

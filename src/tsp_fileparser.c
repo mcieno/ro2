@@ -113,9 +113,11 @@ parse_tsp_file ( instance *problem )
                 goto PARSING_ERROR;
             }
 
-            problem->xcoord = calloc( problem->nnodes, sizeof( *problem->xcoord ) );
-            problem->ycoord = calloc( problem->nnodes, sizeof( *problem->ycoord ) );
-            if (problem->xcoord == NULL || problem->ycoord == NULL) {
+            problem->xcoord   = calloc( problem->nnodes, sizeof( *problem->xcoord ) );
+            problem->ycoord   = calloc( problem->nnodes, sizeof( *problem->ycoord ) );
+            problem->solution = calloc( problem->nnodes, sizeof( *problem->solution ) );
+
+            if (problem->xcoord == NULL || problem->ycoord == NULL || problem->solution == NULL) {
                 strcpy( errinfo, "It looks like you are not allowed to allocate this much memory" );
                 goto PARSING_ERROR;
             }
@@ -195,9 +197,9 @@ PARSING_ERROR:
     errno = errno ? errno : EINVAL;
     perror( "Parsing error" );
 
-    if ( problem->loglevel >= LOG_VBS ) {
+    if ( loglevel >= LOG_INFO ) {
         fprintf( stderr, "%s\n", errinfo ? errinfo : "No further information." );
-        if ( problem->loglevel >= LOG_DBG ) {
+        if ( loglevel >= LOG_DEBUG ) {
             fprintf( stderr, "The problem occured while parsing: \"%s\"\n", line );
         }
     }
