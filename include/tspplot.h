@@ -9,7 +9,7 @@
 #include "tsp.h"
 
 
-static char tspplot_tmpfile[] = "/tmp/tspplot.dat";  /*!< Temporary file to store information for GnuPlot. */
+extern char *tspplot_tmpfile;  /*!< Temporary file to store information for GnuPlot. */
 
 
 /**

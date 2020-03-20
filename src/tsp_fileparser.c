@@ -20,13 +20,16 @@
  * \brief Read input TSP file into instance data structure.
  *
  *
+ * \param filename
+ *     Name of the file where to read the problem from.
+ *
  * \param problem
  *     Pointer to the problem being parsed.
  *
  * \warning \p problem should be initialized via a call to init_instance() *before* passing it to this function.
  */
 void
-parse_tsp_file ( instance *problem )
+parse_tsp_file ( const char *filename, instance *problem )
 {
     char errinfo[256] = "";
     char line[MAX_TSP_FILE_LINE_LENGTH + 1] = "";
@@ -38,7 +41,7 @@ parse_tsp_file ( instance *problem )
     */
     errno = 0;
 
-    FILE *fd = fopen( problem->filename, "r" );
+    FILE *fd = fopen( filename, "r" );
 
     if ( fd == NULL ) {
         perror( "Parsing error" );
@@ -198,7 +201,7 @@ PARSING_ERROR:
     perror( "Parsing error" );
 
     if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, "%s\n", errinfo ? errinfo : "No further information." );
+        fprintf( stderr, "%s\n", *errinfo ? errinfo : "No further information." );
         if ( loglevel >= LOG_DEBUG ) {
             fprintf( stderr, "The problem occured while parsing: \"%s\"\n", line );
         }
