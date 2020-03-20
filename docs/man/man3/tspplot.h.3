@@ -1,4 +1,4 @@
-.TH "include/tspplot.h" 3 "Thu Mar 19 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tspplot.h" 3 "Fri Mar 20 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -29,6 +29,13 @@ include/tspplot.h \- Type and function definitions for a TSP instance\&.
 .RI "void \fBplot_solution\fP (\fBinstance\fP *problem)"
 .br
 .RI "Plot a solved TSP instance\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "char * \fBtspplot_tmpfile\fP"
+.br
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -102,6 +109,10 @@ Write to file the information to plot the solution of an instance\&.
 .RE
 .PP
 
+.SH "Variable Documentation"
+.PP 
+.SS "char* tspplot_tmpfile"
+Temporary file to store information for GnuPlot\&. 
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for TSP Solver from the source code\&.

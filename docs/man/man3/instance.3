@@ -1,8 +1,8 @@
-.TH "instance" 3 "Thu Mar 19 2020" "TSP Solver" \" -*- nroff -*-
+.TH "instance" 3 "Fri Mar 20 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
-instance \- Structure to store command line arguments\&.  
+instance \- Structure to represent a TSP problem\&.  
 
 .SH SYNOPSIS
 .br
@@ -16,22 +16,10 @@ instance \- Structure to store command line arguments\&.
 .RI "double \fBcutoff\fP"
 .br
 .ti -1c
-.RI "char * \fBfilename\fP"
-.br
-.ti -1c
-.RI "unsigned long long \fBmemory\fP"
-.br
-.ti -1c
 .RI "char * \fBname\fP"
 .br
 .ti -1c
 .RI "unsigned long \fBnnodes\fP"
-.br
-.ti -1c
-.RI "unsigned int \fBthreads\fP"
-.br
-.ti -1c
-.RI "unsigned long long \fBtimelimit\fP"
 .br
 .ti -1c
 .RI "double * \fBxcoord\fP"
@@ -45,25 +33,17 @@ instance \- Structure to store command line arguments\&.
 .in -1c
 .SH "Detailed Description"
 .PP 
-Structure to store command line arguments\&. 
+Structure to represent a TSP problem\&. 
 
-This structure is used by parse_opt() to store command line arguments as they are being parsed\&.
+This structure holds all the useful information to represent and solve a TSP problem\&.
 .PP
 \fBParameters:\fP
 .RS 4
 \fIcutoff\fP Master cutoff value of the problem\&.
 .br
-\fIfilename\fP Name of the TSP file to be parsed\&.
-.br
-\fIloglevel\fP Logging level setting the output verbosity\&.
-.br
-\fImemory\fP Maximum amount of memory (in MB) the program may use\&. If the program cannot proceed without requesting more memory, it should be terminated\&. A meaningful value is between 1 and ULLONG_MAX\&. Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer\&.
+\fIname\fP Name to give to this problem\&.
 .br
 \fInnodes\fP Number of nodes\&.
-.br
-\fIthreads\fP Number of threads to use\&.
-.br
-\fItimelimit\fP Maximum number of seconds the program may run\&. If the program does not terminate within this time, it should be terminated anyway\&. A meaningful value is between 1 and ULLONG_MAX\&.
 .br
 \fIxcoord\fP Pointer to the array with the x coordinates\&.
 .br

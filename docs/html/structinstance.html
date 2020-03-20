@@ -69,7 +69,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Structure to store command line arguments.  
+<p>Structure to represent a TSP problem.  
  <a href="structinstance.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="tsp_8h_source.html">tsp.h</a>&gt;</code></p>
@@ -79,24 +79,12 @@ Data Fields</h2></td></tr>
 <tr class="memitem:ad3b5cad7816fe5064bc6c093665d2236"><td class="memItemLeft" align="right" valign="top"><a id="ad3b5cad7816fe5064bc6c093665d2236"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>cutoff</b></td></tr>
 <tr class="separator:ad3b5cad7816fe5064bc6c093665d2236"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc1368e2a6f00e8cc48cac58170fb5ae"><td class="memItemLeft" align="right" valign="top"><a id="afc1368e2a6f00e8cc48cac58170fb5ae"></a>
-char *&#160;</td><td class="memItemRight" valign="bottom"><b>filename</b></td></tr>
-<tr class="separator:afc1368e2a6f00e8cc48cac58170fb5ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a169ce6cfd8d4172b95d1fa76589b6149"><td class="memItemLeft" align="right" valign="top"><a id="a169ce6cfd8d4172b95d1fa76589b6149"></a>
-unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><b>memory</b></td></tr>
-<tr class="separator:a169ce6cfd8d4172b95d1fa76589b6149"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09ce752df4cbc83f7073001661074512"><td class="memItemLeft" align="right" valign="top"><a id="a09ce752df4cbc83f7073001661074512"></a>
 char *&#160;</td><td class="memItemRight" valign="bottom"><b>name</b></td></tr>
 <tr class="separator:a09ce752df4cbc83f7073001661074512"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61d2fe1f47aff8c03e9b938faeca596b"><td class="memItemLeft" align="right" valign="top"><a id="a61d2fe1f47aff8c03e9b938faeca596b"></a>
 unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>nnodes</b></td></tr>
 <tr class="separator:a61d2fe1f47aff8c03e9b938faeca596b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b6d88d49cdd383b8e1e7d6de9efce31"><td class="memItemLeft" align="right" valign="top"><a id="a2b6d88d49cdd383b8e1e7d6de9efce31"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>threads</b></td></tr>
-<tr class="separator:a2b6d88d49cdd383b8e1e7d6de9efce31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1d3677d199dd832be9e75fb721a7e67"><td class="memItemLeft" align="right" valign="top"><a id="ae1d3677d199dd832be9e75fb721a7e67"></a>
-unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><b>timelimit</b></td></tr>
-<tr class="separator:ae1d3677d199dd832be9e75fb721a7e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2dcce52e038a107d3e8ebd8e249c03b3"><td class="memItemLeft" align="right" valign="top"><a id="a2dcce52e038a107d3e8ebd8e249c03b3"></a>
 double *&#160;</td><td class="memItemRight" valign="bottom"><b>xcoord</b></td></tr>
 <tr class="separator:a2dcce52e038a107d3e8ebd8e249c03b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -108,17 +96,13 @@ unsigned long *&#160;</td><td class="memItemRight" valign="bottom"><b>solution</
 <tr class="separator:a024a44242d5f35c89832075fe781bb9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Structure to store command line arguments. </p>
-<p>This structure is used by parse_opt() to store command line arguments as they are being parsed.</p>
+<div class="textblock"><p>Structure to represent a TSP problem. </p>
+<p>This structure holds all the useful information to represent and solve a TSP problem.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cutoff</td><td>Master cutoff value of the problem.</td></tr>
-    <tr><td class="paramname">filename</td><td>Name of the TSP file to be parsed.</td></tr>
-    <tr><td class="paramname">loglevel</td><td>Logging level setting the output verbosity.</td></tr>
-    <tr><td class="paramname">memory</td><td>Maximum amount of memory (in MB) the program may use. If the program cannot proceed without requesting more memory, it should be terminated. A meaningful value is between 1 and ULLONG_MAX. Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer.</td></tr>
+    <tr><td class="paramname">name</td><td>Name to give to this problem.</td></tr>
     <tr><td class="paramname">nnodes</td><td>Number of nodes.</td></tr>
-    <tr><td class="paramname">threads</td><td>Number of threads to use.</td></tr>
-    <tr><td class="paramname">timelimit</td><td>Maximum number of seconds the program may run. If the program does not terminate within this time, it should be terminated anyway. A meaningful value is between 1 and ULLONG_MAX.</td></tr>
     <tr><td class="paramname">xcoord</td><td>Pointer to the array with the x coordinates.</td></tr>
     <tr><td class="paramname">ycoord</td><td>Pointer to the array with the y coordinates.</td></tr>
     <tr><td class="paramname">solution</td><td>Pointer to the current solution. </td></tr>
