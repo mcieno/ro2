@@ -17,7 +17,7 @@
 
 typedef unsigned loglevel_t;
 
-static loglevel_t loglevel = LOG_FATAL;  /*!< Global logging level.  */
+extern loglevel_t loglevel;
 
 
 #endif

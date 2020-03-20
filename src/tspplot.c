@@ -12,6 +12,9 @@
 #include "tspplot.h"
 
 
+char *tspplot_tmpfile = "/tmp/tspplot.dat";
+
+
 void
 instance_to_plot_dat ( instance *problem, char *outputfile )
 {
@@ -40,7 +43,7 @@ solution_to_plot_dat ( instance *problem, char *outputfile )
 
     // Repeat starting to close the tour
     fprintf(
-        fd, "%lu %lf %lf \n", 0,
+        fd, "%lu %lf %lf \n", 0UL,
         problem->xcoord[problem->solution[0]],
         problem->ycoord[problem->solution[0]]
     );

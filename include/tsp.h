@@ -11,36 +11,19 @@
 
 /*!
  * \struct instance
- * \brief  Structure to store command line arguments.
+ * \brief  Structure to represent a TSP problem.
  *
- * This structure is used by parse_opt() to store command line arguments as they are being parsed.
+ * This structure holds all the useful information to represent and solve a TSP problem.
  *
  *
  * \param cutoff
  *     Master cutoff value of the problem.
  *
- * \param filename
- *     Name of the TSP file to be parsed.
- *
- * \param loglevel
- *     Logging level setting the output verbosity.
- *
- * \param memory
- *     Maximum amount of memory (in MB) the program may use.
- *     If the program cannot proceed without requesting more memory, it should be terminated.
- *     A meaningful value is between 1 and ULLONG_MAX.
- *     Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer.
+ * \param name
+ *     Name to give to this problem.
  *
  * \param nnodes:
  *     Number of nodes.
- *
- * \param threads
- *     Number of threads to use.
- *
- * \param timelimit
- *     Maximum number of seconds the program may run.
- *     If the program does not terminate within this time, it should be terminated anyway.
- *     A meaningful value is between 1 and ULLONG_MAX.
  *
  * \param xcoord:
  *      Pointer to the array with the x coordinates.
@@ -54,12 +37,8 @@
 typedef struct
 {
     double             cutoff;
-    char *             filename;
-    unsigned long long memory;
     char *             name;
     unsigned long      nnodes;
-    unsigned int       threads;
-    unsigned long long timelimit;
     double *           xcoord;
     double *           ycoord;
     unsigned long *    solution;

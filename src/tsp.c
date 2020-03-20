@@ -63,13 +63,9 @@ init_instance ( instance *problem )
         exit( EXIT_FAILURE );
     }
 
-    problem->filename  = NULL;
     problem->cutoff    = __DBL_MAX__;
-    problem->memory    = ULLONG_MAX;
     problem->name      = NULL;
     problem->nnodes    = 0UL;
-    problem->threads   = 1U;
-    problem->timelimit = ULLONG_MAX;
     problem->xcoord    = NULL;
     problem->ycoord    = NULL;
     problem->solution  = NULL;
@@ -84,10 +80,6 @@ destroy_instance ( instance *problem )
         /* Attempt to free an non-existing instance */
         errno = EFAULT;
         perror( "free_instance" );
-    }
-
-    if ( problem->filename != NULL ) {
-        free( problem->filename );
     }
 
     if ( problem->name != NULL ) {
@@ -115,16 +107,15 @@ void
 repr_instance ( instance *problem )
 {
     fprintf( stdout, "Problem %s:\n", problem->name ? problem->name : "Unknown" );
-    fprintf( stderr, "  * Parsed from file    : %s\n", problem->filename );
-    fprintf( stderr, "  * Number of nodes     : %llu\n\n", problem->nnodes );
+    fprintf( stderr, "  * Number of nodes     : %lu\n\n", problem->nnodes );
 
     if ( loglevel >= LOG_DEBUG ) {
         fprintf( stderr, "  * List of nodes       : [\n" );
         for ( unsigned long j = 0; j < problem->nnodes; ++j ) {
             fprintf( stderr, "        %04lu : %13.3f, %13.3f \n", j, problem->xcoord[j], problem->ycoord[j] );
             if ( loglevel >= LOG_TRACE ) {
-                fprintf( stderr, "        x in *(%p)\n", &problem->xcoord[j] );
-                fprintf( stderr, "        y in *(%p)\n", &problem->ycoord[j] );
+                fprintf( stderr, "        x in *(%p)\n", (void *) &problem->xcoord[j] );
+                fprintf( stderr, "        y in *(%p)\n", (void *) &problem->ycoord[j] );
             }
         }
         fprintf( stderr, "    ]\n" );
