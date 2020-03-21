@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <ilcplex/cplex.h>
+#include <cplex.h>
 
 #include "logging.h"
 #include "tsp.h"
