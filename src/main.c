@@ -13,8 +13,9 @@
 #include <string.h>
 
 #include "logging.h"
-#include "tspplot.h"
 #include "tsp.h"
+#include "tsp_solvers.h"
+#include "tspplot.h"
 
 
 /*!
@@ -166,7 +167,7 @@ main ( int argc, char *argv[] )
 
     dummy_solution( &problem );
 
-    TSPopt(&problem);
+    dummy_cplex_solution( &problem );
 
     if ( conf.shouldplot ) {
         plot_solution( &problem );

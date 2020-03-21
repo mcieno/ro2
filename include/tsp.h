@@ -93,16 +93,4 @@ int
 solution_cost ( instance *problem );
 
 
-/*!
- * \brief Generate a random solution for the instance.
- *
- * \param problem
- *     Pointer to the instance structure.
- */
-void
-dummy_solution ( instance *problem );
-
-void
-TSPopt(instance *problem);
-
 #endif
