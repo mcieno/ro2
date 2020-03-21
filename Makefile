@@ -2,7 +2,7 @@ BUILD_DIR  = $(PWD)/bin
 SYSTEM     = x86-64_linux
 LIBFORMAT  = static_pic
 
-COSCEDIR   = /opt/ibm/ILOG/CPLEX_Studio_Community129
+COSCEDIR   = /opt/ibm/ILOG/CPLEX_Studio1210
 CPLEXDIR   = $(COSCEDIR)/cplex
 CONCERTDIR = $(COSCEDIR)/concert
 
@@ -16,7 +16,7 @@ LOCAL_INCDIR  = $(PWD)/include
 TSP_SRC_FILES = src/main.c src/logging.c src/tsp_fileparser.c src/tsp.c src/tspplot.c
 
 CLNDIRS   = -L$(CPLEXLIBDIR)
-CLNFLAGS  =  -lm -lpthread -ldl
+CLNFLAGS  =  -lm -lpthread -ldl -lcplex
 
 CC         = gcc
 #COPT       = -O3 -m64 -fPIC

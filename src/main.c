@@ -166,6 +166,8 @@ main ( int argc, char *argv[] )
 
     dummy_solution( &problem );
 
+    TSPopt(&problem);
+
     if ( conf.shouldplot ) {
         plot_solution( &problem );
     }

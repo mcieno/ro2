@@ -102,5 +102,7 @@ solution_cost ( instance *problem );
 void
 dummy_solution ( instance *problem );
 
+void
+TSPopt(instance *problem);
 
 #endif

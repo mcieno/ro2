@@ -2,11 +2,13 @@
  * \brief   Implementation of tsp.h functions.
  * \authors Francesco Cazzaro, Marco Cieno
  */
+#include <ilcplex/cplex.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
 
 #include "logging.h"
 #include "tsp.h"
@@ -153,4 +155,17 @@ dummy_solution ( instance *problem )
     for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
         problem->solution[i] = i;
     }
+}
+
+void TSPopt(instance *problem)
+{
+// open cplex model
+    fprintf(stderr, "entra in TSPopt");
+	int error;
+	CPXENVptr env = CPXopenCPLEX(&error);
+	CPXLPptr lp = CPXcreateprob(env, &error, "TSP"); 
+
+    CPXfreeprob(env, &lp);
+    CPXcloseCPLEX(&env);
+
 }
