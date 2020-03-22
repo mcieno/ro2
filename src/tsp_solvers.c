@@ -17,13 +17,39 @@
 void
 dummy_solution ( instance *problem )
 {
-	
+
     for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
-        problem->solution[i] = i;
+        problem->solution[i][0] = i;
+		problem->solution[i][1] = i+1;
     }
+
+	problem->solution[problem->nnodes-1][1] = 0;
+
 
 }
 
+void
+infer_solution(CPXENVptr env, CPXLPptr lp, instance *problem){
+
+	double sol[CPXgetnumcols(env,lp)];
+	CPXsolution(env, lp, NULL, NULL, sol, NULL,NULL, NULL);
+
+
+	unsigned long p=0;
+	for ( unsigned long i = 0; i < problem->nnodes; i++ )
+	{
+		for ( unsigned long j = i+1; j < problem->nnodes; j++ )
+		{
+			unsigned long pos = i * problem->nnodes + j - (( i + 1 ) * ( i + 2 ) / 2);
+			if(sol[pos]==1){
+				problem->solution[p][0]=i;
+				problem->solution[p][1]=j;
+				p++;
+			}
+		}
+	}
+
+}
 
 int 
 xpos(int i, int j, instance *problem)
@@ -88,38 +114,17 @@ dummy_cplex_solution ( instance *problem )
 
     dummy_build_model(problem, env, lp);
 
-	CPXwriteprob (env, lp, "bin/myprob.lp", NULL);
+	//CPXwriteprob (env, lp, "bin/myprob.lp", NULL);
 
     if(CPXmipopt(env,lp)){
 		fprintf(stderr, "CPXmimopt true\n");
 	}
 
-
-
-	double sol[CPXgetnumcols(env,lp)];
-	CPXsolution(env, lp, NULL, NULL, sol, NULL,NULL, NULL);
-
-	unsigned long solution[problem->nnodes][2];
-
-	unsigned long p=0;
-	for ( unsigned long i = 0; i < problem->nnodes; i++ )
-	{
-		for ( unsigned long j = i+1; j < problem->nnodes; j++ )
-		{
-			unsigned long pos = i * problem->nnodes + j - (( i + 1 ) * ( i + 2 ) / 2);
-			if(sol[pos]==1){
-				solution[p][0]=i;
-				solution[p][1]=j;
-				p++;
-				fprintf(stderr, "%lu %lu\n", solution[p-1][0]+1, solution[p-1][1]+1);
-			}
-		}
-	}
-
+	infer_solution(env, lp, problem);
+	
     CPXfreeprob( env, &lp );
     CPXcloseCPLEX( &env );
     
-    fprintf(stderr, "LET?S GOOO\n");
 
 }
 

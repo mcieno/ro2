@@ -15,28 +15,6 @@
 
 /* Utility functions */
 
-/*!
- * \brief Calculate the Euclidean distance of two 2-dimensional points.
- *
- *
- * \param x_a
- *     X coordinate of first point.
- *
- * \param y_a
- *     Y coordinate of first point.
- *
- * \param x_b
- *     X coordinate of first point.
- *
- * \param y_a
- *     X coordinate of first point.
- */
-double
-_euclidean_distance ( double x_a, double y_a, double x_b, double y_b )
-{
-    return sqrt( pow( x_a - x_b, 2 ) + pow( y_a - y_b, 2 ) );
-}
-
 
 /*!
  * \brief Round a double number to the nearest integer.
@@ -135,9 +113,10 @@ compute_solution_cost ( instance *problem )
     int cost = 0;
 
     for ( int i = 0; i < problem->nnodes; ++i ) {
-        unsigned long node_2 = (i + 1) % problem->nnodes;
+        unsigned long node_1 = problem->solution[i][0];
+        unsigned long node_2 = problem->solution[i][1];
 
-        double dst_cost = _euclidean_distance(problem->xcoord[i], problem->ycoord[i],
+        double dst_cost = _euclidean_distance(problem->xcoord[node_1], problem->ycoord[node_1],
                                               problem->xcoord[node_2], problem->ycoord[node_2] );
         int rounded_cost = _round_double(dst_cost);
         cost += rounded_cost;
@@ -146,3 +125,10 @@ compute_solution_cost ( instance *problem )
 
     return cost;
 }
+
+double
+_euclidean_distance ( double x_a, double y_a, double x_b, double y_b )
+{
+    return sqrt( pow( x_a - x_b, 2 ) + pow( y_a - y_b, 2 ) );
+}
+
