@@ -1,13 +1,19 @@
-.TH "src/tsp_fileparser.c" 3 "Fri Mar 20 2020" "TSP Solver" \" -*- nroff -*-
+.TH "src/main.c" 3 "Fri Mar 20 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
-src/tsp_fileparser.c \- Parse a TSP file into an instance strcture\&.  
+src/main.c \- TSP solver\&.  
 
 .SH SYNOPSIS
 .br
 .PP
+\fC#include <argp\&.h>\fP
+.br
 \fC#include <errno\&.h>\fP
+.br
+\fC#include <float\&.h>\fP
+.br
+\fC#include <limits\&.h>\fP
 .br
 \fC#include <stdbool\&.h>\fP
 .br
@@ -19,27 +25,46 @@ src/tsp_fileparser.c \- Parse a TSP file into an instance strcture\&.
 .br
 \fC#include 'logging\&.h'\fP
 .br
+\fC#include 'tspplot\&.h'\fP
+.br
 \fC#include 'tsp\&.h'\fP
 .br
 
-.SS "Macros"
+.SS "Data Structures"
 
 .in +1c
 .ti -1c
-.RI "#define \fBMAX_TSP_FILE_LINE_LENGTH\fP   255"
+.RI "struct \fBconfiguration\fP"
 .br
+.RI "Structure to help parsing the command line\&. "
 .in -1c
 .SS "Functions"
 
 .in +1c
 .ti -1c
-.RI "void \fBparse_tsp_file\fP (const char *filename, \fBinstance\fP *problem)"
+.RI "void \fB_print_configuration\fP (\fBconfiguration\fP *conf)"
+.br
+.ti -1c
+.RI "void \fBparse_tsp_file\fP (const char *, \fBinstance\fP *)"
 .br
 .RI "Read input TSP file into instance data structure\&. "
+.ti -1c
+.RI "int \fBmain\fP (int argc, char *argv[])"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "const char * \fBargp_program_version\fP = 'tsp_parser brought to you by Francesco Cazzaro and Marco Cieno'"
+.br
+.ti -1c
+.RI "const char * \fBargp_program_bug_address\fP = '{marco\&.cieno, francesco\&.cazzaro}@studenti\&.unipd\&.it'"
+.br
 .in -1c
 .SH "Detailed Description"
 .PP 
-Parse a TSP file into an instance strcture\&. 
+TSP solver\&. 
 
 
 .PP
@@ -49,10 +74,6 @@ Francesco Cazzaro, Marco Cieno
 .RE
 .PP
 
-.SH "Macro Definition Documentation"
-.PP 
-.SS "#define MAX_TSP_FILE_LINE_LENGTH   255"
-Maximum length a single line in a TSP file may have\&. 
 .SH "Function Documentation"
 .PP 
 .SS "void parse_tsp_file (const char * filename, \fBinstance\fP * problem)"

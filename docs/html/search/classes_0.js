@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['instance',['instance',['../structinstance.html',1,'']]]
+  ['configuration',['configuration',['../structconfiguration.html',1,'']]]
 ];

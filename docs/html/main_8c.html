@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.15"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSP Solver: src/tsp_fileparser.c File Reference</title>
+<title>TSP Solver: src/main.c File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -67,56 +67,61 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#nested-classes">Data Structures</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
-<div class="title">tsp_fileparser.c File Reference</div>  </div>
+<div class="title">main.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Parse a TSP file into an instance strcture.  
+<p>TSP solver.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;errno.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;argp.h&gt;</code><br />
+<code>#include &lt;errno.h&gt;</code><br />
+<code>#include &lt;float.h&gt;</code><br />
+<code>#include &lt;limits.h&gt;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="logging_8h_source.html">logging.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="tspplot_8h_source.html">tspplot.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="tsp_8h_source.html">tsp.h</a>&quot;</code><br />
 </div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:aeb7515c426d71e641d71e897337c95a0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__fileparser_8c.html#aeb7515c426d71e641d71e897337c95a0">MAX_TSP_FILE_LINE_LENGTH</a>&#160;&#160;&#160;255</td></tr>
-<tr class="separator:aeb7515c426d71e641d71e897337c95a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Data Structures</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structconfiguration.html">configuration</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure to help parsing the command line.  <a href="structconfiguration.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:add86c629b5affe2f39c0803946208561"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__fileparser_8c.html#add86c629b5affe2f39c0803946208561">parse_tsp_file</a> (const char *filename, <a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:add86c629b5affe2f39c0803946208561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read input TSP file into instance data structure.  <a href="#add86c629b5affe2f39c0803946208561">More...</a><br /></td></tr>
-<tr class="separator:add86c629b5affe2f39c0803946208561"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb932755667be55da6129491cf8a6fa3"><td class="memItemLeft" align="right" valign="top"><a id="abb932755667be55da6129491cf8a6fa3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>_print_configuration</b> (<a class="el" href="structconfiguration.html">configuration</a> *conf)</td></tr>
+<tr class="separator:abb932755667be55da6129491cf8a6fa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f15d515b65a285ece10ecb868917046"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a8f15d515b65a285ece10ecb868917046">parse_tsp_file</a> (const char *, <a class="el" href="structinstance.html">instance</a> *)</td></tr>
+<tr class="memdesc:a8f15d515b65a285ece10ecb868917046"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read input TSP file into instance data structure.  <a href="#a8f15d515b65a285ece10ecb868917046">More...</a><br /></td></tr>
+<tr class="separator:a8f15d515b65a285ece10ecb868917046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top"><a id="a0ddf1224851353fc92bfbff6f499fa97"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>main</b> (int argc, char *argv[])</td></tr>
+<tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a62f73ea01c816f1996aed4c66f57c4fb"><td class="memItemLeft" align="right" valign="top"><a id="a62f73ea01c816f1996aed4c66f57c4fb"></a>
+const char *&#160;</td><td class="memItemRight" valign="bottom"><b>argp_program_version</b> = &quot;tsp_parser brought to you by Francesco Cazzaro and Marco Cieno&quot;</td></tr>
+<tr class="separator:a62f73ea01c816f1996aed4c66f57c4fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa037e59f26a80a8a2e35e6f2364004d"><td class="memItemLeft" align="right" valign="top"><a id="aaa037e59f26a80a8a2e35e6f2364004d"></a>
+const char *&#160;</td><td class="memItemRight" valign="bottom"><b>argp_program_bug_address</b> = &quot;{marco.cieno, francesco.cazzaro}@studenti.unipd.it&quot;</td></tr>
+<tr class="separator:aaa037e59f26a80a8a2e35e6f2364004d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Parse a TSP file into an instance strcture. </p>
+<div class="textblock"><p>TSP solver. </p>
 <dl class="section author"><dt>Authors</dt><dd>Francesco Cazzaro, Marco Cieno </dd></dl>
-</div><h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="aeb7515c426d71e641d71e897337c95a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeb7515c426d71e641d71e897337c95a0">&#9670;&nbsp;</a></span>MAX_TSP_FILE_LINE_LENGTH</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MAX_TSP_FILE_LINE_LENGTH&#160;&#160;&#160;255</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Maximum length a single line in a TSP file may have. </p>
-
-</div>
-</div>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="add86c629b5affe2f39c0803946208561"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#add86c629b5affe2f39c0803946208561">&#9670;&nbsp;</a></span>parse_tsp_file()</h2>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a8f15d515b65a285ece10ecb868917046"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f15d515b65a285ece10ecb868917046">&#9670;&nbsp;</a></span>parse_tsp_file()</h2>
 
 <div class="memitem">
 <div class="memproto">

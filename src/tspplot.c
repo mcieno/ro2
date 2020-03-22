@@ -7,9 +7,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 #include "logging.h"
 #include "tsp.h"
 #include "tspplot.h"
+
 
 
 char *tspplot_tmpfile = "/tmp/tspplot.dat";
@@ -33,20 +35,24 @@ solution_to_plot_dat ( instance *problem, char *outputfile )
 {
     FILE * fd = fopen( outputfile, "w" );
 
+
     for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
         fprintf(
             fd, "%lu %lf %lf \n", i + 1,
-            problem->xcoord[problem->solution[i]],
-            problem->ycoord[problem->solution[i]]
+            problem->xcoord[problem->solution[i][0]], ///NON LO SO RICK, DA SISTEMARE QUA
+            problem->ycoord[problem->solution[i][0]]
         );
+        
     }
 
-    // Repeat starting to close the tour
+    /* Not needed probably???
+     Repeat starting to close the tour
     fprintf(
         fd, "%lu %lf %lf \n", 0UL,
         problem->xcoord[problem->solution[0]],
         problem->ycoord[problem->solution[0]]
     );
+    */
 
     fclose( fd );
 }
