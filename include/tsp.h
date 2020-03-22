@@ -41,7 +41,7 @@ typedef struct
     unsigned long      nnodes;
     double *           xcoord;
     double *           ycoord;
-    unsigned long *    solution;
+    unsigned long **    solution;
 
 } instance;
 
@@ -90,17 +90,27 @@ repr_instance ( instance *problem );
  *     Pointer to the instance structure.
  */
 int
-solution_cost ( instance *problem );
-
+compute_solution_cost ( instance *problem );
 
 /*!
- * \brief Generate a random solution for the instance.
+ * \brief Calculate the Euclidean distance of two 2-dimensional points.
  *
- * \param problem
- *     Pointer to the instance structure.
+ *
+ * \param x_a
+ *     X coordinate of first point.
+ *
+ * \param y_a
+ *     Y coordinate of first point.
+ *
+ * \param x_b
+ *     X coordinate of first point.
+ *
+ * \param y_a
+ *     X coordinate of first point.
  */
-void
-dummy_solution ( instance *problem );
+double
+_euclidean_distance ( double x_a, double y_a, double x_b, double y_b );
+
 
 
 #endif

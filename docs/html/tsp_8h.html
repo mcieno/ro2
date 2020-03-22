@@ -97,17 +97,94 @@ Functions</h2></td></tr>
 <tr class="memitem:a02a28b328856edb5be50a840d0bd2d7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp_8h.html#a02a28b328856edb5be50a840d0bd2d7b">repr_instance</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
 <tr class="memdesc:a02a28b328856edb5be50a840d0bd2d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pretty-print problem information to <code>stderr</code> according to <code>loglevel</code> verbosity.  <a href="#a02a28b328856edb5be50a840d0bd2d7b">More...</a><br /></td></tr>
 <tr class="separator:a02a28b328856edb5be50a840d0bd2d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39c2a6d0f7cad48dd189e71bd529dca4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp_8h.html#a39c2a6d0f7cad48dd189e71bd529dca4">solution_cost</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a39c2a6d0f7cad48dd189e71bd529dca4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the cost of the current solution.  <a href="#a39c2a6d0f7cad48dd189e71bd529dca4">More...</a><br /></td></tr>
-<tr class="separator:a39c2a6d0f7cad48dd189e71bd529dca4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0237ef33422d648108cfd48813021be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp_8h.html#ae0237ef33422d648108cfd48813021be">dummy_solution</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:ae0237ef33422d648108cfd48813021be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a random solution for the instance.  <a href="#ae0237ef33422d648108cfd48813021be">More...</a><br /></td></tr>
-<tr class="separator:ae0237ef33422d648108cfd48813021be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75c4eaf22c5154739a1ef390c09d9344"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp_8h.html#a75c4eaf22c5154739a1ef390c09d9344">compute_solution_cost</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a75c4eaf22c5154739a1ef390c09d9344"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the cost of the current solution.  <a href="#a75c4eaf22c5154739a1ef390c09d9344">More...</a><br /></td></tr>
+<tr class="separator:a75c4eaf22c5154739a1ef390c09d9344"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab0f4a8aa92963b398d3649c2b39128a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp_8h.html#aab0f4a8aa92963b398d3649c2b39128a">_euclidean_distance</a> (double x_a, double y_a, double x_b, double y_b)</td></tr>
+<tr class="memdesc:aab0f4a8aa92963b398d3649c2b39128a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the Euclidean distance of two 2-dimensional points.  <a href="#aab0f4a8aa92963b398d3649c2b39128a">More...</a><br /></td></tr>
+<tr class="separator:aab0f4a8aa92963b398d3649c2b39128a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Type and function definitions for a TSP instance. </p>
 <dl class="section author"><dt>Authors</dt><dd>Francesco Cazzaro, Marco Cieno </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="aab0f4a8aa92963b398d3649c2b39128a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab0f4a8aa92963b398d3649c2b39128a">&#9670;&nbsp;</a></span>_euclidean_distance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double _euclidean_distance </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x_a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y_a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x_b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y_b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculate the Euclidean distance of two 2-dimensional points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x_a</td><td>X coordinate of first point.</td></tr>
+    <tr><td class="paramname">y_a</td><td>Y coordinate of first point.</td></tr>
+    <tr><td class="paramname">x_b</td><td>X coordinate of first point.</td></tr>
+    <tr><td class="paramname">y_a</td><td>X coordinate of first point. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a75c4eaf22c5154739a1ef390c09d9344"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75c4eaf22c5154739a1ef390c09d9344">&#9670;&nbsp;</a></span>compute_solution_cost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int compute_solution_cost </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculate the cost of the current solution. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="abc983799ba1837b747050699cf322d22"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abc983799ba1837b747050699cf322d22">&#9670;&nbsp;</a></span>destroy_instance()</h2>
 
@@ -132,32 +209,6 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section warning"><dt>Warning</dt><dd>Referencing to problem after calling this function might result in undefined behaviour. </dd></dl>
-
-</div>
-</div>
-<a id="ae0237ef33422d648108cfd48813021be"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae0237ef33422d648108cfd48813021be">&#9670;&nbsp;</a></span>dummy_solution()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dummy_solution </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
-          <td class="paramname"><em>problem</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Generate a random solution for the instance. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>
@@ -204,32 +255,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Pretty-print problem information to <code>stderr</code> according to <code>loglevel</code> verbosity. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a39c2a6d0f7cad48dd189e71bd529dca4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a39c2a6d0f7cad48dd189e71bd529dca4">&#9670;&nbsp;</a></span>solution_cost()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int solution_cost </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
-          <td class="paramname"><em>problem</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Calculate the cost of the current solution. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
