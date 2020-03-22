@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['destroy_5finstance',['destroy_instance',['../tsp_8h.html#abc983799ba1837b747050699cf322d22',1,'tsp.c']]],
-  ['dummy_5fsolution',['dummy_solution',['../tsp_8h.html#ae0237ef33422d648108cfd48813021be',1,'tsp.c']]]
+  ['compute_5fsolution_5fcost',['compute_solution_cost',['../tsp_8h.html#a75c4eaf22c5154739a1ef390c09d9344',1,'tsp.c']]],
+  ['configuration',['configuration',['../structconfiguration.html',1,'']]]
 ];

@@ -27,7 +27,7 @@ By default, the project binary will be in `./bin/tsp`.
 As simple as
 
 ```sh
-tsp [-?V] [--help] [--usage] [--version] TSP_FILE
+tsp [-?V] [--plot] [--help] [--usage] [--version] TSP_FILE
 ```
 
 More options are available. Give it a `tsp --help`.
@@ -37,10 +37,13 @@ Usage: tsp [OPTION...] TSP_FILE
 Parse a TSP problem file into a convenient data structure.
 
   -c, --cutoff=VALUE         Master cutoff value.
-  -j, --threads[=N]          Use multithread. Default 4
-  -m, --memory=AVAIL         Available memory (size in MB).
+  -j, --threads[=N]          Use multithread. Default 4.
+  -m, --memory=SIZE          Available memory (size in MB).
+      --name=TSPNAME         Name to assign to this problem.
+      --plot                 Draw solution (requires GnuPlot).
+  -s, --solver=SOLVER        Solving technique. Default dummy_cplex.
   -t, --timelimit=SECONDS    Maximum time the program may run.
-      --verbose, --debug, --hidebug
+      --verbose, --debug, --trace
                              Set program logging level.
   -?, --help                 Give this help list
       --usage                Give a short usage message
@@ -52,4 +55,13 @@ for any corresponding short options.
 Report bugs to {marco.cieno, francesco.cazzaro}@studenti.unipd.it.
 ```
 
-Sample files are provided in `data`. You may test one by running `tsp data/att48.tsp`.
+Sample files are provided in `data`.
+
+Here's an example, just for fun:
+
+```sh
+tsp data/att48.tsp --plot --solver=dummy_cplex
+```
+
+![Instance plot](assets/att48.instance.png)
+![Solution plot](assets/att48.subtour.png)

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['parse_5ftsp_5ffile',['parse_tsp_file',['../main_8c.html#a8f15d515b65a285ece10ecb868917046',1,'parse_tsp_file(const char *, instance *):&#160;tsp_fileparser.c'],['../tsp__fileparser_8c.html#add86c629b5affe2f39c0803946208561',1,'parse_tsp_file(const char *filename, instance *problem):&#160;tsp_fileparser.c']]],
-  ['plot_5finstance',['plot_instance',['../tspplot_8h.html#a1f8fb3cc54826d4a750e69a8a362af50',1,'tspplot.c']]],
-  ['plot_5fsolution',['plot_solution',['../tspplot_8h.html#a3c196a1f6d1a458e7b6f048260deb4eb',1,'tspplot.c']]]
+  ['destroy_5finstance',['destroy_instance',['../tsp_8h.html#abc983799ba1837b747050699cf322d22',1,'tsp.c']]],
+  ['dummy_5fcplex_5fsolution',['dummy_cplex_solution',['../tsp__solvers_8h.html#aafd7bf67c96bc54c1aebb8798d0fcd58',1,'tsp_solvers.c']]],
+  ['dummy_5fsolution',['dummy_solution',['../tsp__solvers_8h.html#ae0237ef33422d648108cfd48813021be',1,'tsp_solvers.c']]]
 ];

@@ -56,6 +56,7 @@ typedef struct
     unsigned long long timelimit;
     instance *         problem;
     _Bool              shouldplot;
+    int                solving_method;
 
 } configuration;
 
@@ -109,20 +110,22 @@ static char args_doc[]               = "TSP_FILE";
 static struct argp_option options[]  =
 {
     /* Global configuration */
-    { "memory",    'm',       "AVAIL",   OPTION_NO_USAGE,                       "Available memory (size in MB)."    },
-    { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL, "Use multithread. Default 4."       },
-    { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE,                       "Maximum time the program may run." },
-    { "tmpfile",   0xAA1,     "FNAME",   OPTION_HIDDEN,                         "Set custom temporary file."        },
-    { "plot",      0xAA2,     NULL,      0,                                     "Draw solution (requires GnuPlot)." },
+    { "memory",    'm',       "SIZE",    OPTION_NO_USAGE, "Available memory (size in MB)."          },
+    { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL,
+                                                          "Use multithread. Default 4."             },
+    { "solver",    's',       "SOLVER",  OPTION_NO_USAGE, "Solving technique. Default dummy_cplex." },
+    { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE, "Maximum time the program may run."       },
+    { "tmpfile",   0xAA1,     "FNAME",   OPTION_HIDDEN,   "Set custom temporary file."              },
+    { "plot",      0xAA2,     NULL,      0,               "Draw solution (requires GnuPlot)."       },
 
     /* Problem specific configuration */
-    { "cutoff",    'c',       "VALUE",   OPTION_NO_USAGE,                       "Master cutoff value."              },
-    { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE,                       "Name to assign to this problem."   },
+    { "cutoff",    'c',       "VALUE",   OPTION_NO_USAGE, "Master cutoff value."                    },
+    { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
 
     /* Logging configuration */
-    { "verbose",   LOG_INFO,  NULL,      OPTION_NO_USAGE,                       "Set program logging level."        },
-    { "debug",     LOG_DEBUG, NULL,      OPTION_ALIAS,                          NULL                                },
-    { "trace",     LOG_TRACE, NULL,      OPTION_ALIAS,                          NULL                                },
+    { "verbose",   LOG_INFO,  NULL,      OPTION_NO_USAGE, "Set program logging level."              },
+    { "debug",     LOG_DEBUG, NULL,      OPTION_ALIAS,    NULL                                      },
+    { "trace",     LOG_TRACE, NULL,      OPTION_ALIAS,    NULL                                      },
 
     { NULL },
 };
@@ -136,12 +139,13 @@ main ( int argc, char *argv[] )
     instance problem;
 
     configuration conf = {
-        /* filename   */  NULL,
-        /* memory     */  ULLONG_MAX,
-        /* threads    */  1U,
-        /* timelimit  */  ULLONG_MAX,
-        /* problem    */  &problem,
-        /* shouldplot */  false
+        /* filename       */  NULL,
+        /* memory         */  ULLONG_MAX,
+        /* threads        */  1U,
+        /* timelimit      */  ULLONG_MAX,
+        /* problem        */  &problem,
+        /* shouldplot     */  false,
+        /* solving_method */  TSP_SOLVER_DUMMY_CPLEX
     };
 
     init_instance( &problem );
@@ -163,14 +167,33 @@ main ( int argc, char *argv[] )
         plot_instance( &problem );
     }
 
-    // ...
+
+    /* Run the solver */
+    switch ( conf.solving_method )
+    {
+        case TSP_SOLVER_DUMMY_CPLEX:
+            dummy_cplex_solution( &problem );
+            break;
 
 
-    dummy_solution( &problem );
+        case TSP_SOLVER_DUMMY:
+            dummy_solution( &problem );
+            break;
 
-    dummy_cplex_solution( &problem );
+
+        default: exit( EXIT_FAILURE );
+    }
+
+
+    if ( loglevel >= LOG_DEBUG ) {
+        /* Dump solution to stderr */
+        for ( unsigned long k = 0; k < problem.nnodes; ++k ) {
+            fprintf( stderr, "(%5lu) %-5lu <--> %5lu\n", k, problem.solution[k][0], problem.solution[k][1] );
+        }
+    }
 
     if ( conf.shouldplot ) {
+        /* Plot solution */
         plot_solution( &problem );
     }
 
@@ -236,6 +259,21 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_error(
                     state,
                     "Bad value for option -m --memory: %s.", strerror( errno ? errno : EDOM )
+                );
+            }
+
+            break;
+
+
+        case 's':
+            if ( !strcmp( "dummy_cplex", arg ) ) {
+                conf->solving_method = TSP_SOLVER_DUMMY_CPLEX;
+            } else if ( !strcmp( "dummy", arg ) ) {
+                conf->solving_method = TSP_SOLVER_DUMMY;
+            } else {
+                argp_error(
+                    state,
+                    "Unknown solving method for option -s --solver: %s.", arg
                 );
             }
 
