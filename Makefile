@@ -2,7 +2,7 @@ BUILD_DIR  = $(PWD)/bin
 SYSTEM     = x86-64_linux
 LIBFORMAT  = static_pic
 
-COSCEDIR   = /opt/ibm/ILOG/CPLEX_Studio_Community129
+COSCEDIR   = /opt/ibm/ILOG/CPLEX_Studio1210
 CPLEXDIR   = $(COSCEDIR)/cplex
 CONCERTDIR = $(COSCEDIR)/concert
 
@@ -10,17 +10,17 @@ CPLEXBINDIR   = $(CPLEXDIR)/bin/$(SYSTEM)
 CPLEXLIBDIR   = $(CPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
 CONCERTLIBDIR = $(CONCERTDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
 
-CONCERTINCDIR = $(CONCERTDIR)/include
-CPLEXINCDIR   = $(CPLEXDIR)/include
+CONCERTINCDIR = $(CONCERTDIR)/include/ilconcert
+CPLEXINCDIR   = $(CPLEXDIR)/include/ilcplex
 LOCAL_INCDIR  = $(PWD)/include
-TSP_SRC_FILES = src/main.c src/logging.c src/tsp_fileparser.c src/tsp.c src/tspplot.c
+TSP_SRC_FILES = src/*.c
 
 CLNDIRS   = -L$(CPLEXLIBDIR)
-CLNFLAGS  =  -lm -lpthread -ldl
+CLNFLAGS  =  -lm -lpthread -ldl -lcplex
 
 CC         = gcc
 #COPT       = -O3 -m64 -fPIC
-COPT       = -g -O0 -m64 -Wall -Werror --pedantic
+COPT       = -g3 -O0 -m64 -Wall -Werror --pedantic
 CFLAGS     = $(COPT)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
 
 FANCYLOG   = \033[96m[*]\033[0m
