@@ -1,4 +1,4 @@
-.TH "include/tsp.h" 3 "Fri Mar 20 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp.h" 3 "Sun Mar 22 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -34,13 +34,13 @@ include/tsp.h \- Type and function definitions for a TSP instance\&.
 .br
 .RI "Pretty-print problem information to \fCstderr\fP according to \fCloglevel\fP verbosity\&. "
 .ti -1c
-.RI "int \fBsolution_cost\fP (\fBinstance\fP *problem)"
+.RI "int \fBcompute_solution_cost\fP (\fBinstance\fP *problem)"
 .br
 .RI "Calculate the cost of the current solution\&. "
 .ti -1c
-.RI "void \fBdummy_solution\fP (\fBinstance\fP *problem)"
+.RI "double \fB_euclidean_distance\fP (double x_a, double y_a, double x_b, double y_b)"
 .br
-.RI "Generate a random solution for the instance\&. "
+.RI "Calculate the Euclidean distance of two 2-dimensional points\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -56,6 +56,34 @@ Francesco Cazzaro, Marco Cieno
 
 .SH "Function Documentation"
 .PP 
+.SS "double _euclidean_distance (double x_a, double y_a, double x_b, double y_b)"
+
+.PP
+Calculate the Euclidean distance of two 2-dimensional points\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIx_a\fP X coordinate of first point\&.
+.br
+\fIy_a\fP Y coordinate of first point\&.
+.br
+\fIx_b\fP X coordinate of first point\&.
+.br
+\fIy_a\fP X coordinate of first point\&. 
+.RE
+.PP
+
+.SS "int compute_solution_cost (\fBinstance\fP * problem)"
+
+.PP
+Calculate the cost of the current solution\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
 .SS "void destroy_instance (\fBinstance\fP * problem)"
 
 .PP
@@ -69,17 +97,6 @@ Free all the memory and destroy the instance\&.
 \fBWarning:\fP
 .RS 4
 Referencing to problem after calling this function might result in undefined behaviour\&. 
-.RE
-.PP
-
-.SS "void dummy_solution (\fBinstance\fP * problem)"
-
-.PP
-Generate a random solution for the instance\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
 .RE
 .PP
 
@@ -98,17 +115,6 @@ Initialize the instance data structure with the default configuration\&.
 
 .PP
 Pretty-print problem information to \fCstderr\fP according to \fCloglevel\fP verbosity\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "int solution_cost (\fBinstance\fP * problem)"
-
-.PP
-Calculate the cost of the current solution\&. 
 .PP
 \fBParameters:\fP
 .RS 4
