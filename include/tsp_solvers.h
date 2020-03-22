@@ -10,6 +10,9 @@
 #include "tsp.h"
 
 
+#define TSP_SOLVER_DUMMY 1        /*!< Dummy solving method.  */
+#define TSP_SOLVER_DUMMY_CPLEX 2  /*!< Dummy CPLEX solving method.  */
+
 
 /*!
  * \brief Generate a random solution for the instance.
