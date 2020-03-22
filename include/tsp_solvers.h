@@ -6,8 +6,9 @@
 #ifndef TSP_SOLVER_H
 #define TSP_SOLVER_H
 
-
+#include <cplex.h>
 #include "tsp.h"
+
 
 
 /*!
@@ -32,6 +33,12 @@ dummy_solution ( instance *problem );
  */
 void
 dummy_cplex_solution ( instance *problem );
+
+int 
+xpos(int i, int j, instance *problem);
+
+void 
+dummy_build_model(instance *problem, CPXENVptr env, CPXLPptr lp);
 
 
 #endif

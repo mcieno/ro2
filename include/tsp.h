@@ -92,5 +92,12 @@ repr_instance ( instance *problem );
 int
 solution_cost ( instance *problem );
 
+/*!
+ * \brief Calculate the euclidean distance.
+ *
+ */
+double
+_euclidean_distance ( double x_a, double y_a, double x_b, double y_b );
+
 
 #endif
