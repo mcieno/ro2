@@ -56,7 +56,7 @@ infer_cplex_solution ( CPXENVptr env, CPXLPptr lp, instance *problem )
 
     for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
         for ( unsigned long j = i + 1; j < problem->nnodes; ++j ) {
-            if ( sol[xpos( i, j, problem )] == 1 )
+            if ( sol[xpos( i, j, problem )] > .5 )
             {
                 problem->solution[p][0] = i;
                 problem->solution[p][1] = j;
