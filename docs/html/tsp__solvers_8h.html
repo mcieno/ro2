@@ -96,9 +96,12 @@ Functions</h2></td></tr>
 <tr class="memitem:aafd7bf67c96bc54c1aebb8798d0fcd58"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#aafd7bf67c96bc54c1aebb8798d0fcd58">dummy_cplex_solution</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
 <tr class="memdesc:aafd7bf67c96bc54c1aebb8798d0fcd58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with CPXmipopt.  <a href="#aafd7bf67c96bc54c1aebb8798d0fcd58">More...</a><br /></td></tr>
 <tr class="separator:aafd7bf67c96bc54c1aebb8798d0fcd58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b548175249a6e65780b9d8e95acfa23"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a3b548175249a6e65780b9d8e95acfa23">xpos</a> (unsigned long i, unsigned long j, <a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a3b548175249a6e65780b9d8e95acfa23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of variable x(i,j)  <a href="#a3b548175249a6e65780b9d8e95acfa23">More...</a><br /></td></tr>
-<tr class="separator:a3b548175249a6e65780b9d8e95acfa23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8310267ef8c6ab88748570f52dbcdc4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#aa8310267ef8c6ab88748570f52dbcdc4">xpos</a> (unsigned long i, unsigned long j, const <a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:aa8310267ef8c6ab88748570f52dbcdc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of variable x(i,j)  <a href="#aa8310267ef8c6ab88748570f52dbcdc4">More...</a><br /></td></tr>
+<tr class="separator:aa8310267ef8c6ab88748570f52dbcdc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fef20aa08c8878d0d470766eff5c446"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a9fef20aa08c8878d0d470766eff5c446">cplex2subtours</a> (const <a class="el" href="structinstance.html">instance</a> *problem, const double *xstar, unsigned long *next, unsigned long *comps, unsigned long *ncomps)</td></tr>
+<tr class="memdesc:a9fef20aa08c8878d0d470766eff5c446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a CPLEX-generated solution, create a more convenient representation.  <a href="#a9fef20aa08c8878d0d470766eff5c446">More...</a><br /></td></tr>
+<tr class="separator:a9fef20aa08c8878d0d470766eff5c446"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Methods for solving a TSP problem. </p>
@@ -135,6 +138,64 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a9fef20aa08c8878d0d470766eff5c446"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fef20aa08c8878d0d470766eff5c446">&#9670;&nbsp;</a></span>cplex2subtours()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void cplex2subtours </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>xstar</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned long *&#160;</td>
+          <td class="paramname"><em>next</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned long *&#160;</td>
+          <td class="paramname"><em>comps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned long *&#160;</td>
+          <td class="paramname"><em>ncomps</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Given a CPLEX-generated solution, create a more convenient representation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
+    <tr><td class="paramname">xstar</td><td>Pointer to the CPLEX solution. <code>xstar[xpos(i, j)] == 1</code> iff the edge was selected.</td></tr>
+    <tr><td class="paramname">next</td><td>Array of adjacencies to be filled. <code>next[i] = j</code> means that there is an arc going from node <code>i</code> to node <code>j</code>.</td></tr>
+    <tr><td class="paramname">comps</td><td>Array of components indices to be filled. <code>comps[i] = k</code> means that node <code>i</code> belongs to connected component <code>k</code>.</td></tr>
+    <tr><td class="paramname">ncomps</td><td>Pointer to an integer where to store the number of connected components in the solution. If 1, the solution is a tour. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="aafd7bf67c96bc54c1aebb8798d0fcd58"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aafd7bf67c96bc54c1aebb8798d0fcd58">&#9670;&nbsp;</a></span>dummy_cplex_solution()</h2>
 
@@ -188,8 +249,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a3b548175249a6e65780b9d8e95acfa23"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b548175249a6e65780b9d8e95acfa23">&#9670;&nbsp;</a></span>xpos()</h2>
+<a id="aa8310267ef8c6ab88748570f52dbcdc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8310267ef8c6ab88748570f52dbcdc4">&#9670;&nbsp;</a></span>xpos()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -209,7 +270,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramtype">const <a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em>&#160;</td>
         </tr>
         <tr>

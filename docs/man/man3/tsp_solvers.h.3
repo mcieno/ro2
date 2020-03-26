@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Sun Mar 22 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Thu Mar 26 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -34,9 +34,13 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .br
 .RI "Solve with CPXmipopt\&. "
 .ti -1c
-.RI "int \fBxpos\fP (unsigned long i, unsigned long j, \fBinstance\fP *problem)"
+.RI "int \fBxpos\fP (unsigned long i, unsigned long j, const \fBinstance\fP *problem)"
 .br
 .RI "Get the position of variable x(i,j) "
+.ti -1c
+.RI "void \fBcplex2subtours\fP (const \fBinstance\fP *problem, const double *xstar, unsigned long *next, unsigned long *comps, unsigned long *ncomps)"
+.br
+.RI "Given a CPLEX-generated solution, create a more convenient representation\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -58,6 +62,25 @@ Dummy solving method\&.
 Dummy CPLEX solving method\&. 
 .SH "Function Documentation"
 .PP 
+.SS "void cplex2subtours (const \fBinstance\fP * problem, const double * xstar, unsigned long * next, unsigned long * comps, unsigned long * ncomps)"
+
+.PP
+Given a CPLEX-generated solution, create a more convenient representation\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&.
+.br
+\fIxstar\fP Pointer to the CPLEX solution\&. \fCxstar[xpos(i, j)] == 1\fP iff the edge was selected\&.
+.br
+\fInext\fP Array of adjacencies to be filled\&. \fCnext[i] = j\fP means that there is an arc going from node \fCi\fP to node \fCj\fP\&.
+.br
+\fIcomps\fP Array of components indices to be filled\&. \fCcomps[i] = k\fP means that node \fCi\fP belongs to connected component \fCk\fP\&.
+.br
+\fIncomps\fP Pointer to an integer where to store the number of connected components in the solution\&. If 1, the solution is a tour\&. 
+.RE
+.PP
+
 .SS "void dummy_cplex_solution (\fBinstance\fP * problem)"
 
 .PP
@@ -85,7 +108,7 @@ Generate a random solution for the instance\&.
 .RE
 .PP
 
-.SS "int xpos (unsigned long i, unsigned long j, \fBinstance\fP * problem)"
+.SS "int xpos (unsigned long i, unsigned long j, const \fBinstance\fP * problem)"
 
 .PP
 Get the position of variable x(i,j) 
