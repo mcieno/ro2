@@ -34,7 +34,7 @@ More options are available. Give it a `tsp --help`.
 
 ```txt
 Usage: tsp [OPTION...] TSP_FILE
-Parse a TSP problem file into a convenient data structure.
+Solve a Traveling Salesman Problem instance.
 
   -c, --cutoff=VALUE         Master cutoff value.
   -j, --threads[=N]          Use multithread. Default 4.

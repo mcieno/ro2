@@ -103,9 +103,9 @@ parse_tsp_file ( const char *, instance * );
 
 /* Argp setup */
 
-const char *argp_program_version     = "tsp_parser brought to you by Francesco Cazzaro and Marco Cieno";
+const char *argp_program_version     = "TSP solver brought to you by Francesco Cazzaro and Marco Cieno";
 const char *argp_program_bug_address = "{marco.cieno, francesco.cazzaro}@studenti.unipd.it";
-static char doc[]                    = "Parse a TSP problem file into a convenient data structure.";
+static char doc[]                    = "Solve a Traveling Salesman Problem instance.";
 static char args_doc[]               = "TSP_FILE";
 static struct argp_option options[]  =
 {
