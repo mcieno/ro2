@@ -19,11 +19,27 @@
 #define EPS 1e-5
 
 
+/* UTILITIES */
+
+/*!
+ * \brief Get the position of variable x(i,j)
+ *
+ *
+ * \param i
+ *      i in x(i,j)
+ *
+ * \param j
+ *      j in x(i,j)
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
 int
 xpos ( unsigned long i, unsigned long j, const instance *problem )
 {
     if ( i == j ) {
-        perror( " i == j in xpos" );
+        errno = EDOM;
+        perror( "i == j in xpos" );
         exit( EXIT_FAILURE );
     }
 
@@ -37,26 +53,20 @@ xpos ( unsigned long i, unsigned long j, const instance *problem )
  * \brief Retrieve the solution after CPXmimopt was run.
  *
  *
- * \param env
- *      cplex env parameter
- *
- * \param lp
- *      cplex lp parameter
+ * \param xopt
+ *      CPLEX incumbent solution.
  *
  * \param problem
  *     Pointer to the instance structure
  */
 void
-infer_cplex_solution ( CPXENVptr env, CPXLPptr lp, instance *problem )
+_xopt2solution ( double *xopt, instance *problem )
 {
-    double sol[CPXgetnumcols( env, lp )];
-    CPXsolution( env, lp, NULL, NULL, sol, NULL, NULL, NULL );
-
     unsigned long p = 0;
 
     for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
         for ( unsigned long j = i + 1; j < problem->nnodes; ++j ) {
-            if ( sol[xpos( i, j, problem )] > .5 )
+            if ( xopt[xpos( i, j, problem )] > .5 )
             {
                 problem->solution[p][0] = i;
                 problem->solution[p][1] = j;
@@ -67,9 +77,32 @@ infer_cplex_solution ( CPXENVptr env, CPXLPptr lp, instance *problem )
 }
 
 
+/*!
+ * \brief Given a CPLEX-generated solution, create a more convenient representation.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ *
+ * \param xopt
+ *     CPLEX incumbent solution.
+ *     `xstar[xpos(i, j)] == 1` iff the edge was selected.
+ *
+ * \param next
+ *     Array of adjacencies to be filled.
+ *     `next[i] = j` means that there is an arc going from node `i` to node `j`.
+ *
+ * \param comps
+ *     Array of components indices to be filled.
+ *     `comps[i] = k` means that node `i` belongs to connected component `k`.
+ *
+ * \param ncomps
+ *     Pointer to an integer where to store the number of connected components in the solution.
+ *     If 1, the solution is a tour.
+ */
 void
-cplex2subtours ( const instance *problem,
-                 const double *xstar,
+_xopt2subtours ( const instance *problem,
+                 const double *xopt,
                  unsigned long *next,
                  unsigned long *comps,
                  unsigned long *ncomps )
@@ -102,7 +135,7 @@ cplex2subtours ( const instance *problem,
     for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
         if ( adj[i][1] != ULONG_MAX ) continue;
         for ( unsigned long j = i + 1; j < problem->nnodes; ++j ) {
-            if ( xstar[xpos(i, j, problem)] > .5 ) {
+            if ( xopt[xpos(i, j, problem)] > .5 ) {
                 // Fill the free spot of adj[i] and adj[j].
                 *( ( adj[i][0] == ULONG_MAX ) ? &adj[i][0] : &adj[i][1] ) = j;
                 *( ( adj[j][0] == ULONG_MAX ) ? &adj[j][0] : &adj[j][1] ) = i;
@@ -136,20 +169,21 @@ cplex2subtours ( const instance *problem,
 }
 
 
+/*!
+ * \brief Build a dummy CPLEX model. Utility for dummy_cplex_solution().
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ *
+ * \param env
+ *     CPLEX environment
+ *
+ * \param lp
+ *     CPLEX problem.
+ */
 void
-dummy_solution ( instance *problem )
-{
-    for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
-        problem->solution[i][0] = i;
-        problem->solution[i][1] = i + 1;
-    }
-
-    problem->solution[problem->nnodes - 1][1] = 0;
-}
-
-
-void
-dummy_build_cplex_model ( instance *problem, CPXENVptr env, CPXLPptr lp )
+_dummy_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr lp )
 {
     char binary = 'B';
     double lb = 0.0;
@@ -209,6 +243,21 @@ dummy_build_cplex_model ( instance *problem, CPXENVptr env, CPXLPptr lp )
     free( cname );
 }
 
+
+/* SOLVERS */
+
+void
+dummy_solution ( instance *problem )
+{
+    for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
+        problem->solution[i][0] = i;
+        problem->solution[i][1] = i + 1;
+    }
+
+    problem->solution[problem->nnodes - 1][1] = 0;
+}
+
+
 void
 dummy_cplex_solution ( instance *problem )
 {
@@ -217,15 +266,20 @@ dummy_cplex_solution ( instance *problem )
     CPXENVptr env = CPXopenCPLEX( &error );
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
-    dummy_build_cplex_model( problem, env, lp );
+    _dummy_cplex_instance2model( problem, env, lp );
 
     //CPXwriteprob (env, lp, "bin/myprob.lp", NULL);
 
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, "CPXmimopt true\n" );
+        fprintf( stderr, "CPXmimopt error\n" );
     }
 
-    infer_cplex_solution( env, lp, problem );
+    double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+    CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
+
+    _xopt2solution( xopt, problem );
+
+    free(xopt);
 
     CPXfreeprob( env, &lp );
     CPXcloseCPLEX( &env );
