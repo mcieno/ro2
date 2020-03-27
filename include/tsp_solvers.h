@@ -37,20 +37,5 @@ dummy_solution ( instance *problem );
 void
 dummy_cplex_solution ( instance *problem );
 
-/*!
- * \brief Get the position of variable x(i,j)
- *
- * \param i
- *      i in x(i,j)
- *
- * \param j
- *      j in x(i,j)
- *
- * \param problem
- *     Pointer to the instance structure.
- */
-int
-xpos ( unsigned long i, unsigned long j, instance *problem );
-
 
 #endif

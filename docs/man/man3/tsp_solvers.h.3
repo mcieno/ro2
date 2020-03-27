@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Sun Mar 22 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Fri Mar 27 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -33,10 +33,6 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .RI "void \fBdummy_cplex_solution\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with CPXmipopt\&. "
-.ti -1c
-.RI "int \fBxpos\fP (unsigned long i, unsigned long j, \fBinstance\fP *problem)"
-.br
-.RI "Get the position of variable x(i,j) "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -81,21 +77,6 @@ Generate a random solution for the instance\&.
 .PP
 \fBParameters:\fP
 .RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "int xpos (unsigned long i, unsigned long j, \fBinstance\fP * problem)"
-
-.PP
-Get the position of variable x(i,j) 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIi\fP i in x(i,j)
-.br
-\fIj\fP j in x(i,j)
-.br
 \fIproblem\fP Pointer to the instance structure\&. 
 .RE
 .PP
