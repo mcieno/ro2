@@ -113,7 +113,7 @@ static struct argp_option options[]  =
     { "memory",    'm',       "SIZE",    OPTION_NO_USAGE, "Available memory (size in MB)."          },
     { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL,
                                                           "Use multithread. Default 4."             },
-    { "solver",    's',       "SOLVER",  OPTION_NO_USAGE, "Solving technique. Default dummy_cplex." },
+    { "model",    'M',       "MODEL",  OPTION_NO_USAGE, "Solving technique. Default dummy_cplex." },
     { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE, "Maximum time the program may run."       },
     { "tmpfile",   0xAA1,     "FNAME",   OPTION_HIDDEN,   "Set custom temporary file."              },
     { "plot",      0xAA2,     NULL,      0,               "Draw solution (requires GnuPlot)."       },
@@ -265,7 +265,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             break;
 
 
-        case 's':
+        case 'M':
             if ( !strcmp( "dummy_cplex", arg ) ) {
                 conf->solving_method = TSP_SOLVER_DUMMY_CPLEX;
             } else if ( !strcmp( "dummy", arg ) ) {
@@ -273,7 +273,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else {
                 argp_error(
                     state,
-                    "Unknown solving method for option -s --solver: %s.", arg
+                    "Unknown solving method for option -ml --model: %s.", arg
                 );
             }
 
