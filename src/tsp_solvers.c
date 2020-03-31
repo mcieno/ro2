@@ -323,7 +323,9 @@ _dummy_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr lp )
 void
 _miller_tucker_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr lp )
 {
-    double big_M = problem->nnodes-1;
+    
+
+    double big_M = problem->nnodes+1;
     char binary = 'B';
     double lb = 0.0;
     double ub = 1.0;
@@ -405,7 +407,7 @@ _miller_tucker_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr
             }
         }
     }
-
+    
     // add u_i variables
     binary = 'E';
     lb = 0.0;
@@ -438,7 +440,7 @@ _miller_tucker_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr
     {
         for ( unsigned long i = 1; i < problem->nnodes; ++i ){
 
-            //if(i==j){continue;}
+            if(i==j){continue;}
             unsigned long lastrow = CPXgetnumrows( env, lp );
 
             snprintf( cname, MAX_CNAME_LENGTH, "degree(%lu)", j + 1 );
@@ -468,7 +470,7 @@ _miller_tucker_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr
     
 
 
-
+    
     free( cname );
 }
 
@@ -529,7 +531,7 @@ miller_tucker_solution(instance *problem)
         fprintf( stderr, "miller_tucker_cplex_solution CPXmimopt error\n" );
     }
 
-    //CPXwriteprob (env, lp, "myprob.lp", NULL);
+    CPXwriteprob (env, lp, "myprob.lp", NULL);
 
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
