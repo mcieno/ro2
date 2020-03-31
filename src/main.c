@@ -7,10 +7,12 @@
 #include <errno.h>
 #include <float.h>
 #include <limits.h>
-#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/timeb.h>
 
 #include "logging.h"
 #include "tsp.h"
@@ -31,7 +33,7 @@
  * \param memory
  *     Maximum amount of memory (in MB) the program may use.
  *     If the program cannot proceed without requesting more memory, it should be terminated.
- *     A meaningful value is between 1 and ULLONG_MAX.
+ *     A meaningful value is between 1 and SIZE_MAX.
  *     Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer.
  *
  * \param threads
@@ -40,23 +42,23 @@
  * \param timelimit
  *     Maximum number of seconds the program may run.
  *     If the program does not terminate within this time, it should be terminated anyway.
- *     A meaningful value is between 1 and ULLONG_MAX.
+ *     A meaningful value is between 1 and SIZE_MAX.
  *
  * \param problem:
  *      Pointer to the instance structure to setup.
  *
  * \param shouldplot:
- *      If `true`, use GnuPlot to draw the tour.
+ *      If true, use GnuPlot to draw the tour. Default: 1.
  */
 typedef struct
 {
-    char *             filename;
-    unsigned long long memory;
-    unsigned           threads;
-    unsigned long long timelimit;
-    instance *         problem;
-    _Bool              shouldplot;
-    int                solving_method;
+    char        *filename;
+    size_t      memory;
+    unsigned    threads;
+    size_t      timelimit;
+    instance    *problem;
+    int         shouldplot;
+    model_t     solving_method;
 
 } configuration;
 
@@ -111,15 +113,15 @@ static struct argp_option options[]  =
 {
     /* Global configuration */
     { "memory",    'm',       "SIZE",    OPTION_NO_USAGE, "Available memory (size in MB)."          },
+    { "noplot",    0xAA2,     NULL,      0,               "Do not sketch the solution."             },
     { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL,
                                                           "Use multithread. Default 4."             },
-    { "solver",    's',       "SOLVER",  OPTION_NO_USAGE, "Solving technique. Default dummy_cplex." },
     { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE, "Maximum time the program may run."       },
     { "tmpfile",   0xAA1,     "FNAME",   OPTION_HIDDEN,   "Set custom temporary file."              },
-    { "plot",      0xAA2,     NULL,      0,               "Draw solution (requires GnuPlot)."       },
 
     /* Problem specific configuration */
     { "cutoff",    'c',       "VALUE",   OPTION_NO_USAGE, "Master cutoff value."                    },
+    { "model",     'M',       "MODEL",   0,               "Solving technique. Default: flow1."      },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
 
     /* Logging configuration */
@@ -140,12 +142,12 @@ main ( int argc, char *argv[] )
 
     configuration conf = {
         /* filename       */  NULL,
-        /* memory         */  ULLONG_MAX,
+        /* memory         */  SIZE_MAX,
         /* threads        */  1U,
-        /* timelimit      */  ULLONG_MAX,
+        /* timelimit      */  SIZE_MAX,
         /* problem        */  &problem,
-        /* shouldplot     */  false,
-        /* solving_method */  TSP_SOLVER_DUMMY_CPLEX
+        /* shouldplot     */  1,
+        /* solving_method */  TSP_SOLVER_FLOW1
     };
 
     init_instance( &problem );
@@ -163,32 +165,63 @@ main ( int argc, char *argv[] )
     }
 
     if ( conf.shouldplot && loglevel >= LOG_INFO ) {
-        /* Plot before solving */
+        /* Plot before solving only if verbose */
         plot_instance( &problem );
     }
 
 
     /* Run the solver */
+    struct timeb start, end;
+
+    ftime( &start );
+
     switch ( conf.solving_method )
     {
-        case TSP_SOLVER_DUMMY_CPLEX:
-            dummy_cplex_solution( &problem );
-            break;
-
-
         case TSP_SOLVER_DUMMY:
-            dummy_solution( &problem );
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, "[*]  Running dummy model\n" );
+            }
+            dummy_model( &problem );
             break;
 
 
-        default: exit( EXIT_FAILURE );
+        case TSP_SOLVER_RANDOM:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, "[*]  Running random model\n" );
+            }
+            random_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_MTZ:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, "[*]  Running MTZ model\n" );
+            }
+            mtz_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_FLOW1:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, "[*]  Running FLOW1 model\n" );
+            }
+            flow1_model( &problem );
+            break;
+
+
+        default:
+            if (loglevel >= LOG_INFO) {
+                fprintf( stderr, "[*]  No model specified. Exit...\n" );
+            }
+            exit(EXIT_FAILURE);
     }
 
+    ftime( &end );
 
     if ( loglevel >= LOG_DEBUG ) {
         /* Dump solution to stderr */
-        for ( unsigned long k = 0; k < problem.nnodes; ++k ) {
-            fprintf( stderr, "(%5lu) %-5lu <--> %5lu\n", k, problem.solution[k][0], problem.solution[k][1] );
+        for ( size_t k = 0; k < problem.nnodes; ++k ) {
+            fprintf( stderr, "(%5zu) %-5zu <--> %5zu\n", k, problem.solution[k][0], problem.solution[k][1] );
         }
     }
 
@@ -196,6 +229,12 @@ main ( int argc, char *argv[] )
         /* Plot solution */
         plot_solution( &problem );
     }
+
+    double elapsed = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    double solcost = compute_solution_cost( &problem );
+
+    fprintf( stdout, "[+]  Solution cost: %13.3lf\n", solcost );
+    fprintf( stdout, "[+]  Time elapsed:  %13.3lf\n", elapsed );
 
     destroy_instance( &problem );
 }
@@ -208,12 +247,12 @@ _print_configuration ( configuration *conf )
     fprintf( stderr, "  * TSP file            : %s\n",                                   conf->filename );
     fprintf( stderr, "  * Problem name        : %s\n",                              conf->problem->name );
     fprintf( stderr, "  * Master cutoff value : %e\n",                            conf->problem->cutoff );
-    fprintf( stderr, "  * Time limit          : %llu hours %llu minutes %llu seconds\n",
-        conf->timelimit / 3600ULL, conf->timelimit % 3600ULL / 60ULL, conf->timelimit % 60              );
-    fprintf( stderr, "  * Maximum memory      : %llu MB\n",                                conf->memory );
+    fprintf( stderr, "  * Time limit          : %zu hours %zu minutes %zu seconds\n",
+                              conf->timelimit / 3600, conf->timelimit % 3600 / 60, conf->timelimit % 60 );
+    fprintf( stderr, "  * Maximum memory      : %zu MB\n",                                conf->memory  );
     fprintf( stderr, "  * Store temporary file: %s\n",                                  tspplot_tmpfile );
     fprintf( stderr, "  * Use multithread     : %s (%u)\n\n",
-        conf->threads > 1U ? "yes" : "no", conf->threads                                                );
+                                                       conf->threads > 1U ? "yes" : "no", conf->threads );
 }
 
 
@@ -265,15 +304,23 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             break;
 
 
-        case 's':
-            if ( !strcmp( "dummy_cplex", arg ) ) {
-                conf->solving_method = TSP_SOLVER_DUMMY_CPLEX;
+        case 'M':
+            if ( !strcmp( "random", arg ) ) {
+                conf->solving_method = TSP_SOLVER_RANDOM;
+
             } else if ( !strcmp( "dummy", arg ) ) {
                 conf->solving_method = TSP_SOLVER_DUMMY;
+
+            } else if( !strcmp( "mtz", arg ) ){
+                conf->solving_method = TSP_SOLVER_MTZ;
+
+            } else if ( !strcmp( "flow1", arg ) ) {
+                conf->solving_method = TSP_SOLVER_FLOW1;
+
             } else {
                 argp_error(
                     state,
-                    "Unknown solving method for option -s --solver: %s.", arg
+                    "Unknown solving method for option -ml --model: %s.", arg
                 );
             }
 
@@ -325,7 +372,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             break;
 
         case 0xAA2:
-            conf->shouldplot = true;
+            conf->shouldplot = 0;
 
             break;
 

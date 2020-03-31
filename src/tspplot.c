@@ -4,14 +4,14 @@
  */
 #include <errno.h>
 #include <limits.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 
 #include "logging.h"
 #include "tsp.h"
 #include "tspplot.h"
-
 
 
 char *tspplot_tmpfile = "/tmp/tspplot.dat";
@@ -22,8 +22,8 @@ instance_to_plot_dat ( instance *problem, char *outputfile )
 {
     FILE * fd = fopen( outputfile, "w" );
 
-    for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
-        fprintf( fd, "%lu %lf %lf \n", i + 1, problem->xcoord[i], problem->ycoord[i] );
+    for ( size_t i = 0; i < problem->nnodes; ++i ) {
+        fprintf( fd, "%zu %lf %lf \n", i + 1, problem->xcoord[i], problem->ycoord[i] );
     }
 
     fclose( fd );
@@ -36,14 +36,14 @@ solution_to_plot_dat ( instance *problem, char *outputfile )
     FILE * fd = fopen( outputfile, "w" );
 
 
-    for ( unsigned long k = 0; k < problem->nnodes; ++k )
+    for ( size_t k = 0; k < problem->nnodes; ++k )
     {
         long unsigned i = problem->solution[k][0];
         long unsigned j = problem->solution[k][1];
 
         // idx_from idx_to x_from y_from x_to y_to
         fprintf(
-            fd, "%lu %lu %lf %lf %lf %lf \n", i + 1, j + 1,
+            fd, "%zu %zu %lf %lf %lf %lf \n", i + 1, j + 1,
             problem->xcoord[i],
             problem->ycoord[i],
             problem->xcoord[j],

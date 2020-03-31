@@ -36,12 +36,12 @@
  */
 typedef struct
 {
-    double             cutoff;
-    char *             name;
-    unsigned long      nnodes;
-    double *           xcoord;
-    double *           ycoord;
-    unsigned long **    solution;
+    double    cutoff;
+    char *    name;
+    size_t    nnodes;
+    double *  xcoord;
+    double *  ycoord;
+    size_t ** solution;
 
 } instance;
 
@@ -89,7 +89,7 @@ repr_instance ( instance *problem );
  * \param problem
  *     Pointer to the instance structure.
  */
-int
+double
 compute_solution_cost ( instance *problem );
 
 /*!
@@ -110,7 +110,6 @@ compute_solution_cost ( instance *problem );
  */
 double
 _euclidean_distance ( double x_a, double y_a, double x_b, double y_b );
-
 
 
 #endif

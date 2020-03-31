@@ -4,6 +4,8 @@
  */
 #include <errno.h>
 #include <limits.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -86,11 +88,11 @@ void
 repr_instance ( instance *problem )
 {
     fprintf( stdout, "Problem %s:\n", problem->name ? problem->name : "Unknown" );
-    fprintf( stderr, "  * Number of nodes     : %lu\n\n", problem->nnodes );
+    fprintf( stderr, "  * Number of nodes     : %zu\n\n", problem->nnodes );
 
     if ( loglevel >= LOG_DEBUG ) {
         fprintf( stderr, "  * List of nodes       : [\n" );
-        for ( unsigned long j = 0; j < problem->nnodes; ++j ) {
+        for ( size_t j = 0; j < problem->nnodes; ++j ) {
             fprintf( stderr, "        %04lu : %13.3f, %13.3f \n", j, problem->xcoord[j], problem->ycoord[j] );
             if ( loglevel >= LOG_TRACE ) {
                 fprintf( stderr, "        x in *(%p)\n", (void *) &problem->xcoord[j] );
@@ -102,25 +104,23 @@ repr_instance ( instance *problem )
 }
 
 
-int
+double
 compute_solution_cost ( instance *problem )
 {
     if ( problem->solution == NULL ) {
+        errno = EFAULT;
         perror( "Cannot calculate cost of solution: solution is NULL\n" );
         exit( EXIT_FAILURE );
     }
 
-    int cost = 0;
+    double cost = 0;
 
     for ( int i = 0; i < problem->nnodes; ++i ) {
-        unsigned long node_1 = problem->solution[i][0];
-        unsigned long node_2 = problem->solution[i][1];
+        size_t node_1 = problem->solution[i][0];
+        size_t node_2 = problem->solution[i][1];
 
-        double dst_cost = _euclidean_distance(problem->xcoord[node_1], problem->ycoord[node_1],
-                                              problem->xcoord[node_2], problem->ycoord[node_2] );
-        int rounded_cost = _round_double(dst_cost);
-        cost += rounded_cost;
-
+        cost += _euclidean_distance(problem->xcoord[node_1], problem->ycoord[node_1],
+                                    problem->xcoord[node_2], problem->ycoord[node_2] );
     }
 
     return cost;

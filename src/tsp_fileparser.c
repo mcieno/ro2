@@ -4,7 +4,8 @@
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
-#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,7 +35,7 @@ parse_tsp_file ( const char *filename, instance *problem )
     char errinfo[256] = "";
     char line[MAX_TSP_FILE_LINE_LENGTH + 1] = "";
     char *tok;
-    _Bool is_node_coord_section = false;
+    int is_node_coord_section = 0;
 
     /* Reset global errno value. This step is mandatory to check
        whether calls to strto[*] functions were successful or not
@@ -66,7 +67,7 @@ parse_tsp_file ( const char *filename, instance *problem )
         }
 
         if ( !strcmp( tok, "NAME" ) ) {
-            is_node_coord_section = false;
+            is_node_coord_section = 0;
 
             tok = strtok( NULL, " :" );
             if ( tok == NULL ) {
@@ -93,13 +94,13 @@ parse_tsp_file ( const char *filename, instance *problem )
                 goto PARSING_ERROR;
             }
 
-            is_node_coord_section = false;
+            is_node_coord_section = 0;
             continue;
         }
 
 
         if ( !strcmp( tok, "DIMENSION" ) ) {
-            is_node_coord_section = false;
+            is_node_coord_section = 0;
 
             if ( problem->nnodes > 0 ) {
                 strcpy( errinfo, "It looks like your file has multiple DIMENSION declaration." );
@@ -116,7 +117,7 @@ parse_tsp_file ( const char *filename, instance *problem )
                 goto PARSING_ERROR;
             }
 
-           
+
             problem->xcoord   = calloc( problem->nnodes, sizeof( *problem->xcoord ) );
             problem->ycoord   = calloc( problem->nnodes, sizeof( *problem->ycoord ) );
             //problem->solution = calloc( problem->nnodes, sizeof( *problem->solution ) );
@@ -126,7 +127,7 @@ parse_tsp_file ( const char *filename, instance *problem )
                 problem->solution[i] =  calloc(2, sizeof(*problem->solution[i]));
             }
 
-          
+
 
             if (problem->xcoord == NULL || problem->ycoord == NULL || problem->solution == NULL) {
                 strcpy( errinfo, "It looks like you are not allowed to allocate this much memory" );
@@ -138,12 +139,12 @@ parse_tsp_file ( const char *filename, instance *problem )
 
 
         if ( !strcmp( tok, "EDGE_WEIGHT_TYPE" ) ) {
-            is_node_coord_section = false;
+            is_node_coord_section = 0;
             continue;
         }
 
         if ( !strcmp( tok, "NODE_COORD_SECTION" ) ) {
-            is_node_coord_section = true;
+            is_node_coord_section = 1;
 
             if ( !problem->nnodes ) {
                 strcpy( errinfo,
@@ -156,7 +157,7 @@ parse_tsp_file ( const char *filename, instance *problem )
 
         if ( is_node_coord_section == 1 ) {
             /* Index of current node being parsed. */
-            unsigned long i = strtoull( tok, NULL, 10 );
+            size_t i = strtoull( tok, NULL, 10 );
             if ( errno || i == 0 || i > problem->nnodes ) {
                 strcpy( errinfo, "It looks like your file has a bad node index in NODE_COORD_SECTION." );
                 goto PARSING_ERROR;

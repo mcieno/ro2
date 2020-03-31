@@ -10,8 +10,12 @@
 #include "tsp.h"
 
 
-#define TSP_SOLVER_DUMMY 1        /*!< Dummy solving method.  */
-#define TSP_SOLVER_DUMMY_CPLEX 2  /*!< Dummy CPLEX solving method.  */
+#define TSP_SOLVER_RANDOM  1U  /*!< Random model.  */
+#define TSP_SOLVER_DUMMY   2U  /*!< Dummy model.  */
+#define TSP_SOLVER_MTZ     3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
+#define TSP_SOLVER_FLOW1   4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
+
+typedef unsigned model_t;
 
 
 /*!
@@ -22,11 +26,11 @@
  *     Pointer to the instance structure.
  */
 void
-dummy_solution ( instance *problem );
+random_model ( instance *problem );
 
 
 /*!
- * \brief Solve with CPXmipopt.
+ * \brief Solve with degree constraints-only model.
  *
  *
  * \param problem
@@ -35,7 +39,29 @@ dummy_solution ( instance *problem );
  * \note This method does not include subtour elimination constraints.
  */
 void
-dummy_cplex_solution ( instance *problem );
+dummy_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with "Sequential Formulation" model by Miller, Tucker and Zemlin (1960).
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+mtz_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with "Single Commodity Flow" model by Gavish and Graves (1978).
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+flow1_model ( instance *problem );
 
 
 #endif
