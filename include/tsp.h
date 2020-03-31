@@ -8,7 +8,6 @@
 
 #include "logging.h"
 
-
 /*!
  * \struct instance
  * \brief  Structure to represent a TSP problem.
@@ -22,26 +21,26 @@
  * \param name
  *     Name to give to this problem.
  *
- * \param nnodes:
+ * \param nnodes
  *     Number of nodes.
  *
- * \param xcoord:
- *      Pointer to the array with the x coordinates.
+ * \param xcoord
+ *     Pointer to the array with the x coordinates.
  *
- * \param ycoord:
- *      Pointer to the array with the y coordinates.
+ * \param ycoord
+ *     Pointer to the array with the y coordinates.
  *
- * \param solution:
- *      Pointer to the current solution.
+ * \param solution
+ *     Pointer to the current solution.
  */
 typedef struct
 {
     double    cutoff;
-    char *    name;
+    char      *name;
     size_t    nnodes;
-    double *  xcoord;
-    double *  ycoord;
-    size_t ** solution;
+    double    *xcoord;
+    double    *ycoord;
+    size_t    **solution;
 
 } instance;
 
@@ -91,25 +90,6 @@ repr_instance ( instance *problem );
  */
 int
 compute_solution_cost ( instance *problem );
-
-/*!
- * \brief Calculate the Euclidean distance of two 2-dimensional points.
- *
- *
- * \param x_a
- *     X coordinate of first point.
- *
- * \param y_a
- *     Y coordinate of first point.
- *
- * \param x_b
- *     X coordinate of first point.
- *
- * \param y_a
- *     X coordinate of first point.
- */
-double
-_euclidean_distance ( double x_a, double y_a, double x_b, double y_b );
 
 
 #endif
