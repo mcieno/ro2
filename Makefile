@@ -25,7 +25,7 @@ CFLAGS     = $(COPT)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
 
 FANCYLOG   = \033[96m[*]\033[0m
 
-.PHONY: config
+
 config:
 	-@echo -e "$(FANCYLOG) BUILD_DIR     = $(BUILD_DIR)"
 	-@echo -e "$(FANCYLOG) CPLEXDIR      = $(CPLEXDIR)"
@@ -39,14 +39,14 @@ config:
 	-@echo -e "$(FANCYLOG) COPT          = $(COPT)"
 	-@echo -e "$(FANCYLOG) CLNFLAGS      = $(CLNFLAGS)"
 
-.PHONY: all
 all:
 	-@echo -e "$(FANCYLOG) Building all"
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(CLNDIRS) -o $(BUILD_DIR)/tsp $(TSP_SRC_FILES) $(CLNFLAGS)
 
-.PHONY: clean
 clean:
 	-@echo -e "$(FANCYLOG) Cleaning all"
 	rm -f $(BUILD_DIR)/*
 	rmdir $(BUILD_DIR)
+
+.PHONY: all clean config

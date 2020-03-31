@@ -113,7 +113,7 @@ static struct argp_option options[]  =
     { "memory",    'm',       "SIZE",    OPTION_NO_USAGE, "Available memory (size in MB)."          },
     { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL,
                                                           "Use multithread. Default 4."             },
-    { "model",    'M',       "MODEL",  OPTION_NO_USAGE, "Solving technique. Default dummy_cplex." },
+    { "model",     'M',       "MODEL",   OPTION_NO_USAGE, "Solving technique. Default dummy_cplex." },
     { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE, "Maximum time the program may run."       },
     { "tmpfile",   0xAA1,     "FNAME",   OPTION_HIDDEN,   "Set custom temporary file."              },
     { "plot",      0xAA2,     NULL,      0,               "Draw solution (requires GnuPlot)."       },
@@ -172,20 +172,43 @@ main ( int argc, char *argv[] )
     switch ( conf.solving_method )
     {
         case TSP_SOLVER_DUMMY_CPLEX:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, "[*]  Running to dummy_cplex model\n" );
+            }
             dummy_cplex_solution( &problem );
             break;
 
 
         case TSP_SOLVER_DUMMY:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, "[*]  Running to dummy model\n" );
+            }
             dummy_solution( &problem );
             break;
 
+
+        case TSP_MILLER_TUCKER_CPLEX:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, "[*]  Running to MTZ model\n" );
+            }
+            fprintf(stderr, "Started solver mtz");
+            miller_tucker_solution( &problem );
+            break;
+
+
         case TSP_SOLVER_FLOW1:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, "[*]  Running to flow1 model\n" );
+            }
             flow1_solution( &problem );
             break;
 
 
-        default: exit( EXIT_FAILURE );
+        default:
+            if (loglevel >= LOG_INFO) {
+                fprintf( stderr, "[*]  No model specified. Exit...\n" );
+            }
+            exit(EXIT_FAILURE);
     }
 
 
@@ -272,10 +295,16 @@ parse_opt ( int key, char *arg, struct argp_state *state )
         case 'M':
             if ( !strcmp( "dummy_cplex", arg ) ) {
                 conf->solving_method = TSP_SOLVER_DUMMY_CPLEX;
+
             } else if ( !strcmp( "dummy", arg ) ) {
                 conf->solving_method = TSP_SOLVER_DUMMY;
+
+            } else if( !strcmp( "miller_tucker", arg ) ){
+                conf->solving_method = TSP_MILLER_TUCKER_CPLEX;
+
             } else if ( !strcmp( "flow1", arg ) ) {
                 conf->solving_method = TSP_SOLVER_FLOW1;
+
             } else {
                 argp_error(
                     state,

@@ -22,7 +22,7 @@
 /* UTILITIES */
 
 /*!
- * \brief Get the position of variable x(i,j)
+ * \brief Get the position of variable x(i,j) in dummy model. 0-indexed.
  *
  *
  * \param i
@@ -34,7 +34,7 @@
  * \param problem
  *     Pointer to the instance structure.
  */
-int
+unsigned long
 xpos ( unsigned long i, unsigned long j, const instance *problem )
 {
     if ( i == j ) {
@@ -50,7 +50,7 @@ xpos ( unsigned long i, unsigned long j, const instance *problem )
 
 
 /*!
- * \brief Get the position of variable y(i,j) of Flow1 model. 0-indexed.
+ * \brief Get the position of variable y(i,j) in Flow1 model. 0-indexed.
  *
  *
  * \param i
@@ -77,6 +77,43 @@ ypos_flow1 ( unsigned long i, unsigned long j, const instance *problem )
 
 
 /*!
+ * \brief Get the position of variable x(i,j) in MTZ model. 0-indexed.
+ *
+ *
+ * \param i
+ *      i in x(i,j)
+ *
+ * \param j
+ *      j in x(i,j)
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+unsigned long
+miller_tucker_xpos ( unsigned long i, unsigned long j, const instance *problem )
+{
+    return i * problem->nnodes + j;
+}
+
+
+/*!
+ * \brief Get the position of variable u(i) in MTZ model. 0-indexed.
+ *
+ *
+ * \param i
+ *      i in u(i)
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+int
+miller_tucker_upos ( unsigned long i, const instance *problem )
+{
+    return  problem->nnodes * problem->nnodes + i;
+}
+
+
+/*!
  * \brief Retrieve the solution after CPXmimopt was run.
  *
  *
@@ -94,6 +131,34 @@ _xopt2solution ( double *xopt, instance *problem )
     for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
         for ( unsigned long j = i + 1; j < problem->nnodes; ++j ) {
             if ( xopt[xpos( i, j, problem )] > .5 )
+            {
+                problem->solution[p][0] = i;
+                problem->solution[p][1] = j;
+                ++p;
+            }
+        }
+    }
+}
+
+
+/*!
+ * \brief Retrieve the solution after CPXmimopt was run for the Miller Tucker model.
+ *
+ *
+ * \param xopt
+ *      CPLEX incumbent solution.
+ *
+ * \param problem
+ *     Pointer to the instance structure
+ */
+void
+_miller_tucker_xopt2solution ( double *xopt, instance *problem )
+{
+    unsigned long p = 0;
+
+    for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
+        for ( unsigned long j = 0; j < problem->nnodes; ++j ) {
+            if ( xopt[miller_tucker_xpos( i, j, problem )] > .5 )
             {
                 problem->solution[p][0] = i;
                 problem->solution[p][1] = j;
@@ -271,45 +336,178 @@ _dummy_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr lp )
 }
 
 
-/* SOLVERS */
-
+/*!
+ * \brief Add MTZ constraints.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ *
+ * \param env
+ *     CPLEX environment
+ *
+ * \param lp
+ *     CPLEX problem.
+ */
 void
-dummy_solution ( instance *problem )
+_miller_tucker_cplex_instance2model ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 {
-    for ( unsigned long i = 0; i < problem->nnodes; ++i ) {
-        problem->solution[i][0] = i;
-        problem->solution[i][1] = i + 1;
+
+
+    double big_M = problem->nnodes-1;
+    char binary = 'B';
+    double lb = 0.0;
+    double ub = 1.0;
+
+    char *cname = calloc( MAX_CNAME_LENGTH, sizeof(  *cname ) );
+
+    // add binary var.s x(i,j) for all ij
+    for ( unsigned long i = 0; i < problem->nnodes; ++i )
+    {
+        for ( unsigned long j = 0; j < problem->nnodes; ++j )
+        {
+            snprintf( cname, MAX_CNAME_LENGTH, "x(%lu,%lu)", i + 1, j + 1 );
+            double obj = _euclidean_distance(
+                problem->xcoord[i],
+                problem->ycoord[i],
+                problem->xcoord[j],
+                problem->ycoord[j]
+            );
+            if( i!=j ){
+                if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &binary, &cname ) ) {
+                    perror( "Wrong CPXnewcols on x var.s" );
+                    exit( EXIT_FAILURE );
+                }
+            } else {
+                double temp_ub = 0.0;
+                if ( CPXnewcols( env, lp, 1, &obj, &lb, &temp_ub, &binary, &cname ) ) {
+                    perror( "Wrong CPXnewcols on x var.s" );
+                    exit( EXIT_FAILURE );
+                }
+            }
+
+            if ( CPXgetnumcols( env, lp ) - 1 != miller_tucker_xpos( i, j, problem ) ) {
+                perror( "Wrong position for x var.s" );
+                exit( EXIT_FAILURE );
+            }
+        }
     }
 
-    problem->solution[problem->nnodes - 1][1] = 0;
-}
+    // add the degree constraints
+    double rhs = 1.0;
+    char sense = 'E';
+    //sum of x_ih =1
+    for ( unsigned long h = 0; h < problem->nnodes; ++h )
+    {
+        unsigned long lastrow = CPXgetnumrows( env, lp );
 
+        snprintf( cname, MAX_CNAME_LENGTH, "degree(%lu)", h + 1 );
+        if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
+            perror( "Wrong CPXnewrows [degree]" );
+            exit( EXIT_FAILURE );
+        }
 
-void
-dummy_cplex_solution ( instance *problem )
-{
-    int error;
-
-    CPXENVptr env = CPXopenCPLEX( &error );
-    CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
-
-    _dummy_cplex_instance2model( problem, env, lp );
-
-    //CPXwriteprob (env, lp, "bin/myprob.lp", NULL);
-
-    if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, "CPXmimopt error\n" );
+        for ( unsigned long i = 0; i < problem->nnodes; ++i )
+        {
+            if ( i == h ) continue;
+            if ( CPXchgcoef( env, lp, lastrow, miller_tucker_xpos( i, h, problem ), 1.0 ) ) {
+                perror( "Wrong CPXchgcoef [degree]" );
+                exit( EXIT_FAILURE );
+            }
+        }
     }
 
-    double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
-    CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
+    //sum of x_hi =1
+    for ( unsigned long h = 0; h < problem->nnodes; ++h )
+    {
+        unsigned long lastrow = CPXgetnumrows( env, lp );
 
-    _xopt2solution( xopt, problem );
+        snprintf( cname, MAX_CNAME_LENGTH, "degree(%lu)", h + 1 );
+        if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
+            perror( "Wrong CPXnewrows [degree]" );
+            exit( EXIT_FAILURE );
+        }
 
-    free(xopt);
+        for ( unsigned long i = 0; i < problem->nnodes; ++i )
+        {
+            if ( i == h ) continue;
+            if ( CPXchgcoef( env, lp, lastrow, miller_tucker_xpos( h, i, problem ), 1.0 ) ) {
+                perror( "Wrong CPXchgcoef [degree]" );
+                exit( EXIT_FAILURE );
+            }
+        }
+    }
 
-    CPXfreeprob( env, &lp );
-    CPXcloseCPLEX( &env );
+    // add u_i variables
+    binary = 'C';
+    lb = 2.0;
+    ub = problem->nnodes;
+
+    for ( unsigned long i = 0; i < problem->nnodes; ++i )
+    {
+
+        snprintf( cname, MAX_CNAME_LENGTH, "u(%lu)", i + 1 );
+        double obj = 0.0;
+
+        if(i==0){
+            double temp_lb = 1.0;
+            double temp_ub = 1.0;
+            if( CPXnewcols( env, lp, 1, &obj, &temp_lb, &temp_ub, &binary, &cname ) ) {
+                perror( "Wrong CPXnewcols on u var.s" );
+                exit( EXIT_FAILURE );
+            }
+        } else {
+            if( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &binary, &cname ) ) {
+                perror( "Wrong CPXnewcols on u var.s" );
+                exit( EXIT_FAILURE );
+            }
+        }
+
+        if ( CPXgetnumcols( env, lp ) - 1 != miller_tucker_upos( i, problem ) ) {
+                perror( "Wrong position for x var.s" );
+                exit( EXIT_FAILURE );
+            }
+
+
+    }
+
+    //add u_i constraints
+    rhs = big_M -1;
+    sense = 'L';
+
+    for ( unsigned long j = 1; j < problem->nnodes; ++j )
+    {
+        for ( unsigned long i = 1; i < problem->nnodes; ++i ){
+
+            if(i==j){continue;}
+            unsigned long lastrow = CPXgetnumrows( env, lp );
+
+            snprintf( cname, MAX_CNAME_LENGTH, "degree(%lu)", j + 1 );
+            if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
+                perror( "Wrong CPXnewrows [degree]" );
+                exit( EXIT_FAILURE );
+            }
+
+            if ( CPXchgcoef( env, lp, lastrow, miller_tucker_upos( j, problem ), -1.0 ) ) {
+                perror( "Wrong CPXchgcoef [degree]" );
+                exit( EXIT_FAILURE );
+            }
+
+            if ( CPXchgcoef( env, lp, lastrow, miller_tucker_upos( i, problem ), 1.0 ) ) {
+                perror( "Wrong CPXchgcoef [degree]" );
+                exit( EXIT_FAILURE );
+            }
+
+            if ( CPXchgcoef( env, lp, lastrow, miller_tucker_xpos( i, j, problem ), big_M) ) {
+                perror( "Wrong CPXchgcoef [degree]" );
+                exit( EXIT_FAILURE );
+            }
+
+        }
+
+    }
+
+    free( cname );
 }
 
 
@@ -464,6 +662,49 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
 }
 
 
+/* SOLVERS */
+
+
+void dummy_solution(instance *problem)
+{
+    for (unsigned long i = 0; i < problem->nnodes; ++i)
+    {
+        problem->solution[i][0] = i;
+        problem->solution[i][1] = i + 1;
+    }
+
+    problem->solution[problem->nnodes - 1][1] = 0;
+}
+
+
+void dummy_cplex_solution(instance *problem)
+{
+    int error;
+
+    CPXENVptr env = CPXopenCPLEX(&error);
+    CPXLPptr lp = CPXcreateprob(env, &error, problem->name ? problem->name : "TSP");
+
+    _dummy_cplex_instance2model(problem, env, lp);
+
+    //CPXwriteprob (env, lp, "bin/myprob.lp", NULL);
+
+    if (CPXmipopt(env, lp))
+    {
+        fprintf(stderr, "dummy_cplex_solution CPXmimopt error\n");
+    }
+
+    double *xopt = malloc(CPXgetnumcols(env, lp) * sizeof(*xopt));
+    CPXsolution(env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
+
+    _xopt2solution(xopt, problem);
+
+    free(xopt);
+
+    CPXfreeprob(env, &lp);
+    CPXcloseCPLEX(&env);
+}
+
+
 void
 flow1_solution ( instance *problem )
 {
@@ -485,6 +726,33 @@ flow1_solution ( instance *problem )
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
 
     _xopt2solution( xopt, problem );
+
+    free(xopt);
+
+    CPXfreeprob(env, &lp);
+    CPXcloseCPLEX(&env);
+}
+
+
+void
+miller_tucker_solution(instance *problem)
+{
+
+    int error;
+
+    CPXENVptr env = CPXopenCPLEX( &error );
+    CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
+
+    _miller_tucker_cplex_instance2model(problem, env, lp);
+
+    if ( CPXmipopt( env, lp ) ) {
+        fprintf( stderr, "miller_tucker_cplex_solution CPXmimopt error\n" );
+    }
+
+    double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+    CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
+
+    _miller_tucker_xopt2solution( xopt, problem );
 
     free(xopt);
 
