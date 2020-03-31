@@ -32,29 +32,6 @@ _round_double ( double x )
 }
 
 
-/*!
- * \brief Calculate the Euclidean distance of two 2-dimensional points.
- *
- *
- * \param x_a
- *     X coordinate of first point.
- *
- * \param y_a
- *     Y coordinate of first point.
- *
- * \param x_b
- *     X coordinate of first point.
- *
- * \param y_a
- *     X coordinate of first point.
- */
-double
-_euclidean_distance ( double x_a, double y_a, double x_b, double y_b )
-{
-    return sqrt( pow( x_a - x_b, 2 ) + pow( y_a - y_b, 2 ) );
-}
-
-
 /* Header functions implementation */
 
 void
@@ -148,3 +125,10 @@ compute_solution_cost ( instance *problem )
 
     return cost;
 }
+
+double
+_euclidean_distance ( double x_a, double y_a, double x_b, double y_b )
+{
+    return sqrt( pow( x_a - x_b, 2 ) + pow( y_a - y_b, 2 ) );
+}
+
