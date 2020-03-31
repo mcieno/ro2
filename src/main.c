@@ -180,6 +180,10 @@ main ( int argc, char *argv[] )
             dummy_solution( &problem );
             break;
 
+        case TSP_SOLVER_FLOW1:
+            flow1_solution( &problem );
+            break;
+
 
         default: exit( EXIT_FAILURE );
     }
@@ -270,6 +274,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 conf->solving_method = TSP_SOLVER_DUMMY_CPLEX;
             } else if ( !strcmp( "dummy", arg ) ) {
                 conf->solving_method = TSP_SOLVER_DUMMY;
+            } else if ( !strcmp( "flow1", arg ) ) {
+                conf->solving_method = TSP_SOLVER_FLOW1;
             } else {
                 argp_error(
                     state,
