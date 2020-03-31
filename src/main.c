@@ -104,23 +104,23 @@ parse_tsp_file ( const char *, instance * );
 
 /* Argp setup */
 
-const char *argp_program_version     = "tsp_parser brought to you by Francesco Cazzaro and Marco Cieno";
+const char *argp_program_version     = "tsp solver brought to you by Francesco Cazzaro and Marco Cieno";
 const char *argp_program_bug_address = "{marco.cieno, francesco.cazzaro}@studenti.unipd.it";
-static char doc[]                    = "Parse a TSP problem file into a convenient data structure.";
+static char doc[]                    = "Solve an instance of TSP.";
 static char args_doc[]               = "TSP_FILE";
 static struct argp_option options[]  =
 {
     /* Global configuration */
     { "memory",    'm',       "SIZE",    OPTION_NO_USAGE, "Available memory (size in MB)."          },
+    { "noplot",    0xAA2,     NULL,      0,               "Do not sketch the solution."             },
     { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL,
                                                           "Use multithread. Default 4."             },
-    { "model",     'M',       "MODEL",   OPTION_NO_USAGE, "Solving technique. Default dummy_cplex." },
     { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE, "Maximum time the program may run."       },
     { "tmpfile",   0xAA1,     "FNAME",   OPTION_HIDDEN,   "Set custom temporary file."              },
-    { "plot",      0xAA2,     NULL,      0,               "Draw solution (requires GnuPlot)."       },
 
     /* Problem specific configuration */
     { "cutoff",    'c',       "VALUE",   OPTION_NO_USAGE, "Master cutoff value."                    },
+    { "model",     'M',       "MODEL",   0,               "Solving technique. Default: flow1."      },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
 
     /* Logging configuration */
@@ -146,7 +146,7 @@ main ( int argc, char *argv[] )
         /* timelimit      */  SIZE_MAX,
         /* problem        */  &problem,
         /* shouldplot     */  1,
-        /* solving_method */  TSP_SOLVER_DUMMY
+        /* solving_method */  TSP_SOLVER_FLOW1
     };
 
     init_instance( &problem );
@@ -164,7 +164,7 @@ main ( int argc, char *argv[] )
     }
 
     if ( conf.shouldplot && loglevel >= LOG_INFO ) {
-        /* Plot before solving */
+        /* Plot before solving only if verbose */
         plot_instance( &problem );
     }
 
@@ -215,7 +215,7 @@ main ( int argc, char *argv[] )
     if ( loglevel >= LOG_DEBUG ) {
         /* Dump solution to stderr */
         for ( size_t k = 0; k < problem.nnodes; ++k ) {
-            fprintf( stderr, "(%5lu) %-5lu <--> %5lu\n", k, problem.solution[k][0], problem.solution[k][1] );
+            fprintf( stderr, "(%5zu) %-5zu <--> %5zu\n", k, problem.solution[k][0], problem.solution[k][1] );
         }
     }
 
@@ -360,7 +360,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             break;
 
         case 0xAA2:
-            conf->shouldplot = 1;
+            conf->shouldplot = 0;
 
             break;
 

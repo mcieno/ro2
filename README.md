@@ -27,21 +27,22 @@ By default, the project binary will be in `./bin/tsp`.
 As simple as
 
 ```sh
-tsp [-?V] [--plot] [--help] [--usage] [--version] TSP_FILE
+tsp [-?V] [-M MODEL] [--model=MODEL] [--plot] [--help] [--usage]
+     [--version] TSP_FILE
 ```
 
 More options are available. Give it a `tsp --help`.
 
 ```txt
 Usage: tsp [OPTION...] TSP_FILE
-Parse a TSP problem file into a convenient data structure.
+Solve an instance of TSP.
 
   -c, --cutoff=VALUE         Master cutoff value.
   -j, --threads[=N]          Use multithread. Default 4.
   -m, --memory=SIZE          Available memory (size in MB).
+  -M, --model=MODEL          Solving technique. Default: flow1.
       --name=TSPNAME         Name to assign to this problem.
-      --plot                 Draw solution (requires GnuPlot).
-  -s, --solver=SOLVER        Solving technique. Default dummy_cplex.
+      --noplot               Do not sketch the solution.
   -t, --timelimit=SECONDS    Maximum time the program may run.
       --verbose, --debug, --trace
                              Set program logging level.
@@ -55,13 +56,15 @@ for any corresponding short options.
 Report bugs to {marco.cieno, francesco.cazzaro}@studenti.unipd.it.
 ```
 
-Sample files are provided in `data`.
+Sample files are provided in folder `data` and come courtesy of the [TSPLIB](http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/).
 
 Here's an example, just for fun:
 
 ```sh
-tsp data/att48.tsp --plot --solver=dummy_cplex
+tsp data/att48.tsp --model=dummy
 ```
+
+Available models are `random`, `dummy`, `mtz` and `flow1`.
 
 ![Instance plot](assets/att48.instance.png)
 ![Solution plot](assets/att48.subtour.png)
