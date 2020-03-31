@@ -191,7 +191,6 @@ main ( int argc, char *argv[] )
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, "[*]  Running MTZ model\n" );
             }
-            fprintf(stderr, "Started solver mtz");
             mtz_model( &problem );
             break;
 

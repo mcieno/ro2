@@ -38,7 +38,7 @@ xpos_dummy ( unsigned long i, unsigned long j, const instance *problem )
 {
     if ( i == j ) {
         errno = EDOM;
-        perror( "i == j in xpos" );
+        perror( "xpos_dummy: i == j" );
         exit( EXIT_FAILURE );
     }
 
@@ -66,12 +66,12 @@ ypos_flow1 ( unsigned long i, unsigned long j, const instance *problem )
 {
     if ( i == j ) {
         errno = EDOM;
-        perror( "i == j in ypos_flow1" );
+        perror( "ypos_flow1: i == j" );
         exit( EXIT_FAILURE );
     }
 
     unsigned long padding = xpos_dummy( problem->nnodes - 1, problem->nnodes, problem );
-    return padding + i * (problem->nnodes - 1) + j - ( ( j > i ) ? 1UL : 0UL );
+    return padding + i * ( problem->nnodes - 1UL ) + j - ( j > i ? 1UL : 0UL );
 }
 
 
@@ -91,7 +91,13 @@ ypos_flow1 ( unsigned long i, unsigned long j, const instance *problem )
 unsigned long
 xpos_mtz ( unsigned long i, unsigned long j, const instance *problem )
 {
-    return i * problem->nnodes + j;
+    if ( i == j ) {
+        errno = EDOM;
+        perror( "xpos_mtz: i == j" );
+        exit( EXIT_FAILURE );
+    }
+
+    return i * ( problem->nnodes - 1UL ) + j - ( j > i ? 1UL : 0UL );
 }
 
 
@@ -105,10 +111,10 @@ xpos_mtz ( unsigned long i, unsigned long j, const instance *problem )
  * \param problem
  *     Pointer to the instance structure.
  */
-int
+unsigned long
 upos_mtz ( unsigned long i, const instance *problem )
 {
-    return  problem->nnodes * problem->nnodes + i;
+    return problem->nnodes * ( problem->nnodes - 1UL ) + i - 1UL;
 }
 
 
@@ -340,6 +346,11 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     double lb = 0.0;
     double ub = 1.0;
 
+    double obj;
+    double rhs;
+    char sense;
+    unsigned long lastrow;
+
     char *cname = calloc( CPX_STR_PARAM_MAX, sizeof( *cname ) );
 
     // add binary var x(i,j) for all i, j
@@ -347,25 +358,19 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         for ( unsigned long j = 0; j < problem->nnodes; ++j )
         {
+            if( i == j ) continue;
+
             snprintf( cname, CPX_STR_PARAM_MAX, "x(%lu,%lu)", i + 1, j + 1 );
-            double obj = _euclidean_distance(
+            obj = _euclidean_distance(
                 problem->xcoord[i],
                 problem->ycoord[i],
                 problem->xcoord[j],
                 problem->ycoord[j]
             );
 
-            if( i != j ) {
-                if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                    fprintf( stderr,  "_add_constraints_mtz: CPXnewcols [%s]\n", cname );
-                    exit( EXIT_FAILURE );
-                }
-            } else {
-                double temp_ub = 0.0;
-                if ( CPXnewcols( env, lp, 1, &obj, &lb, &temp_ub, &ctype, &cname ) ) {
-                    fprintf( stderr,  "_add_constraints_mtz: CPXnewcols [%s]\n", cname );
-                    exit( EXIT_FAILURE );
-                }
+            if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
+                fprintf( stderr,  "_add_constraints_mtz: CPXnewcols [%s]\n", cname );
+                exit( EXIT_FAILURE );
             }
 
             if ( CPXgetnumcols( env, lp ) - 1 != xpos_mtz( i, j, problem ) ) {
@@ -376,19 +381,19 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     }
 
     // add degree constraints
-    double rhs = 1.0;
-    char sense = 'E';
+    rhs = 1.0;
+    sense = 'E';
 
     // Sum[ x(i,h) ]_{i | i != h} = 1  for all h
     for ( unsigned long h = 0; h < problem->nnodes; ++h )
     {
-        unsigned long lastrow = CPXgetnumrows( env, lp );
-
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%lu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
             fprintf( stderr,  "_add_constraints_mtz: CPXnewrows [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
+
+        lastrow = CPXgetnumrows( env, lp ) - 1;
 
         for ( unsigned long i = 0; i < problem->nnodes; ++i )
         {
@@ -404,13 +409,13 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     // Sum[ x(h,i) ]_{i | i != h} = 1  for all h
     for ( unsigned long h = 0; h < problem->nnodes; ++h )
     {
-        unsigned long lastrow = CPXgetnumrows( env, lp );
-
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%lu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
             fprintf( stderr,  "_add_constraints_mtz: CPXnewrows [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
+
+        lastrow = CPXgetnumrows( env, lp ) - 1;
 
         for ( unsigned long i = 0; i < problem->nnodes; ++i )
         {
@@ -423,33 +428,19 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         }
     }
 
-    // add continuous vars u(i)
+    // add sequences vars u(i)
     ctype = CPX_CONTINUOUS;
     lb = 2.0;
     ub = problem->nnodes;
+    obj = 0.;
 
-    for ( unsigned long i = 0; i < problem->nnodes; ++i )
+    for ( unsigned long i = 1; i < problem->nnodes; ++i )
     {
-
         snprintf( cname, CPX_STR_PARAM_MAX, "u(%lu)", i + 1 );
-        double obj = 0.0;
 
-        if( i == 0 ) {
-            double temp_lb = 1.0;
-            double temp_ub = 1.0;
-
-            if( CPXnewcols( env, lp, 1, &obj, &temp_lb, &temp_ub, &ctype, &cname ) ) {
-                fprintf( stderr,  "_add_constraints_mtz: CPXnewcols [%s]\n", cname );
-                exit( EXIT_FAILURE );
-            }
-
-        } else {
-
-            if( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr,  "_add_constraints_mtz: CPXnewcols [%s]\n", cname );
-                exit( EXIT_FAILURE );
-            }
-
+        if( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
+            fprintf( stderr,  "_add_constraints_mtz: CPXnewcols [%s]\n", cname );
+            exit( EXIT_FAILURE );
         }
 
         if ( CPXgetnumcols( env, lp ) - 1 != upos_mtz( i, problem ) ) {
@@ -458,15 +449,15 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         }
     }
 
-    // add sequencs constraints
-    // u(i) - u(j) + n x(i,j) <= n - 1
+    // add sequences constraints
+    // u(i) - u(j) + n x(i,j) <= n - 1  for all i, j | i != j, i != 0, j != 0
     rhs = problem->nnodes - 1;
     sense = 'L';
 
     for ( unsigned long j = 1; j < problem->nnodes; ++j )
     {
-        for ( unsigned long i = 1; i < problem->nnodes; ++i ){
-
+        for ( unsigned long i = 1; i < problem->nnodes; ++i )
+        {
             if ( i == j ) continue;
 
             snprintf( cname, CPX_STR_PARAM_MAX, "degree(%lu)", j + 1 );
@@ -476,7 +467,7 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
                 exit( EXIT_FAILURE );
             }
 
-            unsigned long lastrow = CPXgetnumrows( env, lp ) - 1;
+            lastrow = CPXgetnumrows( env, lp ) - 1;
 
             if ( CPXchgcoef( env, lp, lastrow, upos_mtz( j, problem ), -1.0 ) ) {
                 fprintf( stderr,  "_add_constraints_mtz: CPXchgcoef [%s: u(%lu)]\n", cname, j + 1 );
@@ -538,7 +529,7 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
     char ctype = CPX_CONTINUOUS;
     double lb = 0.0;
-    double ub = CPX_INFBOUND;
+    double ub = problem->nnodes;
     double obj = 0.;
 
     double rhs;
@@ -657,7 +648,6 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
 /* SOLVERS */
 
-
 void
 random_model ( instance *problem )
 {
@@ -682,7 +672,8 @@ dummy_model ( instance *problem )
     _add_constraints_dummy( problem, env, lp );
 
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, "dummy_cplex_solution CPXmimopt error\n" );
+        fprintf( stderr, "dummy_model: CPXmimopt error\n" );
+        exit( EXIT_FAILURE );
     }
 
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
@@ -709,13 +700,14 @@ mtz_model ( instance *problem )
     _add_constraints_mtz( problem, env, lp );
 
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, "miller_tucker_cplex_solution CPXmimopt error\n" );
+        fprintf( stderr, "mtz_model: CPXmimopt error\n" );
+        exit( EXIT_FAILURE );
     }
 
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
 
-    _xopt2solution(xopt, problem, &xpos_mtz);
+    _xopt2solution( xopt, problem, &xpos_mtz );
 
     free( xopt );
 
@@ -736,7 +728,7 @@ flow1_model ( instance *problem )
     _add_constraints_flow1( problem, env, lp );
 
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, "CPXmimopt error\n" );
+        fprintf( stderr, "flow1_model: CPXmimopt error\n" );
         exit( EXIT_FAILURE );
     }
 
