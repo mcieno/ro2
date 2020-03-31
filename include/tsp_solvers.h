@@ -10,10 +10,12 @@
 #include "tsp.h"
 
 
-#define TSP_SOLVER_RANDOM  1  /*!< Random model.  */
-#define TSP_SOLVER_DUMMY   2  /*!< Dummy model.  */
-#define TSP_MILLER_TUCKER  3  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
-#define TSP_SOLVER_FLOW1   4  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
+#define TSP_SOLVER_RANDOM  1U  /*!< Random model.  */
+#define TSP_SOLVER_DUMMY   2U  /*!< Dummy model.  */
+#define TSP_SOLVER_MTZ     3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
+#define TSP_SOLVER_FLOW1   4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
+
+typedef unsigned model_t;
 
 
 /*!
@@ -28,7 +30,7 @@ random_model ( instance *problem );
 
 
 /*!
- * \brief Solve with degree	constraints-only model.
+ * \brief Solve with degree constraints-only model.
  *
  *
  * \param problem

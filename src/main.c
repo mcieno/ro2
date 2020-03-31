@@ -7,7 +7,8 @@
 #include <errno.h>
 #include <float.h>
 #include <limits.h>
-#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,7 +32,7 @@
  * \param memory
  *     Maximum amount of memory (in MB) the program may use.
  *     If the program cannot proceed without requesting more memory, it should be terminated.
- *     A meaningful value is between 1 and ULLONG_MAX.
+ *     A meaningful value is between 1 and SIZE_MAX.
  *     Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer.
  *
  * \param threads
@@ -40,23 +41,23 @@
  * \param timelimit
  *     Maximum number of seconds the program may run.
  *     If the program does not terminate within this time, it should be terminated anyway.
- *     A meaningful value is between 1 and ULLONG_MAX.
+ *     A meaningful value is between 1 and SIZE_MAX.
  *
  * \param problem:
  *      Pointer to the instance structure to setup.
  *
  * \param shouldplot:
- *      If `true`, use GnuPlot to draw the tour.
+ *      If true, use GnuPlot to draw the tour. Default: 1.
  */
 typedef struct
 {
-    char *             filename;
-    unsigned long long memory;
-    unsigned           threads;
-    unsigned long long timelimit;
-    instance *         problem;
-    _Bool              shouldplot;
-    int                solving_method;
+    char        *filename;
+    size_t      memory;
+    unsigned    threads;
+    size_t      timelimit;
+    instance    *problem;
+    int         shouldplot;
+    model_t     solving_method;
 
 } configuration;
 
@@ -140,11 +141,11 @@ main ( int argc, char *argv[] )
 
     configuration conf = {
         /* filename       */  NULL,
-        /* memory         */  ULLONG_MAX,
+        /* memory         */  SIZE_MAX,
         /* threads        */  1U,
-        /* timelimit      */  ULLONG_MAX,
+        /* timelimit      */  SIZE_MAX,
         /* problem        */  &problem,
-        /* shouldplot     */  false,
+        /* shouldplot     */  1,
         /* solving_method */  TSP_SOLVER_DUMMY
     };
 
@@ -187,7 +188,7 @@ main ( int argc, char *argv[] )
             break;
 
 
-        case TSP_MILLER_TUCKER:
+        case TSP_SOLVER_MTZ:
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, "[*]  Running MTZ model\n" );
             }
@@ -213,7 +214,7 @@ main ( int argc, char *argv[] )
 
     if ( loglevel >= LOG_DEBUG ) {
         /* Dump solution to stderr */
-        for ( unsigned long k = 0; k < problem.nnodes; ++k ) {
+        for ( size_t k = 0; k < problem.nnodes; ++k ) {
             fprintf( stderr, "(%5lu) %-5lu <--> %5lu\n", k, problem.solution[k][0], problem.solution[k][1] );
         }
     }
@@ -234,12 +235,12 @@ _print_configuration ( configuration *conf )
     fprintf( stderr, "  * TSP file            : %s\n",                                   conf->filename );
     fprintf( stderr, "  * Problem name        : %s\n",                              conf->problem->name );
     fprintf( stderr, "  * Master cutoff value : %e\n",                            conf->problem->cutoff );
-    fprintf( stderr, "  * Time limit          : %llu hours %llu minutes %llu seconds\n",
-        conf->timelimit / 3600ULL, conf->timelimit % 3600ULL / 60ULL, conf->timelimit % 60              );
-    fprintf( stderr, "  * Maximum memory      : %llu MB\n",                                conf->memory );
+    fprintf( stderr, "  * Time limit          : %zu hours %zu minutes %zu seconds\n",
+                              conf->timelimit / 3600, conf->timelimit % 3600 / 60, conf->timelimit % 60 );
+    fprintf( stderr, "  * Maximum memory      : %zu MB\n",                                conf->memory  );
     fprintf( stderr, "  * Store temporary file: %s\n",                                  tspplot_tmpfile );
     fprintf( stderr, "  * Use multithread     : %s (%u)\n\n",
-        conf->threads > 1U ? "yes" : "no", conf->threads                                                );
+                                                       conf->threads > 1U ? "yes" : "no", conf->threads );
 }
 
 
@@ -299,7 +300,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 conf->solving_method = TSP_SOLVER_DUMMY;
 
             } else if( !strcmp( "mtz", arg ) ){
-                conf->solving_method = TSP_MILLER_TUCKER;
+                conf->solving_method = TSP_SOLVER_MTZ;
 
             } else if ( !strcmp( "flow1", arg ) ) {
                 conf->solving_method = TSP_SOLVER_FLOW1;
@@ -359,7 +360,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             break;
 
         case 0xAA2:
-            conf->shouldplot = true;
+            conf->shouldplot = 1;
 
             break;
 
