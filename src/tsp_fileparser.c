@@ -45,7 +45,7 @@ parse_tsp_file ( const char *filename, instance *problem )
     FILE *fd = fopen( filename, "r" );
 
     if ( fd == NULL ) {
-        perror( "Parsing error" );
+        perror( CFATAL "Parsing error" );
         exit( EXIT_FAILURE );
     }
 
@@ -207,12 +207,12 @@ parse_tsp_file ( const char *filename, instance *problem )
 
 PARSING_ERROR:
     errno = errno ? errno : EINVAL;
-    perror( "Parsing error" );
+    perror( CFATAL "Parsing error" );
 
     if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, "%s\n", *errinfo ? errinfo : "No further information." );
+        fprintf( stderr, CINFO "%s\n", *errinfo ? errinfo : "No further information." );
         if ( loglevel >= LOG_DEBUG ) {
-            fprintf( stderr, "The problem occured while parsing: \"%s\"\n", line );
+            fprintf( stderr, CDEBUG "The problem occured while parsing: \"%s\"\n", line );
         }
     }
 

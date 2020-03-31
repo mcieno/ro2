@@ -179,7 +179,7 @@ main ( int argc, char *argv[] )
     {
         case TSP_SOLVER_DUMMY:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, "[*]  Running dummy model\n" );
+                fprintf( stderr, CINFO "Running dummy model\n" );
             }
             dummy_model( &problem );
             break;
@@ -187,7 +187,7 @@ main ( int argc, char *argv[] )
 
         case TSP_SOLVER_RANDOM:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, "[*]  Running random model\n" );
+                fprintf( stderr, CINFO "Running random model\n" );
             }
             random_model( &problem );
             break;
@@ -195,7 +195,7 @@ main ( int argc, char *argv[] )
 
         case TSP_SOLVER_MTZ:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, "[*]  Running MTZ model\n" );
+                fprintf( stderr, CINFO "Running MTZ model\n" );
             }
             mtz_model( &problem );
             break;
@@ -203,7 +203,7 @@ main ( int argc, char *argv[] )
 
         case TSP_SOLVER_FLOW1:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, "[*]  Running FLOW1 model\n" );
+                fprintf( stderr, CINFO "Running FLOW1 model\n" );
             }
             flow1_model( &problem );
             break;
@@ -211,7 +211,7 @@ main ( int argc, char *argv[] )
 
         default:
             if (loglevel >= LOG_INFO) {
-                fprintf( stderr, "[*]  No model specified. Exit...\n" );
+                fprintf( stderr, CFATAL "No model specified. Exit...\n" );
             }
             exit(EXIT_FAILURE);
     }
@@ -221,7 +221,7 @@ main ( int argc, char *argv[] )
     if ( loglevel >= LOG_DEBUG ) {
         /* Dump solution to stderr */
         for ( size_t k = 0; k < problem.nnodes; ++k ) {
-            fprintf( stderr, "(%5zu) %-5zu <--> %5zu\n", k, problem.solution[k][0], problem.solution[k][1] );
+            fprintf( stderr, CDEBUG "(%5zu) %-5zu <--> %5zu\n", k, problem.solution[k][0], problem.solution[k][1] );
         }
     }
 
@@ -233,8 +233,8 @@ main ( int argc, char *argv[] )
     double elapsed = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
     double solcost = compute_solution_cost( &problem );
 
-    fprintf( stdout, "[+]  Solution cost: %13.3lf\n", solcost );
-    fprintf( stdout, "[+]  Time elapsed:  %13.3lf\n", elapsed );
+    fprintf( stdout, CSUCC "Solution cost: %13.3lf\n", solcost );
+    fprintf( stdout, CSUCC "Time elapsed:  %13.3lf\n", elapsed );
 
     destroy_instance( &problem );
 }
@@ -243,15 +243,15 @@ main ( int argc, char *argv[] )
 void
 _print_configuration ( configuration *conf )
 {
-    fprintf( stderr, "Arguments parsed:\n" );
-    fprintf( stderr, "  * TSP file            : %s\n",                                   conf->filename );
-    fprintf( stderr, "  * Problem name        : %s\n",                              conf->problem->name );
-    fprintf( stderr, "  * Master cutoff value : %e\n",                            conf->problem->cutoff );
-    fprintf( stderr, "  * Time limit          : %zu hours %zu minutes %zu seconds\n",
+    fprintf( stderr, CINFO "Arguments parsed:\n" );
+    fprintf( stderr, CINFO "   TSP file            : %s\n",                                   conf->filename );
+    fprintf( stderr, CINFO "    Problem name        : %s\n",                              conf->problem->name );
+    fprintf( stderr, CINFO "    Master cutoff value : %e\n",                            conf->problem->cutoff );
+    fprintf( stderr, CINFO "    Time limit          : %zu hours %zu minutes %zu seconds\n",
                               conf->timelimit / 3600, conf->timelimit % 3600 / 60, conf->timelimit % 60 );
-    fprintf( stderr, "  * Maximum memory      : %zu MB\n",                                conf->memory  );
-    fprintf( stderr, "  * Store temporary file: %s\n",                                  tspplot_tmpfile );
-    fprintf( stderr, "  * Use multithread     : %s (%u)\n\n",
+    fprintf( stderr, CINFO "    Maximum memory      : %zu MB\n",                                conf->memory  );
+    fprintf( stderr, CINFO "    Store temporary file: %s\n",                                  tspplot_tmpfile );
+    fprintf( stderr, CINFO "    Use multithread     : %s (%u)\n",
                                                        conf->threads > 1U ? "yes" : "no", conf->threads );
 }
 
@@ -268,7 +268,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf->problem->cutoff == 0. ) {
                 argp_error(
                     state,
-                    "Bad value for option -c --cutoff: %s.", strerror( errno ? errno : EDOM )
+                    CERROR "Bad value for option -c --cutoff: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -284,7 +284,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 if ( errno || conf->threads == 0U ) {
                     argp_error(
                         state,
-                        "Bad value for option -j --threads: %s.", strerror( errno ? errno : EDOM )
+                        CERROR "Bad value for option -j --threads: %s.", strerror( errno ? errno : EDOM )
                     );
                 }
             }
@@ -297,7 +297,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf->memory == 0ULL ) {
                 argp_error(
                     state,
-                    "Bad value for option -m --memory: %s.", strerror( errno ? errno : EDOM )
+                    CERROR "Bad value for option -m --memory: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -320,7 +320,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else {
                 argp_error(
                     state,
-                    "Unknown solving method for option -ml --model: %s.", arg
+                    CERROR "Unknown solving method for option -ml --model: %s.", arg
                 );
             }
 
@@ -332,7 +332,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf->timelimit == 0ULL ) {
                 argp_error(
                     state,
-                    "Bad value for option -t --timelimit: %s.", strerror( errno ? errno : EDOM )
+                    CERROR "Bad value for option -t --timelimit: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -363,7 +363,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_failure(
                     state,
                     1, errno,
-                    "Could not read temporary filename: %s.", arg
+                    CFATAL "Could not read temporary filename: %s.", arg
                 );
             }
 
@@ -381,7 +381,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( strcspn( arg, "!@%%^*~|:" ) != strlen( arg ) ) {
                 argp_error(
                     state,
-                    "Bad value for option --name: Invalid characters found."
+                    CERROR "Bad value for option --name: Invalid characters found."
                 );
             }
 
@@ -390,11 +390,10 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_failure(
                     state,
                     1, errno,
-                    "Could not read problem name: %s.", arg
+                    CFATAL "Could not read problem name: %s.", arg
                 );
             }
 
-            fprintf(stderr, "%s\n", conf->problem->name);
             conf->problem->name = strcpy( conf->problem->name, arg );
 
             break;
@@ -406,7 +405,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_failure(
                     state,
                     1, errno,
-                    "Could not read filename: %s.", arg
+                    CFATAL "Could not read filename: %s.", arg
                 );
             }
 
@@ -417,7 +416,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
         case ARGP_KEY_END:
             if ( conf->filename == NULL ) {
-                argp_error( state, "Missing TSP file name." );
+                argp_error( state, CERROR "Missing TSP file name." );
             }
 
             break;

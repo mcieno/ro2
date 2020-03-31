@@ -31,6 +31,24 @@ include/logging.h \- Define logging levels\&.
 .ti -1c
 .RI "#define \fBLOG_TRACE\fP   600U"
 .br
+.ti -1c
+.RI "#define \fBCSUCC\fP   '\\033[92m[+]\\033[0m  '"
+.br
+.ti -1c
+.RI "#define \fBCERROR\fP   '\\033[91m[\-]\\033[0m  '"
+.br
+.ti -1c
+.RI "#define \fBCFATAL\fP   '\\033[31m[!]\\033[0m  '"
+.br
+.ti -1c
+.RI "#define \fBCINFO\fP   '\\033[94m[*]\\033[0m  '"
+.br
+.ti -1c
+.RI "#define \fBCDEBUG\fP   '\\033[96m[\&.]\\033[0m  '"
+.br
+.ti -1c
+.RI "#define \fBCTRACE\fP   '\\033[95m[^]\\033[0m  '"
+.br
 .in -1c
 .SS "Typedefs"
 
@@ -60,6 +78,18 @@ Francesco Cazzaro, Marco Cieno
 
 .SH "Macro Definition Documentation"
 .PP 
+.SS "#define CDEBUG   '\\033[96m[\&.]\\033[0m  '"
+Prefix for INFO logs\&. 
+.SS "#define CERROR   '\\033[91m[\-]\\033[0m  '"
+Prefix for ERROR logs\&. 
+.SS "#define CFATAL   '\\033[31m[!]\\033[0m  '"
+Prefix for FATAL logs\&. 
+.SS "#define CINFO   '\\033[94m[*]\\033[0m  '"
+Prefix for INFO logs\&. 
+.SS "#define CSUCC   '\\033[92m[+]\\033[0m  '"
+Prefix for SUCCESS logs\&. 
+.SS "#define CTRACE   '\\033[95m[^]\\033[0m  '"
+Prefix for INFO logs\&. 
 .SS "#define LOG_DEBUG   500U"
 Debug logging\&. 
 .SS "#define LOG_ERROR   200U"
