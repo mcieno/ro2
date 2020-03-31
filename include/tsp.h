@@ -103,10 +103,10 @@ compute_solution_cost ( instance *problem );
  *     Y coordinate of first point.
  *
  * \param x_b
- *     X coordinate of first point.
+ *     X coordinate of second point.
  *
  * \param y_a
- *     X coordinate of first point.
+ *     Y coordinate of second point.
  */
 double
 _euclidean_distance ( double x_a, double y_a, double x_b, double y_b );

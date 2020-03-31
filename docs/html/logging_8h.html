@@ -96,6 +96,18 @@ Macros</h2></td></tr>
 <tr class="separator:a6ff63e8955665c4a58b1598f2b07c51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7abc145380f1916838e42f9272aa0f6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8h.html#af7abc145380f1916838e42f9272aa0f6">LOG_TRACE</a>&#160;&#160;&#160;600U</td></tr>
 <tr class="separator:af7abc145380f1916838e42f9272aa0f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d2932f49314f1358f5fb5fce1f277b5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8h.html#a5d2932f49314f1358f5fb5fce1f277b5">CSUCC</a>&#160;&#160;&#160;&quot;\033[92m[+]\033[0m  &quot;</td></tr>
+<tr class="separator:a5d2932f49314f1358f5fb5fce1f277b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b2acb17aceb0b216b92a4b930a1a987"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8h.html#a3b2acb17aceb0b216b92a4b930a1a987">CERROR</a>&#160;&#160;&#160;&quot;\033[91m[-]\033[0m  &quot;</td></tr>
+<tr class="separator:a3b2acb17aceb0b216b92a4b930a1a987"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25ccf5b544c7f063eec6043bab8d493f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8h.html#a25ccf5b544c7f063eec6043bab8d493f">CFATAL</a>&#160;&#160;&#160;&quot;\033[31m[!]\033[0m  &quot;</td></tr>
+<tr class="separator:a25ccf5b544c7f063eec6043bab8d493f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c80ef8118064ca303cae1af03cbf93f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8h.html#a2c80ef8118064ca303cae1af03cbf93f">CINFO</a>&#160;&#160;&#160;&quot;\033[94m[*]\033[0m  &quot;</td></tr>
+<tr class="separator:a2c80ef8118064ca303cae1af03cbf93f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7444555626190dd4512ef95f4c8a234"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8h.html#aa7444555626190dd4512ef95f4c8a234">CDEBUG</a>&#160;&#160;&#160;&quot;\033[96m[.]\033[0m  &quot;</td></tr>
+<tr class="separator:aa7444555626190dd4512ef95f4c8a234"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbdd0189004c14868c73160fbe7b42e8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logging_8h.html#adbdd0189004c14868c73160fbe7b42e8">CTRACE</a>&#160;&#160;&#160;&quot;\033[95m[^]\033[0m  &quot;</td></tr>
+<tr class="separator:adbdd0189004c14868c73160fbe7b42e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -113,6 +125,96 @@ loglevel_t&#160;</td><td class="memItemRight" valign="bottom"><b>loglevel</b></t
 <div class="textblock"><p>Define logging levels. </p>
 <dl class="section author"><dt>Authors</dt><dd>Francesco Cazzaro, Marco Cieno </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="aa7444555626190dd4512ef95f4c8a234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7444555626190dd4512ef95f4c8a234">&#9670;&nbsp;</a></span>CDEBUG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CDEBUG&#160;&#160;&#160;&quot;\033[96m[.]\033[0m  &quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Prefix for INFO logs. </p>
+
+</div>
+</div>
+<a id="a3b2acb17aceb0b216b92a4b930a1a987"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b2acb17aceb0b216b92a4b930a1a987">&#9670;&nbsp;</a></span>CERROR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CERROR&#160;&#160;&#160;&quot;\033[91m[-]\033[0m  &quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Prefix for ERROR logs. </p>
+
+</div>
+</div>
+<a id="a25ccf5b544c7f063eec6043bab8d493f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25ccf5b544c7f063eec6043bab8d493f">&#9670;&nbsp;</a></span>CFATAL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CFATAL&#160;&#160;&#160;&quot;\033[31m[!]\033[0m  &quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Prefix for FATAL logs. </p>
+
+</div>
+</div>
+<a id="a2c80ef8118064ca303cae1af03cbf93f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c80ef8118064ca303cae1af03cbf93f">&#9670;&nbsp;</a></span>CINFO</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CINFO&#160;&#160;&#160;&quot;\033[94m[*]\033[0m  &quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Prefix for INFO logs. </p>
+
+</div>
+</div>
+<a id="a5d2932f49314f1358f5fb5fce1f277b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d2932f49314f1358f5fb5fce1f277b5">&#9670;&nbsp;</a></span>CSUCC</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CSUCC&#160;&#160;&#160;&quot;\033[92m[+]\033[0m  &quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Prefix for SUCCESS logs. </p>
+
+</div>
+</div>
+<a id="adbdd0189004c14868c73160fbe7b42e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbdd0189004c14868c73160fbe7b42e8">&#9670;&nbsp;</a></span>CTRACE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CTRACE&#160;&#160;&#160;&quot;\033[95m[^]\033[0m  &quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Prefix for INFO logs. </p>
+
+</div>
+</div>
 <a id="a6ff63e8955665c4a58b1598f2b07c51a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6ff63e8955665c4a58b1598f2b07c51a">&#9670;&nbsp;</a></span>LOG_DEBUG</h2>
 
