@@ -12,6 +12,7 @@
 
 #define TSP_SOLVER_DUMMY 1        /*!< Dummy solving method.  */
 #define TSP_SOLVER_DUMMY_CPLEX 2  /*!< Dummy CPLEX solving method.  */
+#define TSP_MILLER_TUCKER_CPLEX 3 /*!< Miller Tucker CPLEX solving method.  */
 
 
 /*!
@@ -37,6 +38,15 @@ dummy_solution ( instance *problem );
 void
 dummy_cplex_solution ( instance *problem );
 
+/*!
+ * \brief Solve the tsp problem with the Miller-Tucker-Zemlin model
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+miller_tucker_solution(instance *problem);
 
 
 #endif

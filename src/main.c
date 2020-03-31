@@ -180,6 +180,10 @@ main ( int argc, char *argv[] )
             dummy_solution( &problem );
             break;
 
+        case TSP_MILLER_TUCKER_CPLEX:
+            miller_tucker_solution( &problem );
+            break;
+
 
         default: exit( EXIT_FAILURE );
     }
@@ -270,6 +274,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 conf->solving_method = TSP_SOLVER_DUMMY_CPLEX;
             } else if ( !strcmp( "dummy", arg ) ) {
                 conf->solving_method = TSP_SOLVER_DUMMY;
+            } else if( !strcmp( "miller_tucker", arg ) ){
+                conf->solving_method = TSP_MILLER_TUCKER_CPLEX;
             } else {
                 argp_error(
                     state,
