@@ -323,9 +323,9 @@ _dummy_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr lp )
 void
 _miller_tucker_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr lp )
 {
-    
+   
 
-    double big_M = problem->nnodes+1;
+    double big_M = problem->nnodes-1;
     char binary = 'B';
     double lb = 0.0;
     double ub = 1.0;
@@ -409,9 +409,9 @@ _miller_tucker_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr
     }
     
     // add u_i variables
-    binary = 'E';
-    lb = 0.0;
-    ub = problem->nnodes -1 ;
+    binary = 'C';
+    lb = 2.0;
+    ub = problem->nnodes;
 
     for ( unsigned long i = 0; i < problem->nnodes; ++i )
     {
@@ -419,9 +419,18 @@ _miller_tucker_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr
         snprintf( cname, MAX_CNAME_LENGTH, "u(%lu)", i + 1 );
         double obj = 0.0;
 
-        if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &binary, &cname ) ) {
-            perror( "Wrong CPXnewcols on u var.s" );
-             exit( EXIT_FAILURE );
+        if(i==0){
+            double temp_lb = 1.0;
+            double temp_ub = 1.0;
+            if( CPXnewcols( env, lp, 1, &obj, &temp_lb, &temp_ub, &binary, &cname ) ) {
+                perror( "Wrong CPXnewcols on u var.s" );
+                exit( EXIT_FAILURE );
+            }
+        } else {
+            if( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &binary, &cname ) ) {
+                perror( "Wrong CPXnewcols on u var.s" );
+                exit( EXIT_FAILURE );
+            }
         }
 
         if ( CPXgetnumcols( env, lp ) - 1 != miller_tucker_upos( i, problem ) ) {
@@ -432,8 +441,11 @@ _miller_tucker_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr
         
     }
 
+
+
+
     //add u_i constraints
-    rhs = big_M-1 ;
+    rhs = big_M -1;
     sense = 'L';
 
     for ( unsigned long j = 1; j < problem->nnodes; ++j )
@@ -459,7 +471,7 @@ _miller_tucker_cplex_instance2model ( instance *problem, CPXENVptr env, CPXLPptr
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXchgcoef( env, lp, lastrow, miller_tucker_xpos( i, j, problem ), big_M ) ) {
+            if ( CPXchgcoef( env, lp, lastrow, miller_tucker_xpos( i, j, problem ), big_M) ) {
                 perror( "Wrong CPXchgcoef [degree]" );
                 exit( EXIT_FAILURE );
             }
@@ -526,6 +538,8 @@ miller_tucker_solution(instance *problem)
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );   
     
     _miller_tucker_cplex_instance2model(problem, env, lp);
+
+    CPXwriteprob (env, lp, "myprob.lp", NULL);
     
     if ( CPXmipopt( env, lp ) ) {
         fprintf( stderr, "miller_tucker_cplex_solution CPXmimopt error\n" );
