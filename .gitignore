@@ -56,3 +56,6 @@ dkms.conf
 # IDE
 .vscode
 .idea
+
+# CPLEX
+*.lp
