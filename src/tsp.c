@@ -127,25 +127,23 @@ repr_instance ( instance *problem )
 }
 
 
-int
+double
 compute_solution_cost ( instance *problem )
 {
     if ( problem->solution == NULL ) {
+        errno = EFAULT;
         perror( "Cannot calculate cost of solution: solution is NULL\n" );
         exit( EXIT_FAILURE );
     }
 
-    int cost = 0;
+    double cost = 0;
 
     for ( int i = 0; i < problem->nnodes; ++i ) {
         size_t node_1 = problem->solution[i][0];
         size_t node_2 = problem->solution[i][1];
 
-        double dst_cost = _euclidean_distance(problem->xcoord[node_1], problem->ycoord[node_1],
-                                              problem->xcoord[node_2], problem->ycoord[node_2] );
-        int rounded_cost = _round_double(dst_cost);
-        cost += rounded_cost;
-
+        cost += _euclidean_distance(problem->xcoord[node_1], problem->ycoord[node_1],
+                                    problem->xcoord[node_2], problem->ycoord[node_2] );
     }
 
     return cost;

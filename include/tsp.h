@@ -88,7 +88,7 @@ repr_instance ( instance *problem );
  * \param problem
  *     Pointer to the instance structure.
  */
-int
+double
 compute_solution_cost ( instance *problem );
 
 
