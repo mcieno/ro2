@@ -12,6 +12,7 @@
 
 #define TSP_SOLVER_DUMMY 1        /*!< Dummy solving method.  */
 #define TSP_SOLVER_DUMMY_CPLEX 2  /*!< Dummy CPLEX solving method.  */
+#define TSP_SOLVER_FLOW1 3        /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
 
 
 /*!
@@ -37,6 +38,16 @@ dummy_solution ( instance *problem );
 void
 dummy_cplex_solution ( instance *problem );
 
+
+/*!
+ * \brief Solve with "Single Commodity Flow" model by Gavish and Graves (1978).
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+flow1_solution ( instance *problem );
 
 
 #endif
