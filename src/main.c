@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/timeb.h>
 
 #include "logging.h"
 #include "tsp.h"
@@ -170,6 +171,10 @@ main ( int argc, char *argv[] )
 
 
     /* Run the solver */
+    struct timeb start, end;
+
+    ftime( &start );
+
     switch ( conf.solving_method )
     {
         case TSP_SOLVER_DUMMY:
@@ -211,6 +216,11 @@ main ( int argc, char *argv[] )
             exit(EXIT_FAILURE);
     }
 
+    ftime( &end );
+
+    double elapsed = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+
+    fprintf( stdout, "Time elapsed: %.3lf\n", elapsed );
 
     if ( loglevel >= LOG_DEBUG ) {
         /* Dump solution to stderr */
