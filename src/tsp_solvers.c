@@ -50,6 +50,33 @@ xpos ( unsigned long i, unsigned long j, const instance *problem )
 
 
 /*!
+ * \brief Get the position of variable y(i,j) of Flow1 model. 0-indexed.
+ *
+ *
+ * \param i
+ *      i in y(i,j)
+ *
+ * \param j
+ *      j in y(i,j)
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+unsigned long
+ypos_flow1 ( unsigned long i, unsigned long j, const instance *problem )
+{
+    if ( i == j ) {
+        errno = EDOM;
+        perror( "i == j in ypos_flow1" );
+        exit( EXIT_FAILURE );
+    }
+
+    unsigned long padding = xpos( problem->nnodes - 1, problem->nnodes, problem );
+    return padding + i * (problem->nnodes - 1) + j - ( ( j > i ) ? 1 : 0 );
+}
+
+
+/*!
  * \brief Retrieve the solution after CPXmimopt was run.
  *
  *
@@ -272,6 +299,187 @@ dummy_cplex_solution ( instance *problem )
 
     if ( CPXmipopt( env, lp ) ) {
         fprintf( stderr, "CPXmimopt error\n" );
+    }
+
+    double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+    CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
+
+    _xopt2solution( xopt, problem );
+
+    free(xopt);
+
+    CPXfreeprob( env, &lp );
+    CPXcloseCPLEX( &env );
+}
+
+
+/*!
+ * \brief Add Flow1 commodity and coupling constraints.
+ *
+ *
+ * This function adds the commodity and coupling constraints to the model.
+ * That is, it introduces the continuous variables
+ *
+ * ```
+ * y(i,j) = flow in arc (i,j)  for all i != j
+ * ```
+ *
+ * The following constraints are added to the model:
+ *
+ * ```
+ * (1)  y(i,j) <= (n - 1) x(i,j)  for all i != j
+ * (2)  Sum{ y(1,j) }_{ j | j != 1 } = n - 1
+ * (3)  Sum{ y(i,h) }_{ i | i != h } - Sum{ y(h,j) }_{ j | j != h } = 1  for all h != 1
+ * ```
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ *
+ * \param env
+ *     CPLEX environment
+ *
+ * \param lp
+ *     CPLEX problem.
+ */
+void
+_add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
+{
+    char continuous = 'C';
+    double lb = 0.0;
+    double ub = 1.0;
+    double obj = 0.;
+    double rhs;
+    char sense;
+    unsigned long lastrow;
+
+    char *cname = calloc( MAX_CNAME_LENGTH, sizeof( *cname ) );
+
+    // add binary var.s x(i,j) for i < j
+    for ( unsigned long i = 0; i < problem->nnodes; ++i )
+    {
+        for ( unsigned long j = 0; j < problem->nnodes; ++j )
+        {
+            if ( i == j ) continue;
+
+            snprintf( cname, MAX_CNAME_LENGTH, "y(%lu,%lu)", i + 1, j + 1 );
+
+            if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &continuous, &cname ) ) {
+                fprintf( stderr,  "_add_constraints_flow1: CPXnewcols [%s]\n", cname );
+                exit( EXIT_FAILURE );
+            }
+
+            if ( CPXgetnumcols( env, lp ) - 1 != ypos_flow1( i, j, problem ) ) {
+                fprintf( stderr,  "_add_constraints_flow1: CPXgetnumcols [%s]\n", cname );
+                exit( EXIT_FAILURE );
+            }
+        }
+    }
+
+    // add constraints (1)
+    // y(i,j) - (n - 1) x(i,j) <= 0  for all i != j
+    rhs = .0;
+    sense = 'L';
+
+    for ( unsigned long i = 0; i < problem->nnodes; ++i )
+    {
+        for ( unsigned long j = 0; j < problem->nnodes; ++j )
+        {
+            if ( i == j ) continue;
+
+            lastrow = CPXgetnumrows( env, lp );
+
+            snprintf( cname, MAX_CNAME_LENGTH, "flow1_1(%lu,%lu)", i + 1, j + 1 );
+            if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
+                fprintf( stderr,  "_add_constraints_flow1: CPXnewrows [%s]\n", cname );
+                exit( EXIT_FAILURE );
+            }
+
+            if ( CPXchgcoef( env, lp, lastrow, xpos( i, j, problem ), - (double) ( problem->nnodes - 1 ) ) ) {
+                fprintf( stderr,  "_add_constraints_flow1: CPXchgcoef [%s: x]\n", cname);
+                exit( EXIT_FAILURE );
+            }
+
+            if ( CPXchgcoef( env, lp, lastrow, ypos_flow1( i, j, problem ), 1.0 ) ) {
+                fprintf( stderr,  "_add_constraints_flow1: CPXchgcoef [%s: y]\n", cname );
+                exit( EXIT_FAILURE );
+            }
+        }
+    }
+
+    // add constraint (2)
+    // Sum{ y(1,j) }_{ j | j != 1 } = n - 1
+    rhs = (double) ( problem->nnodes - 1 );
+    sense = 'E';
+
+    lastrow = CPXgetnumrows( env, lp );
+
+    snprintf( cname, MAX_CNAME_LENGTH, "flow1_2" );
+    if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
+        fprintf( stderr,  "_add_constraints_flow1: CPXnewrows [%s]\n", cname );
+        exit( EXIT_FAILURE );
+    }
+
+    for ( unsigned long j = 0; j < problem->nnodes; ++j )
+    {
+        if ( 0 == j ) continue;
+
+        if ( CPXchgcoef( env, lp, lastrow, ypos_flow1( 0, j, problem ), 1.0 ) ) {
+            fprintf( stderr,  "_add_constraints_flow1: CPXchgcoef [%s: %lu]\n", cname, j );
+            exit( EXIT_FAILURE );
+        }
+    }
+
+    // add constraints (3)
+    // Sum{ y(i,h) }_{ i | i != h } - Sum{ y(h,j) }_{ j | j != h } = 1  for all h != 1
+    rhs = 1.0;
+    sense = 'E';
+
+    for ( unsigned long h = 1; h < problem->nnodes; ++h )
+    {
+        snprintf( cname, MAX_CNAME_LENGTH, "flow1_3(%lu)", h );
+        if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
+            fprintf( stderr,  "_add_constraints_flow1: CPXnewrows [%s]\n", cname );
+            exit( EXIT_FAILURE );
+        }
+
+        lastrow = CPXgetnumrows( env, lp );
+
+        for ( unsigned long i = 0; i < problem->nnodes; ++i )
+        {
+            if ( i == h ) continue;
+
+            if ( CPXchgcoef( env, lp, lastrow, ypos_flow1( i, h, problem ), 1.0 ) ) {
+                fprintf( stderr,  "_add_constraints_flow1: CPXchgcoef [%s: i=%lu]\n", cname, i );
+                exit( EXIT_FAILURE );
+            }
+
+            if ( CPXchgcoef( env, lp, lastrow, ypos_flow1( h, i, problem ), -1.0 ) ) {
+                fprintf( stderr,  "_add_constraints_flow1: CPXchgcoef [%s: j=%lu]\n", cname, i );
+                exit( EXIT_FAILURE );
+            }
+        }
+    }
+
+    free( cname );
+}
+
+
+void
+flow1_solution ( instance *problem )
+{
+    int error;
+
+    CPXENVptr env = CPXopenCPLEX( &error );
+    CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
+
+    /* Add conventional constraints */
+    _dummy_cplex_instance2model( problem, env, lp );
+    _add_constraints_flow1( problem, env, lp );
+
+    if ( CPXmipopt( env, lp ) ) {
+        fprintf( stderr, "CPXmimopt error\n" );
+        exit( EXIT_FAILURE );
     }
 
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
