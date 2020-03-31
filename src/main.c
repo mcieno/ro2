@@ -219,8 +219,10 @@ main ( int argc, char *argv[] )
     ftime( &end );
 
     double elapsed = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    double solcost = compute_solution_cost( &problem );
 
-    fprintf( stdout, "Time elapsed: %.3lf\n", elapsed );
+    fprintf( stdout, "Time elapsed : %.3lf\n", elapsed );
+    fprintf( stdout, "Solution cost: %.3lf\n", solcost );
 
     if ( loglevel >= LOG_DEBUG ) {
         /* Dump solution to stderr */
