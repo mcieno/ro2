@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['init_5finstance',['init_instance',['../tsp_8h.html#ab25d8f0a014badebe0d7b338e9c49697',1,'tsp.c']]],
-  ['instance_5fto_5fplot_5fdat',['instance_to_plot_dat',['../tspplot_8h.html#a1fe08417a1888e4cfd335a8fcc1e5493',1,'tspplot.c']]]
+  ['flow1_5fmodel',['flow1_model',['../tsp__solvers_8h.html#ab21f7cb6639b5c47a2ff0dedfe766685',1,'tsp_solvers.c']]]
 ];

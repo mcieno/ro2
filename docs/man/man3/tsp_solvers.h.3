@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Fri Mar 27 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Tue Mar 31 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -16,23 +16,44 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 
 .in +1c
 .ti -1c
-.RI "#define \fBTSP_SOLVER_DUMMY\fP   1"
+.RI "#define \fBTSP_SOLVER_RANDOM\fP   1U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_DUMMY_CPLEX\fP   2"
+.RI "#define \fBTSP_SOLVER_DUMMY\fP   2U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_MTZ\fP   3U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_FLOW1\fP   4U"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef unsigned \fBmodel_t\fP"
 .br
 .in -1c
 .SS "Functions"
 
 .in +1c
 .ti -1c
-.RI "void \fBdummy_solution\fP (\fBinstance\fP *problem)"
+.RI "void \fBrandom_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Generate a random solution for the instance\&. "
 .ti -1c
-.RI "void \fBdummy_cplex_solution\fP (\fBinstance\fP *problem)"
+.RI "void \fBdummy_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with CPXmipopt\&. "
+.RI "Solve with degree constraints-only model\&. "
+.ti -1c
+.RI "void \fBmtz_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with 'Sequential Formulation' model by Miller, Tucker and Zemlin (1960)\&. "
+.ti -1c
+.RI "void \fBflow1_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with 'Single Commodity Flow' model by Gavish and Graves (1978)\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -48,16 +69,20 @@ Francesco Cazzaro, Marco Cieno
 
 .SH "Macro Definition Documentation"
 .PP 
-.SS "#define TSP_SOLVER_DUMMY   1"
-Dummy solving method\&. 
-.SS "#define TSP_SOLVER_DUMMY_CPLEX   2"
-Dummy CPLEX solving method\&. 
+.SS "#define TSP_SOLVER_DUMMY   2U"
+Dummy model\&. 
+.SS "#define TSP_SOLVER_FLOW1   4U"
+Single Commodity Flow model (Gavish and Graves (1978))\&. 
+.SS "#define TSP_SOLVER_MTZ   3U"
+Sequential Formulation model (Miller, Tucker and Zemlin (1960))\&. 
+.SS "#define TSP_SOLVER_RANDOM   1U"
+Random model\&. 
 .SH "Function Documentation"
 .PP 
-.SS "void dummy_cplex_solution (\fBinstance\fP * problem)"
+.SS "void dummy_model (\fBinstance\fP * problem)"
 
 .PP
-Solve with CPXmipopt\&. 
+Solve with degree constraints-only model\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -70,7 +95,29 @@ This method does not include subtour elimination constraints\&.
 .RE
 .PP
 
-.SS "void dummy_solution (\fBinstance\fP * problem)"
+.SS "void flow1_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with 'Single Commodity Flow' model by Gavish and Graves (1978)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void mtz_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with 'Sequential Formulation' model by Miller, Tucker and Zemlin (1960)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void random_model (\fBinstance\fP * problem)"
 
 .PP
 Generate a random solution for the instance\&. 

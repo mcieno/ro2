@@ -1,4 +1,4 @@
-.TH "include/tsp.h" 3 "Fri Mar 27 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp.h" 3 "Tue Mar 31 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -34,7 +34,7 @@ include/tsp.h \- Type and function definitions for a TSP instance\&.
 .br
 .RI "Pretty-print problem information to \fCstderr\fP according to \fCloglevel\fP verbosity\&. "
 .ti -1c
-.RI "int \fBcompute_solution_cost\fP (\fBinstance\fP *problem)"
+.RI "double \fBcompute_solution_cost\fP (\fBinstance\fP *problem)"
 .br
 .RI "Calculate the cost of the current solution\&. "
 .ti -1c
@@ -73,7 +73,7 @@ Calculate the Euclidean distance of two 2-dimensional points\&.
 .RE
 .PP
 
-.SS "int compute_solution_cost (\fBinstance\fP * problem)"
+.SS "double compute_solution_cost (\fBinstance\fP * problem)"
 
 .PP
 Calculate the cost of the current solution\&. 
