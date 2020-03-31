@@ -67,6 +67,8 @@ parse_tsp_file ( const char *filename, instance *problem )
         }
 
         if ( !strcmp( tok, "NAME" ) ) {
+            if ( problem->name != NULL ) continue;
+
             is_node_coord_section = 0;
 
             tok = strtok( NULL, " :" );
