@@ -145,7 +145,7 @@ main ( int argc, char *argv[] )
         /* timelimit      */  ULLONG_MAX,
         /* problem        */  &problem,
         /* shouldplot     */  false,
-        /* solving_method */  TSP_SOLVER_DUMMY_CPLEX
+        /* solving_method */  TSP_SOLVER_DUMMY
     };
 
     init_instance( &problem );
@@ -171,36 +171,36 @@ main ( int argc, char *argv[] )
     /* Run the solver */
     switch ( conf.solving_method )
     {
-        case TSP_SOLVER_DUMMY_CPLEX:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, "[*]  Running to dummy_cplex model\n" );
-            }
-            dummy_cplex_solution( &problem );
-            break;
-
-
         case TSP_SOLVER_DUMMY:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, "[*]  Running to dummy model\n" );
+                fprintf( stderr, "[*]  Running dummy model\n" );
             }
-            dummy_solution( &problem );
+            dummy_model( &problem );
             break;
 
 
-        case TSP_MILLER_TUCKER_CPLEX:
+        case TSP_SOLVER_RANDOM:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, "[*]  Running to MTZ model\n" );
+                fprintf( stderr, "[*]  Running random model\n" );
+            }
+            random_model( &problem );
+            break;
+
+
+        case TSP_MILLER_TUCKER:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, "[*]  Running MTZ model\n" );
             }
             fprintf(stderr, "Started solver mtz");
-            miller_tucker_solution( &problem );
+            mtz_model( &problem );
             break;
 
 
         case TSP_SOLVER_FLOW1:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, "[*]  Running to flow1 model\n" );
+                fprintf( stderr, "[*]  Running FLOW1 model\n" );
             }
-            flow1_solution( &problem );
+            flow1_model( &problem );
             break;
 
 
@@ -293,14 +293,14 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
 
         case 'M':
-            if ( !strcmp( "dummy_cplex", arg ) ) {
-                conf->solving_method = TSP_SOLVER_DUMMY_CPLEX;
+            if ( !strcmp( "random", arg ) ) {
+                conf->solving_method = TSP_SOLVER_RANDOM;
 
             } else if ( !strcmp( "dummy", arg ) ) {
                 conf->solving_method = TSP_SOLVER_DUMMY;
 
-            } else if( !strcmp( "miller_tucker", arg ) ){
-                conf->solving_method = TSP_MILLER_TUCKER_CPLEX;
+            } else if( !strcmp( "mtz", arg ) ){
+                conf->solving_method = TSP_MILLER_TUCKER;
 
             } else if ( !strcmp( "flow1", arg ) ) {
                 conf->solving_method = TSP_SOLVER_FLOW1;

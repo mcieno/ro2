@@ -10,10 +10,11 @@
 #include "tsp.h"
 
 
-#define TSP_SOLVER_DUMMY        1  /*!< Dummy solving method.  */
-#define TSP_SOLVER_DUMMY_CPLEX  2  /*!< Dummy CPLEX solving method.  */
-#define TSP_MILLER_TUCKER_CPLEX 3  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
-#define TSP_SOLVER_FLOW1        4  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
+#define TSP_SOLVER_RANDOM  1  /*!< Random model.  */
+#define TSP_SOLVER_DUMMY   2  /*!< Dummy model.  */
+#define TSP_MILLER_TUCKER  3  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
+#define TSP_SOLVER_FLOW1   4  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
+
 
 /*!
  * \brief Generate a random solution for the instance.
@@ -23,11 +24,11 @@
  *     Pointer to the instance structure.
  */
 void
-dummy_solution ( instance *problem );
+random_model ( instance *problem );
 
 
 /*!
- * \brief Solve with CPXmipopt.
+ * \brief Solve with degree	constraints-only model.
  *
  *
  * \param problem
@@ -36,18 +37,18 @@ dummy_solution ( instance *problem );
  * \note This method does not include subtour elimination constraints.
  */
 void
-dummy_cplex_solution ( instance *problem );
+dummy_model ( instance *problem );
 
 
 /*!
- * \brief Solve the tsp problem with the Miller-Tucker-Zemlin model
+ * \brief Solve with "Sequential Formulation" model by Miller, Tucker and Zemlin (1960).
  *
  *
  * \param problem
  *     Pointer to the instance structure.
  */
 void
-miller_tucker_solution ( instance *problem );
+mtz_model ( instance *problem );
 
 
 /*!
@@ -58,7 +59,7 @@ miller_tucker_solution ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-flow1_solution ( instance *problem );
+flow1_model ( instance *problem );
 
 
 #endif
