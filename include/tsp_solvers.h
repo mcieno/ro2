@@ -10,10 +10,11 @@
 #include "tsp.h"
 
 
-#define TSP_SOLVER_RANDOM  1U  /*!< Random model.  */
-#define TSP_SOLVER_DUMMY   2U  /*!< Dummy model.  */
-#define TSP_SOLVER_MTZ     3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
-#define TSP_SOLVER_FLOW1   4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
+#define TSP_SOLVER_RANDOM     1U  /*!< Random model.  */
+#define TSP_SOLVER_DUMMY      2U  /*!< Dummy model.  */
+#define TSP_SOLVER_MTZ        3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
+#define TSP_SOLVER_FLOW1      4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
+#define TSP_SOLVER_FLOW1LAZY  5U  /*!< Single Commodity Flow model with lazy constraints.  */
 
 typedef unsigned model_t;
 
@@ -131,6 +132,19 @@ mtz_model ( instance *problem );
  */
 double
 flow1_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with "Single Commodity Flow" model by Gavish and Graves (1978), using lazy constraints.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ *
+ * \returns Elapsed time.
+ */
+double
+flow1lazy_model ( instance *problem );
 
 
 #endif
