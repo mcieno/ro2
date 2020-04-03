@@ -12,7 +12,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/timeb.h>
 
 #include "logging.h"
 #include "tsp.h"
@@ -54,7 +53,7 @@ typedef struct
 {
     char        *filename;
     size_t      memory;
-    unsigned    threads;
+    size_t      threads;
     size_t      timelimit;
     instance    *problem;
     int         shouldplot;
@@ -115,13 +114,16 @@ static struct argp_option options[]  =
     { "memory",    'm',       "SIZE",    OPTION_NO_USAGE, "Available memory (size in MB)."          },
     { "noplot",    0xAA2,     NULL,      0,               "Do not sketch the solution."             },
     { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL,
-                                                          "Use multithread. Default 4."             },
+                                                          "Use multithread. Default ALL."           },
     { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE, "Maximum time the program may run."       },
     { "tmpfile",   0xAA1,     "FNAME",   OPTION_HIDDEN,   "Set custom temporary file."              },
 
     /* Problem specific configuration */
     { "cutoff",    'c',       "VALUE",   OPTION_NO_USAGE, "Master cutoff value."                    },
-    { "model",     'M',       "MODEL",   0,               "Solving technique. Default: flow1."      },
+    { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
+                                                          "random, dummy, mtz, flow1, mtzlazy, "
+                                                          "flow1lazy. "
+                                                          "Default: flow1."                         },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
 
     /* Logging configuration */
@@ -143,7 +145,7 @@ main ( int argc, char *argv[] )
     configuration conf = {
         /* filename       */  NULL,
         /* memory         */  SIZE_MAX,
-        /* threads        */  1U,
+        /* threads        */  SIZE_MAX,
         /* timelimit      */  SIZE_MAX,
         /* problem        */  &problem,
         /* shouldplot     */  1,
@@ -171,17 +173,14 @@ main ( int argc, char *argv[] )
 
 
     /* Run the solver */
-    struct timeb start, end;
-
-    ftime( &start );
-
+    double elapsed;
     switch ( conf.solving_method )
     {
         case TSP_SOLVER_DUMMY:
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running dummy model\n" );
             }
-            dummy_model( &problem );
+            elapsed = dummy_model( &problem );
             break;
 
 
@@ -189,7 +188,7 @@ main ( int argc, char *argv[] )
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running random model\n" );
             }
-            random_model( &problem );
+            elapsed = random_model( &problem );
             break;
 
 
@@ -197,7 +196,7 @@ main ( int argc, char *argv[] )
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running MTZ model\n" );
             }
-            mtz_model( &problem );
+            elapsed = mtz_model( &problem );
             break;
 
 
@@ -205,7 +204,23 @@ main ( int argc, char *argv[] )
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running FLOW1 model\n" );
             }
-            flow1_model( &problem );
+            elapsed = flow1_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_MTZLAZY:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
+            }
+            elapsed = mtzlazy_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_FLOW1LAZY:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
+            }
+            elapsed = flow1lazy_model( &problem );
             break;
 
 
@@ -213,10 +228,8 @@ main ( int argc, char *argv[] )
             if (loglevel >= LOG_INFO) {
                 fprintf( stderr, CFATAL "No model specified. Exit...\n" );
             }
-            exit(EXIT_FAILURE);
+            exit( EXIT_FAILURE );
     }
-
-    ftime( &end );
 
     if ( loglevel >= LOG_DEBUG ) {
         /* Dump solution to stderr */
@@ -230,7 +243,6 @@ main ( int argc, char *argv[] )
         plot_solution( &problem );
     }
 
-    double elapsed = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
     double solcost = compute_solution_cost( &problem );
 
     fprintf( stdout, CSUCC "Solution cost: %13.3lf\n", solcost );
@@ -251,8 +263,10 @@ _print_configuration ( configuration *conf )
                   conf->timelimit / 3600, conf->timelimit % 3600 / 60, conf->timelimit % 60 );
     fprintf( stderr, CINFO "    Maximum memory      : %zu MB\n",               conf->memory );
     fprintf( stderr, CINFO "    Store temporary file: %s\n",                tspplot_tmpfile );
-    fprintf( stderr, CINFO "    Use multithread     : %s (%u)\n",
-                                           conf->threads > 1U ? "yes" : "no", conf->threads );
+    conf->threads == SIZE_MAX ?
+    fprintf( stderr, CINFO "    Use multithread     : yes\n"                                ):
+    fprintf( stderr, CINFO "    Use multithread     : %s (%zu)\n",
+                                            conf->threads > 1 ? "yes" : "no", conf->threads );
 }
 
 
@@ -276,12 +290,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
 
         case 'j':
-            if ( arg == NULL ) {
-                /* Unless differently specified, `threads` will be set to 4. */
-                conf->threads = 4U;
-            } else {
+            if ( arg != NULL ) {
                 conf->threads = strtoul( arg, NULL, 10 );
-                if ( errno || conf->threads == 0U ) {
+                if ( errno || conf->threads == 0 ) {
                     argp_error(
                         state,
                         CERROR "Bad value for option -j --threads: %s.", strerror( errno ? errno : EDOM )
@@ -316,6 +327,12 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "flow1", arg ) ) {
                 conf->solving_method = TSP_SOLVER_FLOW1;
+
+            } else if ( !strcmp( "mtzlazy", arg ) ) {
+                conf->solving_method = TSP_SOLVER_MTZLAZY;
+
+            } else if ( !strcmp( "flow1lazy", arg ) ) {
+                conf->solving_method = TSP_SOLVER_FLOW1LAZY;
 
             } else {
                 argp_error(

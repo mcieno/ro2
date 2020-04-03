@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Wed Apr 1 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Fri Apr 3 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -27,6 +27,12 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .ti -1c
 .RI "#define \fBTSP_SOLVER_FLOW1\fP   4U"
 .br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_MTZLAZY\fP   5U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_FLOW1LAZY\fP   6U"
+.br
 .in -1c
 .SS "Typedefs"
 
@@ -39,21 +45,37 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 
 .in +1c
 .ti -1c
-.RI "void \fBrandom_model\fP (\fBinstance\fP *problem)"
+.RI "void \fB_xopt2solution\fP (const double *xopt, \fBinstance\fP *problem, size_t(*pos)(size_t, size_t, const \fBinstance\fP *))"
+.br
+.RI "Retrieve the solution after CPXmimopt was run\&. "
+.ti -1c
+.RI "void \fB_xopt2subtours\fP (const \fBinstance\fP *problem, const double *xopt, size_t *next, size_t *comps, size_t *ncomps, size_t(*pos)(size_t, size_t, const \fBinstance\fP *))"
+.br
+.RI "Given a CPLEX-generated solution, create a more convenient representation\&. "
+.ti -1c
+.RI "double \fBrandom_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Generate a random solution for the instance\&. "
 .ti -1c
-.RI "void \fBdummy_model\fP (\fBinstance\fP *problem)"
+.RI "double \fBdummy_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with degree constraints-only model\&. "
 .ti -1c
-.RI "void \fBmtz_model\fP (\fBinstance\fP *problem)"
+.RI "double \fBmtz_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Sequential Formulation' model by Miller, Tucker and Zemlin (1960)\&. "
 .ti -1c
-.RI "void \fBflow1_model\fP (\fBinstance\fP *problem)"
+.RI "double \fBflow1_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Single Commodity Flow' model by Gavish and Graves (1978)\&. "
+.ti -1c
+.RI "double \fBmtzlazy_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with 'Sequential Formulation' model with lazy constraints\&. "
+.ti -1c
+.RI "double \fBflow1lazy_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with 'Single Commodity Flow' model with lazy constraints\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -73,13 +95,55 @@ Francesco Cazzaro, Marco Cieno
 Dummy model\&. 
 .SS "#define TSP_SOLVER_FLOW1   4U"
 Single Commodity Flow model (Gavish and Graves (1978))\&. 
+.SS "#define TSP_SOLVER_FLOW1LAZY   6U"
+Single Commodity Flow model with lazy constraints\&. 
 .SS "#define TSP_SOLVER_MTZ   3U"
 Sequential Formulation model (Miller, Tucker and Zemlin (1960))\&. 
+.SS "#define TSP_SOLVER_MTZLAZY   5U"
+Sequential Formulation model with lazy constraints\&. 
 .SS "#define TSP_SOLVER_RANDOM   1U"
 Random model\&. 
 .SH "Function Documentation"
 .PP 
-.SS "void dummy_model (\fBinstance\fP * problem)"
+.SS "void _xopt2solution (const double * xopt, \fBinstance\fP * problem, size_t(*)(size_t, size_t, const \fBinstance\fP *) pos)"
+
+.PP
+Retrieve the solution after CPXmimopt was run\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIxopt\fP CPLEX incumbent solution\&.
+.br
+\fIproblem\fP Pointer to the instance structure
+.br
+\fIpos\fP Pointer to a function that given coordinates \fCi\fP and \fCj\fP returns the position in \fCxopt\fP fo \fCx(i,j)\fP\&. 
+.RE
+.PP
+
+.SS "void _xopt2subtours (const \fBinstance\fP * problem, const double * xopt, size_t * next, size_t * comps, size_t * ncomps, size_t(*)(size_t, size_t, const \fBinstance\fP *) pos)"
+
+.PP
+Given a CPLEX-generated solution, create a more convenient representation\&. Given the incumbent solution \fCxopt\fP, where \fCxopt[e] = 1 <==> edge e was selected\fP, populate provided arrays \fCnext\fP and \fCcomps\fP so that \fCnext[i] = j <==> the tour goes from node i to node j\fP and \fCcomps[i] = k <==> node i is part of the k-th subtour\fP\&.
+.PP
+The number of subtours is written to \fCncomps\fP, hence \fCxopt\fP is a valid TSP solution iff \fCncomps == 1\fP\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&.
+.br
+\fIxopt\fP CPLEX incumbent solution\&. \fCxstar[xpos(i, j)] == 1\fP iff the edge was selected\&.
+.br
+\fInext\fP Array of adjacencies to be filled\&. \fCnext[i] = j\fP means that there is an arc going from node \fCi\fP to node \fCj\fP\&.
+.br
+\fIcomps\fP Array of components indices to be filled\&. \fCcomps[i] = k\fP means that node \fCi\fP belongs to connected component \fCk\fP\&.
+.br
+\fIncomps\fP Pointer to an integer where to store the number of connected components in the solution\&. If 1, the solution is a tour\&.
+.br
+\fIpos\fP Pointer to a function that given coordinates \fCi\fP and \fCj\fP returns the position in \fCxopt\fP fo \fCx(i,j)\fP\&. 
+.RE
+.PP
+
+.SS "double dummy_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with degree constraints-only model\&. 
@@ -89,42 +153,94 @@ Solve with degree constraints-only model\&.
 \fIproblem\fP Pointer to the instance structure\&.
 .RE
 .PP
+\fBReturns:\fP
+.RS 4
+Elapsed time\&.
+.RE
+.PP
 \fBNote:\fP
 .RS 4
 This method does not include subtour elimination constraints\&. 
 .RE
 .PP
 
-.SS "void flow1_model (\fBinstance\fP * problem)"
+.SS "double flow1_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with 'Single Commodity Flow' model by Gavish and Graves (1978)\&. 
 .PP
 \fBParameters:\fP
 .RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
+\fIproblem\fP Pointer to the instance structure\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Elapsed time\&. 
 .RE
 .PP
 
-.SS "void mtz_model (\fBinstance\fP * problem)"
+.SS "double flow1lazy_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with 'Single Commodity Flow' model with lazy constraints\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Elapsed time\&. 
+.RE
+.PP
+
+.SS "double mtz_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with 'Sequential Formulation' model by Miller, Tucker and Zemlin (1960)\&. 
 .PP
 \fBParameters:\fP
 .RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
+\fIproblem\fP Pointer to the instance structure\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Elapsed time\&. 
 .RE
 .PP
 
-.SS "void random_model (\fBinstance\fP * problem)"
+.SS "double mtzlazy_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with 'Sequential Formulation' model with lazy constraints\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Elapsed time\&. 
+.RE
+.PP
+
+.SS "double random_model (\fBinstance\fP * problem)"
 
 .PP
 Generate a random solution for the instance\&. 
 .PP
 \fBParameters:\fP
 .RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
+\fIproblem\fP Pointer to the instance structure\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Elapsed time\&. 
 .RE
 .PP
 

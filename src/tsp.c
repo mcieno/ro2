@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-
 #include "logging.h"
 #include "tsp.h"
 
@@ -119,16 +118,16 @@ compute_solution_cost ( instance *problem )
         size_t node_1 = problem->solution[i][0];
         size_t node_2 = problem->solution[i][1];
 
-        cost += _euclidean_distance(problem->xcoord[node_1], problem->ycoord[node_1],
-                                    problem->xcoord[node_2], problem->ycoord[node_2] );
+        cost += _euclidean_distance( problem->xcoord[node_1], problem->ycoord[node_1],
+                                     problem->xcoord[node_2], problem->ycoord[node_2] );
     }
 
     return cost;
 }
+
 
 double
 _euclidean_distance ( double x_a, double y_a, double x_b, double y_b )
 {
     return sqrt( pow( x_a - x_b, 2 ) + pow( y_a - y_b, 2 ) );
 }
-

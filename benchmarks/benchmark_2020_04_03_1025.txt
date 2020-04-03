@@ -1,0 +1,56 @@
+====================== data/att48.tsp ======================
+[ flow1 ]
+[+]  Solution cost:     33523.709
+[+]  Time elapsed:         10.247
+[ mtz ]
+[+]  Solution cost:     33523.709
+[+]  Time elapsed:        267.254
+====================== data/eil51.tsp ======================
+[ flow1 ]
+[+]  Solution cost:       428.872
+[+]  Time elapsed:          1.526
+[ mtz ]
+[+]  Solution cost:       428.872
+[+]  Time elapsed:          4.028
+====================== data/berlin52.tsp ======================
+[ flow1 ]
+[+]  Solution cost:      7544.366
+[+]  Time elapsed:          0.546
+[ mtz ]
+[+]  Solution cost:      7544.366
+[+]  Time elapsed:          2.811
+====================== data/st70.tsp ======================
+[ flow1 ]
+[+]  Solution cost:       677.110
+[+]  Time elapsed:         25.169
+[ mtz ]
+[+]  Solution cost:       677.110
+[+]  Time elapsed:        339.900
+====================== data/eil76.tsp ======================
+[ flow1 ]
+[+]  Solution cost:       544.369
+[+]  Time elapsed:          9.839
+[ mtz ]
+[+]  Solution cost:       544.369
+[+]  Time elapsed:         11.329
+====================== data/pr76.tsp ======================
+[ flow1 ]
+[+]  Solution cost:    108159.438
+[+]  Time elapsed:         47.575
+[ mtz ]
+[+]  Solution cost:    108159.438
+[+]  Time elapsed:        541.045
+====================== data/rat99.tsp ======================
+[ flow1 ]
+[+]  Solution cost:      1219.244
+[+]  Time elapsed:         26.730
+[ mtz ]
+[+]  Solution cost:      1219.244
+[+]  Time elapsed:        136.383
+====================== data/rd100.tsp ======================
+[ flow1 ]
+[+]  Solution cost:      7910.396
+[+]  Time elapsed:         71.197
+[ mtz ]
+[+]  Solution cost:      7910.396
+[+]  Time elapsed:        406.295
