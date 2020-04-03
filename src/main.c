@@ -121,7 +121,8 @@ static struct argp_option options[]  =
     /* Problem specific configuration */
     { "cutoff",    'c',       "VALUE",   OPTION_NO_USAGE, "Master cutoff value."                    },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
-                                                          "random, dummy, mtz, flow1. "
+                                                          "random, dummy, mtz, flow1, mtzlazy, "
+                                                          "flow1lazy. "
                                                           "Default: flow1."                         },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
 

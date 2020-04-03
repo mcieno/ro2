@@ -92,6 +92,10 @@ Macros</h2></td></tr>
 <tr class="separator:a6f329e4eaab06a29ba6b9530d46b9f77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac522bc1056eb77ef187b4ced2bfea08c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ac522bc1056eb77ef187b4ced2bfea08c">TSP_SOLVER_FLOW1</a>&#160;&#160;&#160;4U</td></tr>
 <tr class="separator:ac522bc1056eb77ef187b4ced2bfea08c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2a93cc760381d2ab19e1f4806e6a541"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ab2a93cc760381d2ab19e1f4806e6a541">TSP_SOLVER_MTZLAZY</a>&#160;&#160;&#160;5U</td></tr>
+<tr class="separator:ab2a93cc760381d2ab19e1f4806e6a541"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd65bb5f4f670f92c6e5ff680fb87da3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#abd65bb5f4f670f92c6e5ff680fb87da3">TSP_SOLVER_FLOW1LAZY</a>&#160;&#160;&#160;6U</td></tr>
+<tr class="separator:abd65bb5f4f670f92c6e5ff680fb87da3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -119,6 +123,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a598e8d2a37dd3daf2a3bffaa52fe00d8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a598e8d2a37dd3daf2a3bffaa52fe00d8">flow1_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
 <tr class="memdesc:a598e8d2a37dd3daf2a3bffaa52fe00d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Single Commodity Flow" model by Gavish and Graves (1978).  <a href="#a598e8d2a37dd3daf2a3bffaa52fe00d8">More...</a><br /></td></tr>
 <tr class="separator:a598e8d2a37dd3daf2a3bffaa52fe00d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6cd05885b1693d151ac217d2a0f95f1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ad6cd05885b1693d151ac217d2a0f95f1">mtzlazy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:ad6cd05885b1693d151ac217d2a0f95f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Sequential Formulation" model with lazy constraints.  <a href="#ad6cd05885b1693d151ac217d2a0f95f1">More...</a><br /></td></tr>
+<tr class="separator:ad6cd05885b1693d151ac217d2a0f95f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9a721763ca4010598e4156398e4a70b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ae9a721763ca4010598e4156398e4a70b">flow1lazy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:ae9a721763ca4010598e4156398e4a70b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Single Commodity Flow" model with lazy constraints.  <a href="#ae9a721763ca4010598e4156398e4a70b">More...</a><br /></td></tr>
+<tr class="separator:ae9a721763ca4010598e4156398e4a70b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Methods for solving a TSP problem. </p>
@@ -154,6 +164,21 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="abd65bb5f4f670f92c6e5ff680fb87da3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd65bb5f4f670f92c6e5ff680fb87da3">&#9670;&nbsp;</a></span>TSP_SOLVER_FLOW1LAZY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_FLOW1LAZY&#160;&#160;&#160;6U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Single Commodity Flow model with lazy constraints. </p>
+
+</div>
+</div>
 <a id="a6f329e4eaab06a29ba6b9530d46b9f77"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6f329e4eaab06a29ba6b9530d46b9f77">&#9670;&nbsp;</a></span>TSP_SOLVER_MTZ</h2>
 
@@ -166,6 +191,21 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Sequential Formulation model (Miller, Tucker and Zemlin (1960)). </p>
+
+</div>
+</div>
+<a id="ab2a93cc760381d2ab19e1f4806e6a541"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2a93cc760381d2ab19e1f4806e6a541">&#9670;&nbsp;</a></span>TSP_SOLVER_MTZLAZY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_MTZLAZY&#160;&#160;&#160;5U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sequential Formulation model with lazy constraints. </p>
 
 </div>
 </div>
@@ -351,6 +391,33 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ae9a721763ca4010598e4156398e4a70b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9a721763ca4010598e4156398e4a70b">&#9670;&nbsp;</a></span>flow1lazy_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double flow1lazy_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solve with "Single Commodity Flow" model with lazy constraints. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
+
+</div>
+</div>
 <a id="ab7ce381c5830d24c57bee2768cf61b1a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab7ce381c5830d24c57bee2768cf61b1a">&#9670;&nbsp;</a></span>mtz_model()</h2>
 
@@ -368,6 +435,33 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Solve with "Sequential Formulation" model by Miller, Tucker and Zemlin (1960). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
+
+</div>
+</div>
+<a id="ad6cd05885b1693d151ac217d2a0f95f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6cd05885b1693d151ac217d2a0f95f1">&#9670;&nbsp;</a></span>mtzlazy_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mtzlazy_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solve with "Sequential Formulation" model with lazy constraints. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
