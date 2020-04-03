@@ -27,6 +27,12 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .ti -1c
 .RI "#define \fBTSP_SOLVER_FLOW1\fP   4U"
 .br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_MTZLAZY\fP   5U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_FLOW1LAZY\fP   6U"
+.br
 .in -1c
 .SS "Typedefs"
 
@@ -62,6 +68,14 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .RI "double \fBflow1_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Single Commodity Flow' model by Gavish and Graves (1978)\&. "
+.ti -1c
+.RI "double \fBmtzlazy_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with 'Sequential Formulation' model with lazy constraints\&. "
+.ti -1c
+.RI "double \fBflow1lazy_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with 'Single Commodity Flow' model with lazy constraints\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -81,8 +95,12 @@ Francesco Cazzaro, Marco Cieno
 Dummy model\&. 
 .SS "#define TSP_SOLVER_FLOW1   4U"
 Single Commodity Flow model (Gavish and Graves (1978))\&. 
+.SS "#define TSP_SOLVER_FLOW1LAZY   6U"
+Single Commodity Flow model with lazy constraints\&. 
 .SS "#define TSP_SOLVER_MTZ   3U"
 Sequential Formulation model (Miller, Tucker and Zemlin (1960))\&. 
+.SS "#define TSP_SOLVER_MTZLAZY   5U"
+Sequential Formulation model with lazy constraints\&. 
 .SS "#define TSP_SOLVER_RANDOM   1U"
 Random model\&. 
 .SH "Function Documentation"
@@ -162,10 +180,42 @@ Elapsed time\&.
 .RE
 .PP
 
+.SS "double flow1lazy_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with 'Single Commodity Flow' model with lazy constraints\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Elapsed time\&. 
+.RE
+.PP
+
 .SS "double mtz_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with 'Sequential Formulation' model by Miller, Tucker and Zemlin (1960)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Elapsed time\&. 
+.RE
+.PP
+
+.SS "double mtzlazy_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with 'Sequential Formulation' model with lazy constraints\&. 
 .PP
 \fBParameters:\fP
 .RS 4

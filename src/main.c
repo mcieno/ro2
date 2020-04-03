@@ -121,7 +121,8 @@ static struct argp_option options[]  =
     /* Problem specific configuration */
     { "cutoff",    'c',       "VALUE",   OPTION_NO_USAGE, "Master cutoff value."                    },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
-                                                          "random, dummy, mtz, flow1. "
+                                                          "random, dummy, mtz, flow1, mtzlazy, "
+                                                          "flow1lazy. "
                                                           "Default: flow1."                         },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
 
@@ -204,6 +205,22 @@ main ( int argc, char *argv[] )
                 fprintf( stderr, CINFO "Running FLOW1 model\n" );
             }
             elapsed = flow1_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_MTZLAZY:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
+            }
+            elapsed = mtzlazy_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_FLOW1LAZY:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
+            }
+            elapsed = flow1lazy_model( &problem );
             break;
 
 
@@ -310,6 +327,12 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "flow1", arg ) ) {
                 conf->solving_method = TSP_SOLVER_FLOW1;
+
+            } else if ( !strcmp( "mtzlazy", arg ) ) {
+                conf->solving_method = TSP_SOLVER_MTZLAZY;
+
+            } else if ( !strcmp( "flow1lazy", arg ) ) {
+                conf->solving_method = TSP_SOLVER_FLOW1LAZY;
 
             } else {
                 argp_error(
