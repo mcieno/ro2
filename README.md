@@ -38,9 +38,10 @@ Usage: tsp [OPTION...] TSP_FILE
 Solve a Traveling Salesman Problem instance.
 
   -c, --cutoff=VALUE         Master cutoff value.
-  -j, --threads[=N]          Use multithread. Default 4.
+  -j, --threads[=N]          Use multithread. Default ALL.
   -m, --memory=SIZE          Available memory (size in MB).
-  -M, --model=MODEL          Solving technique. Default: flow1.
+  -M, --model=MODEL          Solving technique. Available: random, dummy, mtz,
+                             flow1. Default: flow1.
       --name=TSPNAME         Name to assign to this problem.
       --noplot               Do not sketch the solution.
   -t, --timelimit=SECONDS    Maximum time the program may run.

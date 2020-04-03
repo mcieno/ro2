@@ -93,7 +93,7 @@ double
 compute_solution_cost ( instance *problem );
 
 /*!
- * \brief Calculate the Euclidean distance of two 2-dimensional points.
+ * \brief Calculate the Euclidean distance between two 2-dimensional points.
  *
  *
  * \param x_a

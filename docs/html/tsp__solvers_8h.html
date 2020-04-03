@@ -101,18 +101,24 @@ typedef unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>model_t</
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ada1a343e6259036cd2e3971d3f871cd6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ada1a343e6259036cd2e3971d3f871cd6">random_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:ada1a343e6259036cd2e3971d3f871cd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a random solution for the instance.  <a href="#ada1a343e6259036cd2e3971d3f871cd6">More...</a><br /></td></tr>
-<tr class="separator:ada1a343e6259036cd2e3971d3f871cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7722a7c35aa23a040a06729e8b0d9d81"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a7722a7c35aa23a040a06729e8b0d9d81">dummy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a7722a7c35aa23a040a06729e8b0d9d81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with degree constraints-only model.  <a href="#a7722a7c35aa23a040a06729e8b0d9d81">More...</a><br /></td></tr>
-<tr class="separator:a7722a7c35aa23a040a06729e8b0d9d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbfb20391e32bc3c7f0633802900860a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#adbfb20391e32bc3c7f0633802900860a">mtz_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:adbfb20391e32bc3c7f0633802900860a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Sequential Formulation" model by Miller, Tucker and Zemlin (1960).  <a href="#adbfb20391e32bc3c7f0633802900860a">More...</a><br /></td></tr>
-<tr class="separator:adbfb20391e32bc3c7f0633802900860a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab21f7cb6639b5c47a2ff0dedfe766685"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ab21f7cb6639b5c47a2ff0dedfe766685">flow1_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:ab21f7cb6639b5c47a2ff0dedfe766685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Single Commodity Flow" model by Gavish and Graves (1978).  <a href="#ab21f7cb6639b5c47a2ff0dedfe766685">More...</a><br /></td></tr>
-<tr class="separator:ab21f7cb6639b5c47a2ff0dedfe766685"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0f345efef4fb04882f12208c10c905d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#af0f345efef4fb04882f12208c10c905d">_xopt2solution</a> (const double *xopt, <a class="el" href="structinstance.html">instance</a> *problem, size_t(*pos)(size_t, size_t, const <a class="el" href="structinstance.html">instance</a> *))</td></tr>
+<tr class="memdesc:af0f345efef4fb04882f12208c10c905d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the solution after CPXmimopt was run.  <a href="#af0f345efef4fb04882f12208c10c905d">More...</a><br /></td></tr>
+<tr class="separator:af0f345efef4fb04882f12208c10c905d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10d9614ef8f7d549bdb1b58044dc5b70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a10d9614ef8f7d549bdb1b58044dc5b70">_xopt2subtours</a> (const <a class="el" href="structinstance.html">instance</a> *problem, const double *xopt, size_t *next, size_t *comps, size_t *ncomps, size_t(*pos)(size_t, size_t, const <a class="el" href="structinstance.html">instance</a> *))</td></tr>
+<tr class="memdesc:a10d9614ef8f7d549bdb1b58044dc5b70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a CPLEX-generated solution, create a more convenient representation.  <a href="#a10d9614ef8f7d549bdb1b58044dc5b70">More...</a><br /></td></tr>
+<tr class="separator:a10d9614ef8f7d549bdb1b58044dc5b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4aec48e232ea6ba398259799efa1cf01"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a4aec48e232ea6ba398259799efa1cf01">random_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a4aec48e232ea6ba398259799efa1cf01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a random solution for the instance.  <a href="#a4aec48e232ea6ba398259799efa1cf01">More...</a><br /></td></tr>
+<tr class="separator:a4aec48e232ea6ba398259799efa1cf01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad811ce2875e6c7e5b1f44420064d8c3b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ad811ce2875e6c7e5b1f44420064d8c3b">dummy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:ad811ce2875e6c7e5b1f44420064d8c3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with degree constraints-only model.  <a href="#ad811ce2875e6c7e5b1f44420064d8c3b">More...</a><br /></td></tr>
+<tr class="separator:ad811ce2875e6c7e5b1f44420064d8c3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7ce381c5830d24c57bee2768cf61b1a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ab7ce381c5830d24c57bee2768cf61b1a">mtz_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:ab7ce381c5830d24c57bee2768cf61b1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Sequential Formulation" model by Miller, Tucker and Zemlin (1960).  <a href="#ab7ce381c5830d24c57bee2768cf61b1a">More...</a><br /></td></tr>
+<tr class="separator:ab7ce381c5830d24c57bee2768cf61b1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a598e8d2a37dd3daf2a3bffaa52fe00d8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a598e8d2a37dd3daf2a3bffaa52fe00d8">flow1_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a598e8d2a37dd3daf2a3bffaa52fe00d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Single Commodity Flow" model by Gavish and Graves (1978).  <a href="#a598e8d2a37dd3daf2a3bffaa52fe00d8">More...</a><br /></td></tr>
+<tr class="separator:a598e8d2a37dd3daf2a3bffaa52fe00d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Methods for solving a TSP problem. </p>
@@ -179,14 +185,125 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a7722a7c35aa23a040a06729e8b0d9d81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7722a7c35aa23a040a06729e8b0d9d81">&#9670;&nbsp;</a></span>dummy_model()</h2>
+<a id="af0f345efef4fb04882f12208c10c905d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0f345efef4fb04882f12208c10c905d">&#9670;&nbsp;</a></span>_xopt2solution()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void dummy_model </td>
+          <td class="memname">void _xopt2solution </td>
+          <td>(</td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>xopt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t(*)(size_t, size_t, const <a class="el" href="structinstance.html">instance</a> *)&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the solution after CPXmimopt was run. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">xopt</td><td>CPLEX incumbent solution.</td></tr>
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure</td></tr>
+    <tr><td class="paramname">pos</td><td>Pointer to a function that given coordinates <code>i</code> and <code>j</code> returns the position in <code>xopt</code> fo <code>x(i,j)</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a10d9614ef8f7d549bdb1b58044dc5b70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10d9614ef8f7d549bdb1b58044dc5b70">&#9670;&nbsp;</a></span>_xopt2subtours()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void _xopt2subtours </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>xopt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>next</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>comps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>ncomps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t(*)(size_t, size_t, const <a class="el" href="structinstance.html">instance</a> *)&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Given a CPLEX-generated solution, create a more convenient representation. </p>
+<p>Given the incumbent solution <code>xopt</code>, where <code>xopt[e] = 1 &lt;==&gt; edge e was selected</code>, populate provided arrays <code>next</code> and <code>comps</code> so that <code>next[i] = j &lt;==&gt; the tour goes from node i to node j</code> and <code>comps[i] = k &lt;==&gt; node i is part of the k-th subtour</code>.</p>
+<p>The number of subtours is written to <code>ncomps</code>, hence <code>xopt</code> is a valid TSP solution iff <code>ncomps == 1</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
+    <tr><td class="paramname">xopt</td><td>CPLEX incumbent solution. <code>xstar[xpos(i, j)] == 1</code> iff the edge was selected.</td></tr>
+    <tr><td class="paramname">next</td><td>Array of adjacencies to be filled. <code>next[i] = j</code> means that there is an arc going from node <code>i</code> to node <code>j</code>.</td></tr>
+    <tr><td class="paramname">comps</td><td>Array of components indices to be filled. <code>comps[i] = k</code> means that node <code>i</code> belongs to connected component <code>k</code>.</td></tr>
+    <tr><td class="paramname">ncomps</td><td>Pointer to an integer where to store the number of connected components in the solution. If 1, the solution is a tour.</td></tr>
+    <tr><td class="paramname">pos</td><td>Pointer to a function that given coordinates <code>i</code> and <code>j</code> returns the position in <code>xopt</code> fo <code>x(i,j)</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad811ce2875e6c7e5b1f44420064d8c3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad811ce2875e6c7e5b1f44420064d8c3b">&#9670;&nbsp;</a></span>dummy_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double dummy_model </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em></td><td>)</td>
@@ -202,18 +319,19 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>Elapsed time.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This method does not include subtour elimination constraints. </dd></dl>
 
 </div>
 </div>
-<a id="ab21f7cb6639b5c47a2ff0dedfe766685"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab21f7cb6639b5c47a2ff0dedfe766685">&#9670;&nbsp;</a></span>flow1_model()</h2>
+<a id="a598e8d2a37dd3daf2a3bffaa52fe00d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a598e8d2a37dd3daf2a3bffaa52fe00d8">&#9670;&nbsp;</a></span>flow1_model()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void flow1_model </td>
+          <td class="memname">double flow1_model </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em></td><td>)</td>
@@ -225,21 +343,22 @@ Functions</h2></td></tr>
 <p>Solve with "Single Commodity Flow" model by Gavish and Graves (1978). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
 
 </div>
 </div>
-<a id="adbfb20391e32bc3c7f0633802900860a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adbfb20391e32bc3c7f0633802900860a">&#9670;&nbsp;</a></span>mtz_model()</h2>
+<a id="ab7ce381c5830d24c57bee2768cf61b1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7ce381c5830d24c57bee2768cf61b1a">&#9670;&nbsp;</a></span>mtz_model()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void mtz_model </td>
+          <td class="memname">double mtz_model </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em></td><td>)</td>
@@ -251,21 +370,22 @@ Functions</h2></td></tr>
 <p>Solve with "Sequential Formulation" model by Miller, Tucker and Zemlin (1960). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
 
 </div>
 </div>
-<a id="ada1a343e6259036cd2e3971d3f871cd6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada1a343e6259036cd2e3971d3f871cd6">&#9670;&nbsp;</a></span>random_model()</h2>
+<a id="a4aec48e232ea6ba398259799efa1cf01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4aec48e232ea6ba398259799efa1cf01">&#9670;&nbsp;</a></span>random_model()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void random_model </td>
+          <td class="memname">double random_model </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em></td><td>)</td>
@@ -277,10 +397,11 @@ Functions</h2></td></tr>
 <p>Generate a random solution for the instance. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
 
 </div>
 </div>
