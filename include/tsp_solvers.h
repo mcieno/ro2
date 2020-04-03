@@ -24,8 +24,10 @@ typedef unsigned model_t;
  *
  * \param problem
  *     Pointer to the instance structure.
+ *
+ * \returns Elapsed time.
  */
-void
+double
 random_model ( instance *problem );
 
 
@@ -36,9 +38,11 @@ random_model ( instance *problem );
  * \param problem
  *     Pointer to the instance structure.
  *
+ * \returns Elapsed time.
+ *
  * \note This method does not include subtour elimination constraints.
  */
-void
+double
 dummy_model ( instance *problem );
 
 
@@ -48,8 +52,10 @@ dummy_model ( instance *problem );
  *
  * \param problem
  *     Pointer to the instance structure.
+ *
+ * \returns Elapsed time.
  */
-void
+double
 mtz_model ( instance *problem );
 
 
@@ -59,8 +65,10 @@ mtz_model ( instance *problem );
  *
  * \param problem
  *     Pointer to the instance structure.
+ *
+ * \returns Elapsed time.
  */
-void
+double
 flow1_model ( instance *problem );
 
 

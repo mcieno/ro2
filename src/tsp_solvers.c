@@ -4,11 +4,12 @@
  */
 #include <errno.h>
 #include <limits.h>
+#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <sys/timeb.h>
 
 #include <cplex.h>
 
@@ -658,9 +659,12 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
 /* SOLVERS */
 
-void
+double
 random_model ( instance *problem )
 {
+    struct timeb start, end;
+    ftime( &start );
+
     for ( size_t i = 0; i < problem->nnodes; ++i )
     {
         problem->solution[i][0] = i;
@@ -668,10 +672,14 @@ random_model ( instance *problem )
     }
 
     problem->solution[problem->nnodes - 1][1] = 0;
+
+    ftime( &end );
+
+    return ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 }
 
 
-void
+double
 dummy_model ( instance *problem )
 {
     int error;
@@ -681,10 +689,15 @@ dummy_model ( instance *problem )
 
     _add_constraints_dummy( problem, env, lp );
 
+    struct timeb start, end;
+    ftime( &start );
+
     if ( CPXmipopt( env, lp ) ) {
         fprintf( stderr, CFATAL "dummy_model: CPXmimopt error\n" );
         exit( EXIT_FAILURE );
     }
+
+    ftime( &end );
 
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
@@ -695,10 +708,12 @@ dummy_model ( instance *problem )
 
     CPXfreeprob( env, &lp );
     CPXcloseCPLEX( &env );
+
+    return ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 }
 
 
-void
+double
 mtz_model ( instance *problem )
 {
 
@@ -709,10 +724,15 @@ mtz_model ( instance *problem )
 
     _add_constraints_mtz( problem, env, lp );
 
+    struct timeb start, end;
+    ftime( &start );
+
     if ( CPXmipopt( env, lp ) ) {
         fprintf( stderr, CFATAL "mtz_model: CPXmimopt error\n" );
         exit( EXIT_FAILURE );
     }
+
+    ftime( &end );
 
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
@@ -723,10 +743,12 @@ mtz_model ( instance *problem )
 
     CPXfreeprob( env, &lp );
     CPXcloseCPLEX( &env );
+
+    return ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 }
 
 
-void
+double
 flow1_model ( instance *problem )
 {
     int error;
@@ -736,10 +758,15 @@ flow1_model ( instance *problem )
 
     _add_constraints_flow1( problem, env, lp );
 
+    struct timeb start, end;
+    ftime( &start );
+
     if ( CPXmipopt( env, lp ) ) {
         fprintf( stderr, CFATAL "flow1_model: CPXmimopt error\n" );
         exit( EXIT_FAILURE );
     }
+
+    ftime( &end );
 
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
@@ -750,4 +777,6 @@ flow1_model ( instance *problem )
 
     CPXfreeprob(env, &lp);
     CPXcloseCPLEX(&env);
+
+    return ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 }
