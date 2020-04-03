@@ -207,6 +207,14 @@ main ( int argc, char *argv[] )
             break;
 
 
+        case TSP_SOLVER_MTZLAZY:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
+            }
+            elapsed = mtzlazy_model( &problem );
+            break;
+
+
         case TSP_SOLVER_FLOW1LAZY:
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
@@ -318,6 +326,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "flow1", arg ) ) {
                 conf->solving_method = TSP_SOLVER_FLOW1;
+
+            } else if ( !strcmp( "mtzlazy", arg ) ) {
+                conf->solving_method = TSP_SOLVER_MTZLAZY;
 
             } else if ( !strcmp( "flow1lazy", arg ) ) {
                 conf->solving_method = TSP_SOLVER_FLOW1LAZY;
