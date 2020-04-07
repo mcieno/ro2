@@ -122,8 +122,8 @@ static struct argp_option options[]  =
     { "cutoff",    'c',       "VALUE",   OPTION_NO_USAGE, "Master cutoff value."                    },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
                                                           "random, dummy, mtz, flow1, mtzlazy, "
-                                                          "flow1lazy. "
-                                                          "Default: flow1."                         },
+                                                          "flow1lazy, dummyBB. "
+                                                          "Default: dummyBB."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
 
     /* Logging configuration */
@@ -149,7 +149,7 @@ main ( int argc, char *argv[] )
         /* timelimit      */  SIZE_MAX,
         /* problem        */  &problem,
         /* shouldplot     */  1,
-        /* solving_method */  TSP_SOLVER_FLOW1
+        /* solving_method */  TSP_SOLVER_DUMMYBB
     };
 
     init_instance( &problem );
@@ -223,12 +223,12 @@ main ( int argc, char *argv[] )
             elapsed = flow1lazy_model( &problem );
             break;
 
-        case TSP_SOLVER_BRANCHANDBOUND:
+        case TSP_SOLVER_DUMMYBB:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and bound model\n" );
+                fprintf( stderr, CINFO "Running Dummy Branch and Bound model\n" );
             }
-            elapsed = branch_and_bound_model( &problem );
-            break;    
+            elapsed = dummyBB_model( &problem );
+            break;
 
 
         default:
@@ -341,8 +341,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else if ( !strcmp( "flow1lazy", arg ) ) {
                 conf->solving_method = TSP_SOLVER_FLOW1LAZY;
 
-            } else if ( !strcmp( "branchandbound", arg ) ) {
-                conf->solving_method = TSP_SOLVER_BRANCHANDBOUND;
+            } else if ( !strcmp( "dummyBB", arg ) ) {
+                conf->solving_method = TSP_SOLVER_DUMMYBB;
 
             } else {
                 argp_error(

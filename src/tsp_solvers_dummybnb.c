@@ -20,7 +20,7 @@
 
 
 /*!
- * \brief Get the position of variable x(i,j) in dummy model.
+ * \brief Get the position of variable x(i,j) in B&B model.
  *
  *
  * \param i
@@ -33,7 +33,7 @@
  *     Pointer to the instance structure.
  */
 size_t
-_branch_and_bound_xpos ( size_t i, size_t j, const instance *problem )
+_dummyBB_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
         errno = EFAULT;
@@ -41,7 +41,7 @@ _branch_and_bound_xpos ( size_t i, size_t j, const instance *problem )
         exit( EXIT_FAILURE );
     }
 
-    if ( i > j ) return _branch_and_bound_xpos( j, i, problem );
+    if ( i > j ) return _dummyBB_xpos( j, i, problem );
 
     return i * problem->nnodes + j - ( ( i + 1 ) * ( i + 2 ) / 2UL );
 }
@@ -49,26 +49,7 @@ _branch_and_bound_xpos ( size_t i, size_t j, const instance *problem )
 
 
 /*!
- * \brief Add Flow1 constraints to the problem.
- *
- *
- * This function adds constraints of the Single Commodity Flow model,
- * that is both degree constraints and commodity and coupling constraints.
- *
- * The last two types of constraints are achieved by adding the following *continuous* variables:
- *
- * ```
- * y(i,j) = flow in arc (i,j)  for all i != j
- * ```
- *
- * The new constraince are then
- *
- * ```
- * (0)  Degree constraints
- * (1)  y(i,j) <= (n - 1) x(i,j)  for all i != j
- * (2)  Sum{ y(1,j) }_{ j | j != 1 } = n - 1
- * (3)  Sum{ y(i,h) }_{ i | i != h } - Sum{ y(h,j) }_{ j | j != h } = 1  for all h != 1
- * ```
+ * \brief Add Degree constraints to the problem.
  *
  *
  * \param problem
@@ -81,7 +62,7 @@ _branch_and_bound_xpos ( size_t i, size_t j, const instance *problem )
  *     CPLEX problem.
  */
 void
-_add_constraints_branch_and_bound( const instance *problem, CPXENVptr env, CPXLPptr lp )
+_add_constraints_dummyBB ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 {
     char ctype;
     double lb, ub, obj, rhs;
@@ -107,19 +88,18 @@ _add_constraints_branch_and_bound( const instance *problem, CPXENVptr env, CPXLP
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXnewcols [%s]\n", cname );
+                fprintf( stderr, CFATAL "_add_constraints_dummyBB: CPXnewcols [%s]\n", cname );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXgetnumcols( env, lp ) - 1 != _branch_and_bound_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+            if ( CPXgetnumcols( env, lp ) - 1 != _dummyBB_xpos( i, j, problem ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_dummyBB: CPXgetnumcols [%s: x(%zu, %zu)]\n",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
         }
     }
 
-    // add constraints (0)
     // Degree constraints
     rhs = 2.0;
     sense = 'E';
@@ -128,7 +108,7 @@ _add_constraints_branch_and_bound( const instance *problem, CPXENVptr env, CPXLP
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_flow1: CPXnewrows [%s]\n", cname );
+            fprintf( stderr, CFATAL "_add_constraints_dummyBB: CPXnewrows [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -137,8 +117,8 @@ _add_constraints_branch_and_bound( const instance *problem, CPXENVptr env, CPXLP
         for ( size_t i = 0; i < problem->nnodes; ++i )
         {
             if ( i == h ) continue;
-            if ( CPXchgcoef( env, lp, lastrow, _branch_and_bound_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXnewrows [%s: x(%zu, %zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _dummyBB_xpos( i, h, problem ), 1.0 ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_dummyBB: CPXnewrows [%s: x(%zu, %zu)]\n",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -149,8 +129,9 @@ _add_constraints_branch_and_bound( const instance *problem, CPXENVptr env, CPXLP
     free( cname );
 }
 
+
 void
-add_soubtour_constraints(const instance *problem, CPXENVptr env, CPXLPptr lp, size_t *ncomps, size_t *comps)
+_add_soubtour_constraints ( const instance *problem, CPXENVptr env, CPXLPptr lp, size_t *ncomps, size_t *comps )
 {
     if(*ncomps==1){
         return;
@@ -162,18 +143,16 @@ add_soubtour_constraints(const instance *problem, CPXENVptr env, CPXLPptr lp, si
     char *cname = calloc( CPX_STR_PARAM_MAX, sizeof( *cname ) );
     double rhs;
     char sense;
-    
-   
 
-    for(int i=0; i<*ncomps; i++){
-        num_nodes =0;
-        for(size_t j =0; j<problem->nnodes; j++){ //fetch all nodes in a comp
-            if(comps[j]==i+1){
-                nodes[num_nodes]=j;
+    for ( int i = 0; i <* ncomps; i++ )
+    {
+        num_nodes = 0;
+        for ( size_t j = 0; j < problem->nnodes; j++ ) {
+            if ( comps[j] == i + 1 ) {
+                nodes[num_nodes] = j;
                 num_nodes++;
             }
         }
-
 
         //add subtour constraint of the comp
         sense = 'L';
@@ -181,42 +160,37 @@ add_soubtour_constraints(const instance *problem, CPXENVptr env, CPXLPptr lp, si
 
         snprintf( cname, CPX_STR_PARAM_MAX, "subtour constraint");
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_soubtour_constraints in branch and bound: CPXnewrows [%s]\n", cname );
+            fprintf( stderr, CFATAL "__add_soubtour_constraints: CPXnewrows [%s]\n", cname );
             exit( EXIT_FAILURE );
             }
 
         size_t lastrow = CPXgetnumrows( env, lp ) - 1;
 
 
-        for ( size_t j = 0; j < num_nodes-1; ++j )
-        {
-            for(size_t k =j+1; k<num_nodes; ++k){
-            
-                if ( CPXchgcoef( env, lp, lastrow, _branch_and_bound_xpos( nodes[j], nodes[k], problem ), 1.0 ) ) {
-                    fprintf( stderr, CFATAL "_add_constraints_subtours branch and bound: CPXnewrows [%s: x(%zu, %zu)]\n",
+        for ( size_t j = 0; j < num_nodes-1; ++j ) {
+            for ( size_t k = j + 1; k < num_nodes; ++k ) {
+                if ( CPXchgcoef( env, lp, lastrow, _dummyBB_xpos( nodes[j], nodes[k], problem ), 1.0 ) ) {
+                    fprintf( stderr, CFATAL "_add_soubtour_constraints: CPXnewrows [%s: x(%zu, %zu)]\n",
                         cname, j + 1, k + 1 );
                     exit( EXIT_FAILURE );
                 }
             }
         }
-
-
     }
 
-
     free(cname);
-
 }
 
+
 double
-branch_and_bound_model  ( instance *problem )
+dummyBB_model  ( instance *problem )
 {
     int error;
 
     CPXENVptr env = CPXopenCPLEX( &error );
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
-    _add_constraints_branch_and_bound( problem, env, lp );
+    _add_constraints_dummyBB( problem, env, lp );
 
     size_t ncomps = 9999;
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
@@ -228,30 +202,27 @@ branch_and_bound_model  ( instance *problem )
     struct timeb start, end;
     ftime( &start );
 
-    while(ncomps!=1){
+    while ( ncomps!=1 )
+    {
         if ( CPXmipopt( env, lp ) ) {
             fprintf( stderr, CFATAL "flow1_model: CPXmimopt error\n" );
             exit( EXIT_FAILURE );
         }
+
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-        _xopt2subtours(problem, xopt, next, comps, &ncomps, _branch_and_bound_xpos);
+        _xopt2subtours( problem, xopt, next, comps, &ncomps, _dummyBB_xpos );
 
-       
-        add_soubtour_constraints(problem, env, lp, &ncomps, comps);
-
-        //_xopt2solution( xopt, problem, &_branch_and_bound_xpos );
-        //plot_solution(problem);
-    
+        _add_soubtour_constraints( problem, env, lp, &ncomps, comps );
     }
 
     ftime( &end );
 
-    _xopt2solution( xopt, problem, &_branch_and_bound_xpos );
+    _xopt2solution( xopt, problem, &_dummyBB_xpos );
 
     free( xopt );
 
-    CPXfreeprob(env, &lp);
-    CPXcloseCPLEX(&env);
+    CPXfreeprob( env, &lp );
+    CPXcloseCPLEX( &env );
 
     return ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 }
