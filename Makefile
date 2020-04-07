@@ -1,52 +1,57 @@
-BUILD_DIR  = $(PWD)/bin
-SYSTEM     = x86-64_linux
-LIBFORMAT  = static_pic
-
-COSCEDIR   = /opt/ibm/ILOG/CPLEX_Studio1210
-CPLEXDIR   = $(COSCEDIR)/cplex
-CONCERTDIR = $(COSCEDIR)/concert
-
-CPLEXBINDIR   = $(CPLEXDIR)/bin/$(SYSTEM)
-CPLEXLIBDIR   = $(CPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
-CONCERTLIBDIR = $(CONCERTDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
-
-CONCERTINCDIR = $(CONCERTDIR)/include/ilconcert
-CPLEXINCDIR   = $(CPLEXDIR)/include/ilcplex
-LOCAL_INCDIR  = $(PWD)/include
-TSP_SRC_FILES = src/*.c
-
-CLNDIRS   = -L$(CPLEXLIBDIR)
-CLNFLAGS  =  -lm -lpthread -ldl -lcplex
-
-CC         = gcc
-#COPT       = -O3 -m64 -fPIC
-COPT       = -g3 -O0 -m64 -Wall -Werror --pedantic
-CFLAGS     = $(COPT)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
-
-FANCYLOG   = \033[96m[*]\033[0m
+BUILD_DIR  = $(PWD)/bin/tsp
+OBJS = src/main.o src/logging.o src/tsp_fileparser.o src/tsp_solvers_branch_and_bound.o src/tsp.o src/tspplot.o src/tsp_solvers_dummy.o src/tsp_solvers_flow1.o src/tsp_solvers_flow1lazy.o src/tsp_solvers_mtz.o src/tsp_solvers_mtzlazy.o src/tsp_solvers_random.o src/tsp_solvers_utils.o
+HEADERS = ./include/*.h 
+EXE = $(BUILD_DIR)
+all: $(EXE) 
+setting = -1   
+OS := $(shell uname)
 
 
-config:
-	-@echo -e "$(FANCYLOG) BUILD_DIR     = $(BUILD_DIR)"
-	-@echo -e "$(FANCYLOG) CPLEXDIR      = $(CPLEXDIR)"
-	-@echo -e "$(FANCYLOG) CPLEXBINDIR   = $(CPLEXBINDIR)"
-	-@echo -e "$(FANCYLOG) CPLEXLIBDIR   = $(CPLEXLIBDIR)"
-	-@echo -e "$(FANCYLOG) CPLEXINCDIR   = $(CPLEXINCDIR)"
-	-@echo -e "$(FANCYLOG) CONCERTDIR    = $(CONCERTDIR)"
-	-@echo -e "$(FANCYLOG) CONCERTLIBDIR = $(CONCERTLIBDIR)"
-	-@echo -e "$(FANCYLOG) CONCERTINCDIR = $(CONCERTINCDIR)"
-	-@echo -e "$(FANCYLOG) CC            = $(CC)"
-	-@echo -e "$(FANCYLOG) COPT          = $(COPT)"
-	-@echo -e "$(FANCYLOG) CLNFLAGS      = $(CLNFLAGS)"
+setting = 1
+CPLEX_HOME = /opt/ibm/ILOG/CPLEX_Studio1210/cplex
+CC = gcc
+AR = ar rc
+LIBS = -L${CPLEX_HOME}/lib/x86-64_linux/static_pic -L. -lcplex -lm -lpthread -ldl
+INC = -I./include -I${CPLEX_HOME}/include/ilcplex
 
-all:
-	-@echo -e "$(FANCYLOG) Building all"
-	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(CLNDIRS) -o $(BUILD_DIR)/tsp $(TSP_SRC_FILES) $(CLNFLAGS)
+
+# ---------------------------------------------------------------------
+# Rules
+# ---------------------------------------------------------------------
+CFLAGS = -Wall -O3
+##CFLAGS = -Wall -g -O0 
+
+
+.SUFFIXES:
+.SUFFIXES: .o .c .cpp
+.c.o :
+	$(CC) $(CFLAGS) $(INC) -c $< -o $@
+.cpp.o :
+	$(CC) $(CFLAGS) $(INC) -c $< -o $@
+
+$(EXE): $(OBJS) $(LIBUTILS)
+	$(CC) $(CFLAGS) -o $(EXE) $(OBJS) $(LIBS)
+
+$(OBJS) : $(HEADERS)
+
+$(LIBUTILS): $(OBJS_LIBUTILS)
+	$(AR) $(LIBUTILS) $(OBJS_LIBUTILS)
+
+$(LIBUTILS) : $(HEADERS_LIBUTILS)
 
 clean:
-	-@echo -e "$(FANCYLOG) Cleaning all"
-	rm -f $(BUILD_DIR)/*
-	rmdir $(BUILD_DIR)
+	$(RM) $(OBJS)
+	$(RM) $(OBJS_LIBUTILS)
+	$(RM) $(LIBUTILS)
+	$(RM) $(EXE) 
+	
+again:                                                               
+	make clean
+	make    
+	
+wow:
+	@echo "                                      W O W W W W WWWWWWWWWWWWWWWWWWW"
 
-.PHONY: all clean config
+who:
+	@echo "you are user $(USER) with uname `uname` (OS = $(OS)) and you working with compiler setting $(setting)" 
+
