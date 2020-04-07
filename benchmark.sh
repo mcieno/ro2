@@ -6,9 +6,10 @@ models=(
     dummy
     flow1
     mtz
+    dummyBB
 )
 
-testset=(
+testbed=(
     data/att48.tsp
     data/eil51.tsp
     data/berlin52.tsp
@@ -19,10 +20,28 @@ testset=(
     data/rd100.tsp
 )
 
-for tspfile in "${testset[@]}"; do
-    echo "====================== $tspfile ======================"
+bmdir="benchmarks"
+bmfile="bm_$(date +%F_%T).csv"
+
+mkdir -p $bmdir || exit 1
+
+echo "Saving benchmark to $bmdir/$bmfile"
+
+echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' | tee "$bmdir/$bmfile"
+
+for tspfile in "${testbed[@]}"; do
+    echo -n $tspfile | tee -a "$bmdir/$bmfile"
     for model in "${models[@]}"; do
-        echo "[ $model ]"
-        ./bin/tsp $tspfile --model=$model  --noplot
+        echo -n ",$(./bin/tsp $tspfile --model=$model  --noplot --quiet)" | tee -a "$bmdir/$bmfile"
     done
+    echo "" | tee -a "$bmdir/$bmfile"
 done
+
+python2 perfprof.py              \
+    -D ','                       \
+    -T 3600                      \
+    -S 2                         \
+    -M 20                        \
+    $bmdir/$bmfile               \
+    $bmdir/$bmfile.pdf           \
+    -P "all instances, shift 2s"
