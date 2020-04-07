@@ -16,6 +16,7 @@
 #define TSP_SOLVER_FLOW1      4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
 #define TSP_SOLVER_MTZLAZY    5U  /*!< Sequential Formulation model with lazy constraints.  */
 #define TSP_SOLVER_FLOW1LAZY  6U  /*!< Single Commodity Flow model with lazy constraints.  */
+#define TSP_SOLVER_DUMMYBB    7U  /*!< Branch and Bound model.  */
 
 typedef unsigned model_t;
 
@@ -159,6 +160,19 @@ mtzlazy_model ( instance *problem );
  */
 double
 flow1lazy_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with dummy "Branch and Bound" model, restarting cplex after every intermediate solution.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ *
+ * \returns Elapsed time.
+ */
+double
+dummyBB_model ( instance *problem );
 
 
 #endif

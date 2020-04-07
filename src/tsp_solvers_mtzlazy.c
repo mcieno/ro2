@@ -220,7 +220,7 @@ _add_constraints_mtzlazy ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             rmatval[2] = (double) problem->nnodes;
 
             if ( CPXaddlazyconstraints( env, lp, 1, 3, &rhs, &sense, &rmatbeg, rmatind, rmatval, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1lazy: CPXaddlazyconstraints [%s]\n", cname );
+                fprintf( stderr, CFATAL "_add_constraints_mtzlazy: CPXaddlazyconstraints [%s]\n", cname );
                 exit( EXIT_FAILURE );
             }
         }

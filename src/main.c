@@ -122,14 +122,15 @@ static struct argp_option options[]  =
     { "cutoff",    'c',       "VALUE",   OPTION_NO_USAGE, "Master cutoff value."                    },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
                                                           "random, dummy, mtz, flow1, mtzlazy, "
-                                                          "flow1lazy. "
-                                                          "Default: flow1."                         },
+                                                          "flow1lazy, dummyBB. "
+                                                          "Default: dummyBB."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
 
     /* Logging configuration */
-    { "verbose",   LOG_INFO,  NULL,      OPTION_NO_USAGE, "Set program logging level."              },
-    { "debug",     LOG_DEBUG, NULL,      OPTION_ALIAS,    NULL                                      },
-    { "trace",     LOG_TRACE, NULL,      OPTION_ALIAS,    NULL                                      },
+    { "verbose",   LOG_INFO,      NULL,      OPTION_NO_USAGE, "Set program logging level."          },
+    { "debug",     LOG_DEBUG,     NULL,      OPTION_ALIAS,    NULL                                  },
+    { "trace",     LOG_TRACE,     NULL,      OPTION_ALIAS,    NULL                                  },
+    { "quiet",     LOG_OFF+0xFFF, NULL,      OPTION_ALIAS,    NULL                                  },
 
     { NULL },
 };
@@ -149,7 +150,7 @@ main ( int argc, char *argv[] )
         /* timelimit      */  SIZE_MAX,
         /* problem        */  &problem,
         /* shouldplot     */  1,
-        /* solving_method */  TSP_SOLVER_FLOW1
+        /* solving_method */  TSP_SOLVER_DUMMYBB
     };
 
     init_instance( &problem );
@@ -223,6 +224,13 @@ main ( int argc, char *argv[] )
             elapsed = flow1lazy_model( &problem );
             break;
 
+        case TSP_SOLVER_DUMMYBB:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Dummy Branch and Bound model\n" );
+            }
+            elapsed = dummyBB_model( &problem );
+            break;
+
 
         default:
             if (loglevel >= LOG_INFO) {
@@ -245,8 +253,12 @@ main ( int argc, char *argv[] )
 
     double solcost = compute_solution_cost( &problem );
 
-    fprintf( stdout, CSUCC "Solution cost: %13.3lf\n", solcost );
-    fprintf( stdout, CSUCC "Time elapsed:  %13.3lf\n", elapsed );
+    if ( loglevel > LOG_OFF ) {
+        fprintf( stdout, CSUCC "Solution cost: %13.3lf\n", solcost );
+        fprintf( stdout, CSUCC "Time elapsed:  %13.3lf\n", elapsed );
+    } else {
+        fprintf( stdout, "%lf\n", elapsed );
+    }
 
     destroy_instance( &problem );
 }
@@ -334,6 +346,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else if ( !strcmp( "flow1lazy", arg ) ) {
                 conf->solving_method = TSP_SOLVER_FLOW1LAZY;
 
+            } else if ( !strcmp( "dummyBB", arg ) ) {
+                conf->solving_method = TSP_SOLVER_DUMMYBB;
+
             } else {
                 argp_error(
                     state,
@@ -370,6 +385,12 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
         case LOG_TRACE:
             loglevel = LOG_TRACE;
+
+            break;
+
+
+        case LOG_OFF + 0xFFF:
+            loglevel = LOG_OFF;
 
             break;
 

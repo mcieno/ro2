@@ -96,6 +96,8 @@ Macros</h2></td></tr>
 <tr class="separator:ab2a93cc760381d2ab19e1f4806e6a541"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd65bb5f4f670f92c6e5ff680fb87da3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#abd65bb5f4f670f92c6e5ff680fb87da3">TSP_SOLVER_FLOW1LAZY</a>&#160;&#160;&#160;6U</td></tr>
 <tr class="separator:abd65bb5f4f670f92c6e5ff680fb87da3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfc1f3087e02779d9c98d9cd5d07ccfe"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#acfc1f3087e02779d9c98d9cd5d07ccfe">TSP_SOLVER_DUMMYBB</a>&#160;&#160;&#160;7U</td></tr>
+<tr class="separator:acfc1f3087e02779d9c98d9cd5d07ccfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -129,6 +131,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ae9a721763ca4010598e4156398e4a70b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ae9a721763ca4010598e4156398e4a70b">flow1lazy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
 <tr class="memdesc:ae9a721763ca4010598e4156398e4a70b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Single Commodity Flow" model with lazy constraints.  <a href="#ae9a721763ca4010598e4156398e4a70b">More...</a><br /></td></tr>
 <tr class="separator:ae9a721763ca4010598e4156398e4a70b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a469571631741e0f4b9068cf981ecbaed"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a469571631741e0f4b9068cf981ecbaed">dummyBB_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a469571631741e0f4b9068cf981ecbaed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with dummy "Branch and Bound" model, restarting cplex after every intermediate solution.  <a href="#a469571631741e0f4b9068cf981ecbaed">More...</a><br /></td></tr>
+<tr class="separator:a469571631741e0f4b9068cf981ecbaed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Methods for solving a TSP problem. </p>
@@ -146,6 +151,21 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Dummy model. </p>
+
+</div>
+</div>
+<a id="acfc1f3087e02779d9c98d9cd5d07ccfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfc1f3087e02779d9c98d9cd5d07ccfe">&#9670;&nbsp;</a></span>TSP_SOLVER_DUMMYBB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_DUMMYBB&#160;&#160;&#160;7U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Branch and Bound model. </p>
 
 </div>
 </div>
@@ -361,6 +381,33 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Elapsed time.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This method does not include subtour elimination constraints. </dd></dl>
+
+</div>
+</div>
+<a id="a469571631741e0f4b9068cf981ecbaed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a469571631741e0f4b9068cf981ecbaed">&#9670;&nbsp;</a></span>dummyBB_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double dummyBB_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solve with dummy "Branch and Bound" model, restarting cplex after every intermediate solution. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
 
 </div>
 </div>
