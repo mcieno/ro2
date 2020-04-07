@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Fri Apr 3 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Tue Apr 7 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -32,6 +32,9 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .br
 .ti -1c
 .RI "#define \fBTSP_SOLVER_FLOW1LAZY\fP   6U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_DUMMYBB\fP   7U"
 .br
 .in -1c
 .SS "Typedefs"
@@ -76,6 +79,10 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .RI "double \fBflow1lazy_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Single Commodity Flow' model with lazy constraints\&. "
+.ti -1c
+.RI "double \fBdummyBB_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with dummy 'Branch and Bound' model, restarting cplex after every intermediate solution\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -93,6 +100,8 @@ Francesco Cazzaro, Marco Cieno
 .PP 
 .SS "#define TSP_SOLVER_DUMMY   2U"
 Dummy model\&. 
+.SS "#define TSP_SOLVER_DUMMYBB   7U"
+Branch and Bound model\&. 
 .SS "#define TSP_SOLVER_FLOW1   4U"
 Single Commodity Flow model (Gavish and Graves (1978))\&. 
 .SS "#define TSP_SOLVER_FLOW1LAZY   6U"
@@ -161,6 +170,22 @@ Elapsed time\&.
 \fBNote:\fP
 .RS 4
 This method does not include subtour elimination constraints\&. 
+.RE
+.PP
+
+.SS "double dummyBB_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with dummy 'Branch and Bound' model, restarting cplex after every intermediate solution\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Elapsed time\&. 
 .RE
 .PP
 
