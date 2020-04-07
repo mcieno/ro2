@@ -127,9 +127,10 @@ static struct argp_option options[]  =
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
 
     /* Logging configuration */
-    { "verbose",   LOG_INFO,  NULL,      OPTION_NO_USAGE, "Set program logging level."              },
-    { "debug",     LOG_DEBUG, NULL,      OPTION_ALIAS,    NULL                                      },
-    { "trace",     LOG_TRACE, NULL,      OPTION_ALIAS,    NULL                                      },
+    { "verbose",   LOG_INFO,      NULL,      OPTION_NO_USAGE, "Set program logging level."          },
+    { "debug",     LOG_DEBUG,     NULL,      OPTION_ALIAS,    NULL                                  },
+    { "trace",     LOG_TRACE,     NULL,      OPTION_ALIAS,    NULL                                  },
+    { "quiet",     LOG_OFF+0xFFF, NULL,      OPTION_ALIAS,    NULL                                  },
 
     { NULL },
 };
@@ -252,8 +253,12 @@ main ( int argc, char *argv[] )
 
     double solcost = compute_solution_cost( &problem );
 
-    fprintf( stdout, CSUCC "Solution cost: %13.3lf\n", solcost );
-    fprintf( stdout, CSUCC "Time elapsed:  %13.3lf\n", elapsed );
+    if ( loglevel > LOG_OFF ) {
+        fprintf( stdout, CSUCC "Solution cost: %13.3lf\n", solcost );
+        fprintf( stdout, CSUCC "Time elapsed:  %13.3lf\n", elapsed );
+    } else {
+        fprintf( stdout, "%lf\n", elapsed );
+    }
 
     destroy_instance( &problem );
 }
@@ -380,6 +385,12 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
         case LOG_TRACE:
             loglevel = LOG_TRACE;
+
+            break;
+
+
+        case LOG_OFF + 0xFFF:
+            loglevel = LOG_OFF;
 
             break;
 
