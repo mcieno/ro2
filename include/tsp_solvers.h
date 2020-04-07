@@ -16,6 +16,7 @@
 #define TSP_SOLVER_FLOW1      4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
 #define TSP_SOLVER_MTZLAZY    5U  /*!< Sequential Formulation model with lazy constraints.  */
 #define TSP_SOLVER_FLOW1LAZY  6U  /*!< Single Commodity Flow model with lazy constraints.  */
+#define TSP_SOLVER_BRANCHANDBOUND  7U  /*!< Branch and Bound model. */
 
 typedef unsigned model_t;
 
@@ -159,6 +160,21 @@ mtzlazy_model ( instance *problem );
  */
 double
 flow1lazy_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with "Branch and bound" model.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ *
+ * \returns Elapsed time.
+ */
+double
+branch_and_bound_model ( instance *problem );
+
+
 
 
 #endif

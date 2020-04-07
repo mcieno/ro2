@@ -223,6 +223,13 @@ main ( int argc, char *argv[] )
             elapsed = flow1lazy_model( &problem );
             break;
 
+        case TSP_SOLVER_BRANCHANDBOUND:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Branch and bound model\n" );
+            }
+            elapsed = branch_and_bound_model( &problem );
+            break;    
+
 
         default:
             if (loglevel >= LOG_INFO) {
@@ -333,6 +340,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "flow1lazy", arg ) ) {
                 conf->solving_method = TSP_SOLVER_FLOW1LAZY;
+
+            } else if ( !strcmp( "branchandbound", arg ) ) {
+                conf->solving_method = TSP_SOLVER_BRANCHANDBOUND;
 
             } else {
                 argp_error(

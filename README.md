@@ -67,11 +67,10 @@ Here's an example, just for fun:
 tsp data/att48.tsp --model=dummy
 ```
 
-
 ![Instance plot](assets/att48.instance.png)
 ![Subtours plot](assets/att48.subtour.png)
 
-Obiously, that's not a valid solution, here's one:
+Obviously, that's not a valid solution, here's one:
 
 ```sh
 tsp data/att48.tsp --model=flow1lazy
