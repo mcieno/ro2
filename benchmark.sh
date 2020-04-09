@@ -6,8 +6,10 @@ timelimit=1800  # 30 minutes
 
 models=(
     dummy
-    flow1
     mtz
+    flow1
+    mtzlazy
+    flow1lazy
     dummyBB
 )
 
