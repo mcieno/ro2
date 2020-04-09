@@ -54,7 +54,7 @@ typedef struct
     char        *filename;
     size_t      memory;
     size_t      threads;
-    size_t      timelimit;
+    double      timelimit;
     instance    *problem;
     int         shouldplot;
     model_t     solving_method;
@@ -147,7 +147,7 @@ main ( int argc, char *argv[] )
         /* filename       */  NULL,
         /* memory         */  SIZE_MAX,
         /* threads        */  SIZE_MAX,
-        /* timelimit      */  SIZE_MAX,
+        /* timelimit      */  __DBL_MAX__,
         /* problem        */  &problem,
         /* shouldplot     */  1,
         /* solving_method */  TSP_SOLVER_DUMMYBB
@@ -272,7 +272,9 @@ _print_configuration ( configuration *conf )
     fprintf( stderr, CINFO "    Problem name        : %s\n",            conf->problem->name );
     fprintf( stderr, CINFO "    Master cutoff value : %e\n",          conf->problem->cutoff );
     fprintf( stderr, CINFO "    Time limit          : %zu hours %zu minutes %zu seconds\n",
-                  conf->timelimit / 3600, conf->timelimit % 3600 / 60, conf->timelimit % 60 );
+                                                         ((size_t) conf->timelimit) / 3600,
+                                                    ((size_t) conf->timelimit) % 3600 / 60,
+                                                            ((size_t) conf->timelimit) % 60 );
     fprintf( stderr, CINFO "    Maximum memory      : %zu MB\n",               conf->memory );
     fprintf( stderr, CINFO "    Store temporary file: %s\n",                tspplot_tmpfile );
     conf->threads == SIZE_MAX ?
@@ -360,13 +362,15 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
 
         case 't':
-            conf->timelimit = strtoull( arg, NULL, 10 );
+            conf->timelimit = strtod( arg, NULL );
             if ( errno || conf->timelimit == 0ULL ) {
                 argp_error(
                     state,
                     CERROR "Bad value for option -t --timelimit: %s.", strerror( errno ? errno : EDOM )
                 );
             }
+
+            timelimit = conf->timelimit;
 
             break;
 

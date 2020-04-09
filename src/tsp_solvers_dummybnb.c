@@ -190,7 +190,14 @@ dummyBB_model  ( instance *problem )
     CPXENVptr env = CPXopenCPLEX( &error );
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
-    _add_constraints_dummyBB( problem, env, lp );
+    /* CPLEX PARAMETERS */
+    if (timelimit < __DBL_MAX__)
+    {
+        CPXsetdblparam(env, CPXPARAM_TimeLimit, timelimit);
+    }
+
+    /* BUILD MODEL */
+    _add_constraints_dummyBB(problem, env, lp);
 
     size_t ncomps = 9999;
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );

@@ -19,6 +19,7 @@
 
 
 #define EPS 1e-5
+double timelimit = __DBL_MAX__;
 
 
 void

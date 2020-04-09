@@ -296,6 +296,13 @@ flow1_model ( instance *problem )
     CPXENVptr env = CPXopenCPLEX( &error );
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
+    /* CPLEX PARAMETERS */
+    if (timelimit < __DBL_MAX__)
+    {
+        CPXsetdblparam(env, CPXPARAM_TimeLimit, timelimit);
+    }
+
+    /* BUILD MODEL */
     _add_constraints_flow1( problem, env, lp );
 
     struct timeb start, end;

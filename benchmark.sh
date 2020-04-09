@@ -2,6 +2,8 @@
 
 # Benchmark all TSP solvers
 
+timelimit=1800  # 30 minutes
+
 models=(
     dummy
     flow1
@@ -32,7 +34,11 @@ echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' | tee "$bmdir/$bmfile"
 for tspfile in "${testbed[@]}"; do
     echo -n $tspfile | tee -a "$bmdir/$bmfile"
     for model in "${models[@]}"; do
-        echo -n ",$(./bin/tsp $tspfile --model=$model  --noplot --quiet)" | tee -a "$bmdir/$bmfile"
+        testresult=$(timeout $timelimit ./bin/tsp $tspfile --model=$model  --noplot --quiet)
+        if [ $? -ne 0 ]; then
+            testresult=$timelimit
+        fi
+        echo -n ",$testresult" | tee -a "$bmdir/$bmfile"
     done
     echo "" | tee -a "$bmdir/$bmfile"
 done
