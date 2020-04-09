@@ -139,8 +139,12 @@ parse_tsp_file ( const char *filename, instance *problem )
             continue;
         }
 
-
         if ( !strcmp( tok, "EDGE_WEIGHT_TYPE" ) ) {
+            is_node_coord_section = 0;
+            continue;
+        }
+
+        if ( !strcmp( tok, "DISPLAY_DATA_TYPE" ) ) {
             is_node_coord_section = 0;
             continue;
         }
