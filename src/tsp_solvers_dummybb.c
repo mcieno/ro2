@@ -47,7 +47,6 @@ _dummyBB_xpos ( size_t i, size_t j, const instance *problem )
 }
 
 
-
 /*!
  * \brief Add Degree constraints to the problem.
  *
@@ -181,8 +180,8 @@ _add_soubtour_constraints ( const instance *problem, CPXENVptr env, CPXLPptr lp,
 }
 
 
-double
-dummyBB_model  ( instance *problem )
+void
+dummyBB_model ( instance *problem )
 {
     int error;
 
@@ -202,6 +201,7 @@ dummyBB_model  ( instance *problem )
     size_t *comps = calloc( problem->nnodes, sizeof( *comps ) );
     size_t *next =  calloc( problem->nnodes, sizeof( *next ) );
 
+    int visitednodes = 0;
     struct timeb start, end;
     ftime( &start );
 
@@ -214,6 +214,7 @@ dummyBB_model  ( instance *problem )
 
         ftime( &end );
 
+        visitednodes += CPXgetnodecnt( env, lp );
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
         _xopt2subtours( problem, xopt, next, comps, &ncomps, _dummyBB_xpos );
 
@@ -233,8 +234,10 @@ dummyBB_model  ( instance *problem )
 
     free( xopt );
 
+    problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    problem->visitednodes = visitednodes;
+    problem->solcost      = compute_solution_cost( problem );
+
     CPXfreeprob( env, &lp );
     CPXcloseCPLEX( &env );
-
-    return ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 }

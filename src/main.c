@@ -102,7 +102,6 @@ main ( int argc, char *argv[] )
     /* Initialize default configuration */
     tspconf_init( NULL, &problem, 1,TSP_SOLVER_DUMMYBB, 0, 0, 0, 0., 0. );
 
-
     argp_parse( &argp, argc, argv, 0, 0, &conf );
 
     if ( loglevel >= LOG_INFO ) {
@@ -120,16 +119,14 @@ main ( int argc, char *argv[] )
         plot_instance( &problem );
     }
 
-
     /* Run the solver */
-    double elapsed;
     switch ( conf.solving_method )
     {
         case TSP_SOLVER_DUMMY:
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running dummy model\n" );
             }
-            elapsed = dummy_model( &problem );
+            dummy_model( &problem );
             break;
 
 
@@ -137,7 +134,7 @@ main ( int argc, char *argv[] )
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running random model\n" );
             }
-            elapsed = random_model( &problem );
+            random_model( &problem );
             break;
 
 
@@ -145,7 +142,7 @@ main ( int argc, char *argv[] )
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running MTZ model\n" );
             }
-            elapsed = mtz_model( &problem );
+            mtz_model( &problem );
             break;
 
 
@@ -153,7 +150,7 @@ main ( int argc, char *argv[] )
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running FLOW1 model\n" );
             }
-            elapsed = flow1_model( &problem );
+            flow1_model( &problem );
             break;
 
 
@@ -161,7 +158,7 @@ main ( int argc, char *argv[] )
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
             }
-            elapsed = mtzlazy_model( &problem );
+            mtzlazy_model( &problem );
             break;
 
 
@@ -169,14 +166,14 @@ main ( int argc, char *argv[] )
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
             }
-            elapsed = flow1lazy_model( &problem );
+            flow1lazy_model( &problem );
             break;
 
         case TSP_SOLVER_DUMMYBB:
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running Dummy Branch and Bound model\n" );
             }
-            elapsed = dummyBB_model( &problem );
+            dummyBB_model( &problem );
             break;
 
 
@@ -199,13 +196,12 @@ main ( int argc, char *argv[] )
         plot_solution( &problem );
     }
 
-    double solcost = compute_solution_cost( &problem );
-
     if ( loglevel > LOG_OFF ) {
-        fprintf( stdout, CSUCC "Solution cost: %13.3lf\n", solcost );
-        fprintf( stdout, CSUCC "Time elapsed:  %13.3lf\n", elapsed );
+        fprintf( stdout, CSUCC "Solution cost: %13.3lf\n", problem.solcost      );
+        fprintf( stdout, CSUCC "Time elapsed:  %13.3lf\n", problem.elapsedtime  );
+        fprintf( stdout, CSUCC "Visited nodes: %13zu\n",   problem.visitednodes );
     } else {
-        fprintf( stdout, "%lf\n", elapsed );
+        fprintf( stdout, "%lf\n", problem.elapsedtime );
     }
 
     destroy_instance( &problem );

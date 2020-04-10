@@ -7,6 +7,7 @@
 #define TSP_SOLVER_H
 
 #include <cplex.h>
+
 #include "tsp.h"
 
 
@@ -89,10 +90,8 @@ _xopt2subtours ( const instance *problem,
  *
  * \param problem
  *     Pointer to the instance structure.
- *
- * \returns Elapsed time.
  */
-double
+void
 random_model ( instance *problem );
 
 
@@ -103,11 +102,9 @@ random_model ( instance *problem );
  * \param problem
  *     Pointer to the instance structure.
  *
- * \returns Elapsed time.
- *
  * \note This method does not include subtour elimination constraints.
  */
-double
+void
 dummy_model ( instance *problem );
 
 
@@ -117,10 +114,8 @@ dummy_model ( instance *problem );
  *
  * \param problem
  *     Pointer to the instance structure.
- *
- * \returns Elapsed time.
  */
-double
+void
 mtz_model ( instance *problem );
 
 
@@ -130,10 +125,8 @@ mtz_model ( instance *problem );
  *
  * \param problem
  *     Pointer to the instance structure.
- *
- * \returns Elapsed time.
  */
-double
+void
 flow1_model ( instance *problem );
 
 
@@ -143,10 +136,8 @@ flow1_model ( instance *problem );
  *
  * \param problem
  *     Pointer to the instance structure.
- *
- * \returns Elapsed time.
  */
-double
+void
 mtzlazy_model ( instance *problem );
 
 
@@ -156,10 +147,8 @@ mtzlazy_model ( instance *problem );
  *
  * \param problem
  *     Pointer to the instance structure.
- *
- * \returns Elapsed time.
  */
-double
+void
 flow1lazy_model ( instance *problem );
 
 
@@ -169,10 +158,8 @@ flow1lazy_model ( instance *problem );
  *
  * \param problem
  *     Pointer to the instance structure.
- *
- * \returns Elapsed time.
  */
-double
+void
 dummyBB_model ( instance *problem );
 
 

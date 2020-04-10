@@ -1,3 +1,7 @@
+/*
+ * \brief   Implementation of tspconf.h functions.
+ * \authors Francesco Cazzaro, Marco Cieno
+ */
 #include <cplex.h>
 
 #include "tspconf.h"
@@ -17,14 +21,14 @@ tspconf_init ( char      *filename,
                double    timelimit,
                double    epgap )
 {
-    conf.filename       =  filename;
-    conf.problem        =  problem;
-    conf.shouldplot     =  shouldplot;
-    conf.solving_method =  solving_method;
-    conf.threads        =  threads;
-    conf.memory         =  memory;
-    conf.timelimit      =  nodelimit;
-    conf.nodelimit      =  timelimit;
+    conf.filename       = filename;
+    conf.problem        = problem;
+    conf.shouldplot     = shouldplot;
+    conf.solving_method = solving_method;
+    conf.threads        = threads;
+    conf.memory         = memory;
+    conf.timelimit      = nodelimit;
+    conf.nodelimit      = timelimit;
     conf.epgap          = epgap;
 }
 

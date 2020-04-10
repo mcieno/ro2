@@ -42,8 +42,11 @@ typedef struct
     double *  xcoord;
     double *  ycoord;
     size_t ** solution;
-
-} instance;
+    double    solcost;
+    double    elapsedtime;
+    size_t    visitednodes;
+}
+instance;
 
 
 /**

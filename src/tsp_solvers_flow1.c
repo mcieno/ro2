@@ -289,7 +289,7 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
 }
 
 
-double
+void
 flow1_model ( instance *problem )
 {
     int error;
@@ -320,8 +320,10 @@ flow1_model ( instance *problem )
 
     free( xopt );
 
+    problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    problem->visitednodes = CPXgetnodecnt( env, lp );
+    problem->solcost      = compute_solution_cost( problem );
+
     CPXfreeprob(env, &lp);
     CPXcloseCPLEX(&env);
-
-    return ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 }
