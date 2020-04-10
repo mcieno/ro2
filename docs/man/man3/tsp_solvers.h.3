@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Tue Apr 7 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Fri Apr 10 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -56,31 +56,31 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .br
 .RI "Given a CPLEX-generated solution, create a more convenient representation\&. "
 .ti -1c
-.RI "double \fBrandom_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBrandom_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Generate a random solution for the instance\&. "
 .ti -1c
-.RI "double \fBdummy_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBdummy_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with degree constraints-only model\&. "
 .ti -1c
-.RI "double \fBmtz_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBmtz_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Sequential Formulation' model by Miller, Tucker and Zemlin (1960)\&. "
 .ti -1c
-.RI "double \fBflow1_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBflow1_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Single Commodity Flow' model by Gavish and Graves (1978)\&. "
 .ti -1c
-.RI "double \fBmtzlazy_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBmtzlazy_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Sequential Formulation' model with lazy constraints\&. "
 .ti -1c
-.RI "double \fBflow1lazy_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBflow1lazy_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Single Commodity Flow' model with lazy constraints\&. "
 .ti -1c
-.RI "double \fBdummyBB_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBdummyBB_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with dummy 'Branch and Bound' model, restarting cplex after every intermediate solution\&. "
 .in -1c
@@ -152,7 +152,7 @@ The number of subtours is written to \fCncomps\fP, hence \fCxopt\fP is a valid T
 .RE
 .PP
 
-.SS "double dummy_model (\fBinstance\fP * problem)"
+.SS "void dummy_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with degree constraints-only model\&. 
@@ -162,110 +162,75 @@ Solve with degree constraints-only model\&.
 \fIproblem\fP Pointer to the instance structure\&.
 .RE
 .PP
-\fBReturns:\fP
-.RS 4
-Elapsed time\&.
-.RE
-.PP
 \fBNote:\fP
 .RS 4
 This method does not include subtour elimination constraints\&. 
 .RE
 .PP
 
-.SS "double dummyBB_model (\fBinstance\fP * problem)"
+.SS "void dummyBB_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with dummy 'Branch and Bound' model, restarting cplex after every intermediate solution\&. 
 .PP
 \fBParameters:\fP
 .RS 4
-\fIproblem\fP Pointer to the instance structure\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-Elapsed time\&. 
+\fIproblem\fP Pointer to the instance structure\&. 
 .RE
 .PP
 
-.SS "double flow1_model (\fBinstance\fP * problem)"
+.SS "void flow1_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with 'Single Commodity Flow' model by Gavish and Graves (1978)\&. 
 .PP
 \fBParameters:\fP
 .RS 4
-\fIproblem\fP Pointer to the instance structure\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-Elapsed time\&. 
+\fIproblem\fP Pointer to the instance structure\&. 
 .RE
 .PP
 
-.SS "double flow1lazy_model (\fBinstance\fP * problem)"
+.SS "void flow1lazy_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with 'Single Commodity Flow' model with lazy constraints\&. 
 .PP
 \fBParameters:\fP
 .RS 4
-\fIproblem\fP Pointer to the instance structure\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-Elapsed time\&. 
+\fIproblem\fP Pointer to the instance structure\&. 
 .RE
 .PP
 
-.SS "double mtz_model (\fBinstance\fP * problem)"
+.SS "void mtz_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with 'Sequential Formulation' model by Miller, Tucker and Zemlin (1960)\&. 
 .PP
 \fBParameters:\fP
 .RS 4
-\fIproblem\fP Pointer to the instance structure\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-Elapsed time\&. 
+\fIproblem\fP Pointer to the instance structure\&. 
 .RE
 .PP
 
-.SS "double mtzlazy_model (\fBinstance\fP * problem)"
+.SS "void mtzlazy_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with 'Sequential Formulation' model with lazy constraints\&. 
 .PP
 \fBParameters:\fP
 .RS 4
-\fIproblem\fP Pointer to the instance structure\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-Elapsed time\&. 
+\fIproblem\fP Pointer to the instance structure\&. 
 .RE
 .PP
 
-.SS "double random_model (\fBinstance\fP * problem)"
+.SS "void random_model (\fBinstance\fP * problem)"
 
 .PP
 Generate a random solution for the instance\&. 
 .PP
 \fBParameters:\fP
 .RS 4
-\fIproblem\fP Pointer to the instance structure\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-Elapsed time\&. 
+\fIproblem\fP Pointer to the instance structure\&. 
 .RE
 .PP
 

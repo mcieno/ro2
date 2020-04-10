@@ -76,9 +76,6 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:ad3b5cad7816fe5064bc6c093665d2236"><td class="memItemLeft" align="right" valign="top"><a id="ad3b5cad7816fe5064bc6c093665d2236"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>cutoff</b></td></tr>
-<tr class="separator:ad3b5cad7816fe5064bc6c093665d2236"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09ce752df4cbc83f7073001661074512"><td class="memItemLeft" align="right" valign="top"><a id="a09ce752df4cbc83f7073001661074512"></a>
 char *&#160;</td><td class="memItemRight" valign="bottom"><b>name</b></td></tr>
 <tr class="separator:a09ce752df4cbc83f7073001661074512"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -94,13 +91,21 @@ double *&#160;</td><td class="memItemRight" valign="bottom"><b>ycoord</b></td></
 <tr class="memitem:aa257fa7659a18951d04d42f77d6ea6a2"><td class="memItemLeft" align="right" valign="top"><a id="aa257fa7659a18951d04d42f77d6ea6a2"></a>
 size_t **&#160;</td><td class="memItemRight" valign="bottom"><b>solution</b></td></tr>
 <tr class="separator:aa257fa7659a18951d04d42f77d6ea6a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23dcae539d02f76d2b8c6bf6677b7b0e"><td class="memItemLeft" align="right" valign="top"><a id="a23dcae539d02f76d2b8c6bf6677b7b0e"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>solcost</b></td></tr>
+<tr class="separator:a23dcae539d02f76d2b8c6bf6677b7b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7162e8745f805a98937144942a007ecf"><td class="memItemLeft" align="right" valign="top"><a id="a7162e8745f805a98937144942a007ecf"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>elapsedtime</b></td></tr>
+<tr class="separator:a7162e8745f805a98937144942a007ecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3298ef9db8d86f7364ba1b7b09e5e9e"><td class="memItemLeft" align="right" valign="top"><a id="ac3298ef9db8d86f7364ba1b7b09e5e9e"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>visitednodes</b></td></tr>
+<tr class="separator:ac3298ef9db8d86f7364ba1b7b09e5e9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Structure to represent a TSP problem. </p>
 <p>This structure holds all the useful information to represent and solve a TSP problem.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">cutoff</td><td>Master cutoff value of the problem.</td></tr>
     <tr><td class="paramname">name</td><td>Name to give to this problem.</td></tr>
     <tr><td class="paramname">nnodes</td><td>Number of nodes.</td></tr>
     <tr><td class="paramname">xcoord</td><td>Pointer to the array with the x coordinates.</td></tr>

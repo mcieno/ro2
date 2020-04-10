@@ -10,6 +10,10 @@ var searchData=
   ['tsp_5fsolver_5fmtzlazy',['TSP_SOLVER_MTZLAZY',['../tsp__solvers_8h.html#ab2a93cc760381d2ab19e1f4806e6a541',1,'tsp_solvers.h']]],
   ['tsp_5fsolver_5frandom',['TSP_SOLVER_RANDOM',['../tsp__solvers_8h.html#a9d871ea184ab498c5b6b5abf303d2704',1,'tsp_solvers.h']]],
   ['tsp_5fsolvers_2eh',['tsp_solvers.h',['../tsp__solvers_8h.html',1,'']]],
+  ['tspconf_2eh',['tspconf.h',['../tspconf_8h.html',1,'']]],
+  ['tspconf_5fapply',['tspconf_apply',['../tspconf_8h.html#aae66c0ce7775c010f4694f8b7338c3b7',1,'tspconf.c']]],
+  ['tspconf_5finit',['tspconf_init',['../tspconf_8h.html#a6fe28dc5389e39698e6d95a922ecdc64',1,'tspconf.c']]],
+  ['tspconf_5ft',['tspconf_t',['../structtspconf__t.html',1,'']]],
   ['tspplot_2eh',['tspplot.h',['../tspplot_8h.html',1,'']]],
   ['tspplot_5ftmpfile',['tspplot_tmpfile',['../tspplot_8h.html#a1facbb721cde7d0816f47c799e99b80e',1,'tspplot.c']]]
 ];

@@ -1,4 +1,4 @@
-.TH "instance" 3 "Tue Apr 7 2020" "TSP Solver" \" -*- nroff -*-
+.TH "instance" 3 "Fri Apr 10 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -12,9 +12,6 @@ instance \- Structure to represent a TSP problem\&.
 .SS "Data Fields"
 
 .in +1c
-.ti -1c
-.RI "double \fBcutoff\fP"
-.br
 .ti -1c
 .RI "char * \fBname\fP"
 .br
@@ -30,6 +27,15 @@ instance \- Structure to represent a TSP problem\&.
 .ti -1c
 .RI "size_t ** \fBsolution\fP"
 .br
+.ti -1c
+.RI "double \fBsolcost\fP"
+.br
+.ti -1c
+.RI "double \fBelapsedtime\fP"
+.br
+.ti -1c
+.RI "size_t \fBvisitednodes\fP"
+.br
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -39,8 +45,6 @@ This structure holds all the useful information to represent and solve a TSP pro
 .PP
 \fBParameters:\fP
 .RS 4
-\fIcutoff\fP Master cutoff value of the problem\&.
-.br
 \fIname\fP Name to give to this problem\&.
 .br
 \fInnodes\fP Number of nodes\&.

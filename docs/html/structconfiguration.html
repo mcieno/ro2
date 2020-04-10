@@ -62,8 +62,6 @@ $(function() {
 
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
 <div class="title">configuration Struct Reference</div>  </div>
 </div><!--header-->
@@ -71,47 +69,30 @@ $(function() {
 
 <p>Structure to help parsing the command line.  
  <a href="structconfiguration.html#details">More...</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Data Fields</h2></td></tr>
-<tr class="memitem:af72386d76fde59a4661672d2446eac3c"><td class="memItemLeft" align="right" valign="top"><a id="af72386d76fde59a4661672d2446eac3c"></a>
-char *&#160;</td><td class="memItemRight" valign="bottom"><b>filename</b></td></tr>
-<tr class="separator:af72386d76fde59a4661672d2446eac3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9698522b49c715ed4af70a5f82b7a0cf"><td class="memItemLeft" align="right" valign="top"><a id="a9698522b49c715ed4af70a5f82b7a0cf"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>memory</b></td></tr>
-<tr class="separator:a9698522b49c715ed4af70a5f82b7a0cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa8e3a9e74cfe4e3d32c2e3e8db59081"><td class="memItemLeft" align="right" valign="top"><a id="afa8e3a9e74cfe4e3d32c2e3e8db59081"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>threads</b></td></tr>
-<tr class="separator:afa8e3a9e74cfe4e3d32c2e3e8db59081"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83c4ae6c9a33b5d07ece42828638a5b7"><td class="memItemLeft" align="right" valign="top"><a id="a83c4ae6c9a33b5d07ece42828638a5b7"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>timelimit</b></td></tr>
-<tr class="separator:a83c4ae6c9a33b5d07ece42828638a5b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab58ff0b3323eaecba22bf6475cf6be72"><td class="memItemLeft" align="right" valign="top"><a id="ab58ff0b3323eaecba22bf6475cf6be72"></a>
-<a class="el" href="structinstance.html">instance</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>problem</b></td></tr>
-<tr class="separator:ab58ff0b3323eaecba22bf6475cf6be72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa499c56a328f9cc81d09efde867a926b"><td class="memItemLeft" align="right" valign="top"><a id="aa499c56a328f9cc81d09efde867a926b"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>shouldplot</b></td></tr>
-<tr class="separator:aa499c56a328f9cc81d09efde867a926b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecd76e1c8932ca114e6a853d40adec37"><td class="memItemLeft" align="right" valign="top"><a id="aecd76e1c8932ca114e6a853d40adec37"></a>
-model_t&#160;</td><td class="memItemRight" valign="bottom"><b>solving_method</b></td></tr>
-<tr class="separator:aecd76e1c8932ca114e6a853d40adec37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
+
+<p><code>#include &lt;<a class="el" href="tspconf_8h_source.html">tspconf.h</a>&gt;</code></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Structure to help parsing the command line. </p>
 <p>This structure is used by parse_opt() to store command line arguments as they are being parsed.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">filename</td><td>Name of the TSP file to be parsed.</td></tr>
-    <tr><td class="paramname">memory</td><td>Maximum amount of memory (in MB) the program may use. If the program cannot proceed without requesting more memory, it should be terminated. A meaningful value is between 1 and SIZE_MAX. Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer.</td></tr>
-    <tr><td class="paramname">threads</td><td>Number of threads to use.</td></tr>
-    <tr><td class="paramname">timelimit</td><td>Maximum number of seconds the program may run. If the program does not terminate within this time, it should be terminated anyway. A meaningful value is between 1 and SIZE_MAX.</td></tr>
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure to setup.</td></tr>
-    <tr><td class="paramname">shouldplot</td><td>If true, use GnuPlot to draw the tour. Default: 1. </td></tr>
+    <tr><td class="paramname">name</td><td>Name to assign to this problem. Default: parsed from file.</td></tr>
+    <tr><td class="paramname">cpxlog</td><td>Tune information display. Default: silent.</td></tr>
+    <tr><td class="paramname">shouldplot</td><td>If true, use GnuPlot to draw the tour. Default: yes.</td></tr>
+    <tr><td class="paramname">solving_method</td><td>Model/solver to be used. Default: Dummy Branch and Bound.</td></tr>
+    <tr><td class="paramname">threads</td><td>Number of threads to use. Default: all.</td></tr>
+    <tr><td class="paramname">memory</td><td>Maximum amount of memory (in MB) the program may use. If the program cannot proceed without requesting more memory, it should be terminated. A meaningful value is between 1 and SIZE_MAX. Default: no limit. Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer.</td></tr>
+    <tr><td class="paramname">nodelimit</td><td>Maximum number of nodes the program may visit. If the program does not find a solution within these nodes, it should be terminated anyway. A meaningful value is between 1 and SIZE_MAX. Default: no limit.</td></tr>
+    <tr><td class="paramname">timelimit</td><td>Maximum number of seconds the program may run. If the program does not terminate within this time, it should be terminated anyway. A meaningful value is between 1 and <b>DBL_MAX</b>. Default: no limit.</td></tr>
+    <tr><td class="paramname">cutup</td><td>Upper cutoff value for the problem.</td></tr>
+    <tr><td class="paramname">epgap</td><td>CPLEX optimality gap. Default: automatic.</td></tr>
+    <tr><td class="paramname">seed</td><td>CPLEX random seed. Default: automatic. </td></tr>
   </table>
   </dd>
 </dl>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>src/<a class="el" href="main_8c.html">main.c</a></li>
+<li>include/<a class="el" href="tspconf_8h_source.html">tspconf.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
