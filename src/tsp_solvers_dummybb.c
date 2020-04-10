@@ -16,7 +16,7 @@
 #include "tsp_solvers.h"
 #include "logging.h"
 #include "tsp.h"
-#include "tspplot.h"
+#include "tspconf.h"
 
 
 /*!
@@ -166,8 +166,7 @@ _add_soubtour_constraints ( const instance *problem, CPXENVptr env, CPXLPptr lp,
 
         size_t lastrow = CPXgetnumrows( env, lp ) - 1;
 
-
-        for ( size_t j = 0; j < num_nodes-1; ++j ) {
+        for ( size_t j = 0; j < num_nodes - 1; ++j ) {
             for ( size_t k = j + 1; k < num_nodes; ++k ) {
                 if ( CPXchgcoef( env, lp, lastrow, _dummyBB_xpos( nodes[j], nodes[k], problem ), 1.0 ) ) {
                     fprintf( stderr, CFATAL "_add_soubtour_constraints: CPXnewrows [%s: x(%zu, %zu)]\n",
@@ -191,33 +190,39 @@ dummyBB_model  ( instance *problem )
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
     /* CPLEX PARAMETERS */
-    if (timelimit < __DBL_MAX__)
-    {
-        CPXsetdblparam(env, CPXPARAM_TimeLimit, timelimit);
-    }
+    tspconf_apply( env );
+
+    //CPXsetintparam(env, CPX_PARAM_SCRIND, CPX_ON );
 
     /* BUILD MODEL */
     _add_constraints_dummyBB(problem, env, lp);
 
-    size_t ncomps = 9999;
-    double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+    size_t ncomps = 0;
+    double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
     size_t *comps = calloc( problem->nnodes, sizeof( *comps ) );
-
-    size_t *next =  calloc(problem->nnodes, sizeof(*next));
-
+    size_t *next =  calloc( problem->nnodes, sizeof( *next ) );
 
     struct timeb start, end;
     ftime( &start );
 
-    while ( ncomps!=1 )
+    for (size_t iter = 0; ncomps != 1; ++iter)
     {
         if ( CPXmipopt( env, lp ) ) {
-            fprintf( stderr, CFATAL "flow1_model: CPXmimopt error\n" );
+            fprintf( stderr, CFATAL "dummyBB_model: CPXmimopt error\n" );
             exit( EXIT_FAILURE );
         }
 
+        ftime( &end );
+
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
         _xopt2subtours( problem, xopt, next, comps, &ncomps, _dummyBB_xpos );
+
+        if ( loglevel >= LOG_INFO ) {
+            fprintf( stderr, CINFO "dummyBB_model: iteration %zu\n",                   iter );
+            fprintf( stderr, CINFO "dummyBB_model:     - components: %zu\n",          ncomps );
+            fprintf( stderr, CINFO "dummyBB_model:     - elapsed:    %lfs\n",
+                ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+        }
 
         _add_soubtour_constraints( problem, env, lp, &ncomps, comps );
     }

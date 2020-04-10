@@ -16,6 +16,7 @@
 #include "tsp_solvers.h"
 #include "logging.h"
 #include "tsp.h"
+#include "tspconf.h"
 
 
 /*!
@@ -239,10 +240,7 @@ mtz_model ( instance *problem )
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
     /* CPLEX PARAMETERS */
-    if (timelimit < __DBL_MAX__)
-    {
-        CPXsetdblparam(env, CPXPARAM_TimeLimit, timelimit);
-    }
+    tspconf_apply( env );
 
     /* BUILD MODEL */
     _add_constraints_mtz( problem, env, lp );

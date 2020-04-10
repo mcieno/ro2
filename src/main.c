@@ -16,50 +16,8 @@
 #include "logging.h"
 #include "tsp.h"
 #include "tsp_solvers.h"
+#include "tspconf.h"
 #include "tspplot.h"
-
-
-/*!
- * \struct configuration
- * \brief  Structure to help parsing the command line.
- *
- * This structure is used by parse_opt() to store command line arguments as they are being parsed.
- *
- *
- * \param filename
- *     Name of the TSP file to be parsed.
- *
- * \param memory
- *     Maximum amount of memory (in MB) the program may use.
- *     If the program cannot proceed without requesting more memory, it should be terminated.
- *     A meaningful value is between 1 and SIZE_MAX.
- *     Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer.
- *
- * \param threads
- *     Number of threads to use.
- *
- * \param timelimit
- *     Maximum number of seconds the program may run.
- *     If the program does not terminate within this time, it should be terminated anyway.
- *     A meaningful value is between 1 and SIZE_MAX.
- *
- * \param problem:
- *      Pointer to the instance structure to setup.
- *
- * \param shouldplot:
- *      If true, use GnuPlot to draw the tour. Default: 1.
- */
-typedef struct
-{
-    char        *filename;
-    size_t      memory;
-    size_t      threads;
-    double      timelimit;
-    instance    *problem;
-    int         shouldplot;
-    model_t     solving_method;
-
-} configuration;
 
 
 /* Function declarations */
@@ -87,12 +45,9 @@ parse_opt ( int key, char *arg, struct argp_state *state );
 
 /*
  * Debugging function to inspect parsed command line arguments.
- *
- * \param conf
- *     Pointer to the configuration structure.
  */
 void
-_print_configuration ( configuration *conf );
+_print_configuration ();
 
 
 /*
@@ -142,23 +97,16 @@ int
 main ( int argc, char *argv[] )
 {
     instance problem;
-
-    configuration conf = {
-        /* filename       */  NULL,
-        /* memory         */  SIZE_MAX,
-        /* threads        */  SIZE_MAX,
-        /* timelimit      */  __DBL_MAX__,
-        /* problem        */  &problem,
-        /* shouldplot     */  1,
-        /* solving_method */  TSP_SOLVER_DUMMYBB
-    };
-
     init_instance( &problem );
+
+    /* Initialize default configuration */
+    tspconf_init( NULL, &problem, 1,TSP_SOLVER_DUMMYBB, 0, 0, 0, 0., 0. );
+
 
     argp_parse( &argp, argc, argv, 0, 0, &conf );
 
     if ( loglevel >= LOG_INFO ) {
-        _print_configuration( &conf );
+        _print_configuration();
     }
 
     parse_tsp_file( conf.filename, &problem );
@@ -265,35 +213,33 @@ main ( int argc, char *argv[] )
 
 
 void
-_print_configuration ( configuration *conf )
+_print_configuration ()
 {
     fprintf( stderr, CINFO "Arguments parsed:\n" );
-    fprintf( stderr, CINFO "    TSP file            : %s\n",                 conf->filename );
-    fprintf( stderr, CINFO "    Problem name        : %s\n",            conf->problem->name );
-    fprintf( stderr, CINFO "    Master cutoff value : %e\n",          conf->problem->cutoff );
+    fprintf( stderr, CINFO "    TSP file            : %s\n",                 conf.filename );
+    fprintf( stderr, CINFO "    Problem name        : %s\n",            conf.problem->name );
+    fprintf( stderr, CINFO "    Master cutoff value : %e\n",          conf.problem->cutoff );
     fprintf( stderr, CINFO "    Time limit          : %zu hours %zu minutes %zu seconds\n",
-                                                         ((size_t) conf->timelimit) / 3600,
-                                                    ((size_t) conf->timelimit) % 3600 / 60,
-                                                            ((size_t) conf->timelimit) % 60 );
-    fprintf( stderr, CINFO "    Maximum memory      : %zu MB\n",               conf->memory );
-    fprintf( stderr, CINFO "    Store temporary file: %s\n",                tspplot_tmpfile );
-    conf->threads == SIZE_MAX ?
-    fprintf( stderr, CINFO "    Use multithread     : yes\n"                                ):
+                                                         ((size_t) conf.timelimit) / 3600,
+                                                    ((size_t) conf.timelimit) % 3600 / 60,
+                                                            ((size_t) conf.timelimit) % 60 );
+    fprintf( stderr, CINFO "    Maximum memory      : %zu MB\n",               conf.memory );
+    fprintf( stderr, CINFO "    Store temporary file: %s\n",               tspplot_tmpfile );
+    conf.threads == SIZE_MAX ?
+    fprintf( stderr, CINFO "    Use multithread     : yes\n"                               ):
     fprintf( stderr, CINFO "    Use multithread     : %s (%zu)\n",
-                                            conf->threads > 1 ? "yes" : "no", conf->threads );
+                                             conf.threads > 1 ? "yes" : "no", conf.threads );
 }
 
 
 static error_t
 parse_opt ( int key, char *arg, struct argp_state *state )
 {
-    configuration *conf = state->input;
-
     switch ( key )
     {
         case 'c':
-            conf->problem->cutoff = strtod( arg, NULL );
-            if ( errno || conf->problem->cutoff == 0. ) {
+            conf.problem->cutoff = strtod( arg, NULL );
+            if ( errno || conf.problem->cutoff == 0. ) {
                 argp_error(
                     state,
                     CERROR "Bad value for option -c --cutoff: %s.", strerror( errno ? errno : EDOM )
@@ -305,8 +251,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
         case 'j':
             if ( arg != NULL ) {
-                conf->threads = strtoul( arg, NULL, 10 );
-                if ( errno || conf->threads == 0 ) {
+                conf.threads = strtoul( arg, NULL, 10 );
+                if ( errno || conf.threads == 0 ) {
                     argp_error(
                         state,
                         CERROR "Bad value for option -j --threads: %s.", strerror( errno ? errno : EDOM )
@@ -318,8 +264,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
 
         case 'm':
-            conf->memory = strtoull( arg, NULL, 10 );
-            if ( errno || conf->memory == 0ULL ) {
+            conf.memory = strtoull( arg, NULL, 10 );
+            if ( errno || conf.memory == 0ULL ) {
                 argp_error(
                     state,
                     CERROR "Bad value for option -m --memory: %s.", strerror( errno ? errno : EDOM )
@@ -331,25 +277,25 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
         case 'M':
             if ( !strcmp( "random", arg ) ) {
-                conf->solving_method = TSP_SOLVER_RANDOM;
+                conf.solving_method = TSP_SOLVER_RANDOM;
 
             } else if ( !strcmp( "dummy", arg ) ) {
-                conf->solving_method = TSP_SOLVER_DUMMY;
+                conf.solving_method = TSP_SOLVER_DUMMY;
 
             } else if( !strcmp( "mtz", arg ) ){
-                conf->solving_method = TSP_SOLVER_MTZ;
+                conf.solving_method = TSP_SOLVER_MTZ;
 
             } else if ( !strcmp( "flow1", arg ) ) {
-                conf->solving_method = TSP_SOLVER_FLOW1;
+                conf.solving_method = TSP_SOLVER_FLOW1;
 
             } else if ( !strcmp( "mtzlazy", arg ) ) {
-                conf->solving_method = TSP_SOLVER_MTZLAZY;
+                conf.solving_method = TSP_SOLVER_MTZLAZY;
 
             } else if ( !strcmp( "flow1lazy", arg ) ) {
-                conf->solving_method = TSP_SOLVER_FLOW1LAZY;
+                conf.solving_method = TSP_SOLVER_FLOW1LAZY;
 
             } else if ( !strcmp( "dummyBB", arg ) ) {
-                conf->solving_method = TSP_SOLVER_DUMMYBB;
+                conf.solving_method = TSP_SOLVER_DUMMYBB;
 
             } else {
                 argp_error(
@@ -362,15 +308,15 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
 
         case 't':
-            conf->timelimit = strtod( arg, NULL );
-            if ( errno || conf->timelimit == 0ULL ) {
+            conf.timelimit = strtod( arg, NULL );
+            if ( errno || conf.timelimit == 0ULL ) {
                 argp_error(
                     state,
                     CERROR "Bad value for option -t --timelimit: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
-            timelimit = conf->timelimit;
+            timelimit = conf.timelimit;
 
             break;
 
@@ -414,7 +360,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             break;
 
         case 0xAA2:
-            conf->shouldplot = 0;
+            conf.shouldplot = 0;
 
             break;
 
@@ -427,8 +373,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 );
             }
 
-            conf->problem->name = calloc( strlen( arg ), sizeof( *arg ) );
-            if ( conf->problem->name == NULL ) {
+            conf.problem->name = calloc( strlen( arg ), sizeof( *arg ) );
+            if ( conf.problem->name == NULL ) {
                 argp_failure(
                     state,
                     1, errno,
@@ -436,14 +382,14 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 );
             }
 
-            conf->problem->name = strcpy( conf->problem->name, arg );
+            conf.problem->name = strcpy( conf.problem->name, arg );
 
             break;
 
 
         case ARGP_KEY_ARG:
-            conf->filename = calloc( strlen( arg ), sizeof( *arg ) );
-            if ( conf->filename == NULL ) {
+            conf.filename = calloc( strlen( arg ), sizeof( *arg ) );
+            if ( conf.filename == NULL ) {
                 argp_failure(
                     state,
                     1, errno,
@@ -451,13 +397,13 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 );
             }
 
-            conf->filename = strcpy( conf->filename, arg );
+            conf.filename = strcpy( conf.filename, arg );
 
             break;
 
 
         case ARGP_KEY_END:
-            if ( conf->filename == NULL ) {
+            if ( conf.filename == NULL ) {
                 argp_error( state, CERROR "Missing TSP file name." );
             }
 
