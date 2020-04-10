@@ -117,7 +117,7 @@ _add_constraints_dummyBB ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         {
             if ( i == h ) continue;
             if ( CPXchgcoef( env, lp, lastrow, _dummyBB_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_dummyBB: CPXnewrows [%s: x(%zu, %zu)]\n",
+                fprintf( stderr, CFATAL "_add_constraints_dummyBB: CPXchgcoef [%s: x(%zu, %zu)]\n",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -130,53 +130,78 @@ _add_constraints_dummyBB ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
 
 void
-_add_soubtour_constraints ( const instance *problem, CPXENVptr env, CPXLPptr lp, size_t *ncomps, size_t *comps )
+_add_subtour_constraints ( const instance *problem,
+                           CPXENVptr      env,
+                           CPXLPptr       lp,
+                           size_t         *next,
+                           size_t         *comps,
+                           size_t         ncomps )
 {
-    if(*ncomps==1){
+    if ( ncomps == 1 ) {
         return;
     }
 
+    int *cnodes;
+    int *rmatind;
+    double *rmatval;
+    char *cname;
+    void *memchunk = malloc(                     problem->nnodes * sizeof( *cnodes  )
+                             + problem->nnodes * problem->nnodes * sizeof( *rmatind )
+                             + problem->nnodes * problem->nnodes * sizeof( *rmatval )
+                             +                 CPX_STR_PARAM_MAX * sizeof( *cname   ) );
 
-    size_t nodes[problem->nnodes]; //nodes in a subtour
-    size_t num_nodes; //number of nodes in a subtour
-    char *cname = calloc( CPX_STR_PARAM_MAX, sizeof( *cname ) );
+    if (memchunk == NULL) {
+        fprintf( stderr, CFATAL "_add_subtour_constraints: out of memory\n" );
+        exit( EXIT_FAILURE );
+    }
+
+    cnodes  =           ( memchunk );
+    rmatind =           ( cnodes + problem->nnodes );
+    rmatval = (double*) ( rmatind + problem->nnodes * problem->nnodes );
+    cname   = (char*)   ( rmatval + problem->nnodes * problem->nnodes );
+
+    char sense = 'L';
+    int rmatbeg[] = {0};
+
+    /* Add constraint for k-th component */
     double rhs;
-    char sense;
-
-    for ( int i = 0; i <* ncomps; i++ )
+    for ( size_t k = 0; k < ncomps; ++k )
     {
-        num_nodes = 0;
-        for ( size_t j = 0; j < problem->nnodes; j++ ) {
-            if ( comps[j] == i + 1 ) {
-                nodes[num_nodes] = j;
-                num_nodes++;
+        snprintf( cname, CPX_STR_PARAM_MAX, "SEC(%zu/%zu)", k + 1, ncomps);
+
+        /* Find k-th component initial node */
+        size_t j_start = 0;
+        for ( j_start = 0; j_start < problem->nnodes; ++j_start ) {
+            if ( comps[j_start] == k + 1 ) {
+                break;
             }
         }
 
-        //add subtour constraint of the comp
-        sense = 'L';
-        rhs = num_nodes-1;
+        int compsize = 1;
+        cnodes[0] = j_start;
+        for (size_t j = next[j_start]; j != j_start; cnodes[compsize++] = j, j = next[j])
+            ;
 
-        snprintf( cname, CPX_STR_PARAM_MAX, "subtour constraint");
-        if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "__add_soubtour_constraints: CPXnewrows [%s]\n", cname );
+        rhs = compsize - 1.0;
+
+        /* Build rmatind/rmatval */
+        int nzcnt = 0;
+        for (size_t i = 0; i < compsize; ++i) {
+            for (size_t j = i + 1; j < compsize; ++j) {
+                rmatind[nzcnt] = _dummyBB_xpos( cnodes[i], cnodes[j], problem );
+                rmatval[nzcnt] = 1.0;
+                ++nzcnt;
+            }
+        }
+
+        if ( CPXaddrows( env, lp, 0, 1, nzcnt, &rhs, &sense,
+                         rmatbeg, rmatind, rmatval, NULL, &cname ) ) {
+            fprintf( stderr, CFATAL "_add_subtour_constraints: CPXaddrows [SEC(%zu/%zu)]\n", k + 1, ncomps);
             exit( EXIT_FAILURE );
-            }
-
-        size_t lastrow = CPXgetnumrows( env, lp ) - 1;
-
-        for ( size_t j = 0; j < num_nodes - 1; ++j ) {
-            for ( size_t k = j + 1; k < num_nodes; ++k ) {
-                if ( CPXchgcoef( env, lp, lastrow, _dummyBB_xpos( nodes[j], nodes[k], problem ), 1.0 ) ) {
-                    fprintf( stderr, CFATAL "_add_soubtour_constraints: CPXnewrows [%s: x(%zu, %zu)]\n",
-                        cname, j + 1, k + 1 );
-                    exit( EXIT_FAILURE );
-                }
-            }
         }
     }
 
-    free(cname);
+    free( memchunk );
 }
 
 
@@ -198,8 +223,8 @@ dummyBB_model ( instance *problem )
 
     size_t ncomps = 0;
     double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
-    size_t *comps = calloc( problem->nnodes, sizeof( *comps ) );
     size_t *next =  calloc( problem->nnodes, sizeof( *next ) );
+    size_t *comps = calloc( problem->nnodes, sizeof( *comps ) );
 
     int visitednodes = 0;
     struct timeb start, end;
@@ -225,7 +250,7 @@ dummyBB_model ( instance *problem )
                 ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
         }
 
-        _add_soubtour_constraints( problem, env, lp, &ncomps, comps );
+        _add_subtour_constraints( problem, env, lp, next, comps, ncomps );
     }
 
     ftime( &end );
