@@ -207,6 +207,12 @@ parse_tsp_file ( const char *filename, instance *problem )
 
     /* Successful parsing */
     fclose( fd );
+
+    if (loglevel >= LOG_DEBUG)
+    {
+        repr_instance( problem );
+    }
+
     return;
 
     /* Error while parsing */

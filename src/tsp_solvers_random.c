@@ -18,7 +18,7 @@
 #include "tsp.h"
 
 
-double
+void
 random_model ( instance *problem )
 {
     struct timeb start, end;
@@ -34,5 +34,7 @@ random_model ( instance *problem )
 
     ftime( &end );
 
-    return ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    problem->visitednodes = 0;
+    problem->solcost      = compute_solution_cost( problem );
 }
