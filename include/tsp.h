@@ -16,9 +16,6 @@
  * This structure holds all the useful information to represent and solve a TSP problem.
  *
  *
- * \param cutoff
- *     Master cutoff value of the problem.
- *
  * \param name
  *     Name to give to this problem.
  *
@@ -36,7 +33,6 @@
  */
 typedef struct
 {
-    double    cutoff;
     char *    name;
     size_t    nnodes;
     double *  xcoord;

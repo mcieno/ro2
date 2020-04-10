@@ -59,22 +59,24 @@ static char args_doc[]               = "TSP_FILE";
 static struct argp_option options[]  =
 {
     /* Global configuration */
-    { "memory",    'm',       "SIZE",    OPTION_NO_USAGE, "Available memory (size in MB)."          },
-    { "noplot",    0xAA2,     NULL,      0,               "Do not sketch the solution."             },
+    { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE, "Optimizer time limit in seconds."        },
+    { "nodelimit", 'n',       "NODES",   OPTION_NO_USAGE, "MIP node limit."                         },
+    { "memory",    'm',       "SIZE",    OPTION_NO_USAGE, "Maximum working memory (size in MB)."    },
     { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL,
-                                                          "Use multithread. Default ALL."           },
-    { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE, "Maximum time the program may run."       },
-    { "nodelimit", 'n',       "NODES",   OPTION_NO_USAGE, "Maximum nodes the program may visit."    },
-    { "epgap",     'e',       "EPGAP",   OPTION_NO_USAGE, "Optimality gap."                         },
-    { "tmpfile",   0xAA1,     "FNAME",   OPTION_HIDDEN,   "Set custom temporary file."              },
+                                                          "Global thread count. Default ALL."       },
+    { "scrind",    0xAA3,     NULL,      OPTION_NO_USAGE, "Display CPLEX messages on screen."       },
+    { "seed",      's',       "RNDSEED", OPTION_NO_USAGE, "Random seed."                            },
+    { "epgap",     'e',       "EPGAP",   OPTION_NO_USAGE, "Relative MIP gap tolerance."             },
 
     /* Problem specific configuration */
-    { "cutoff",    'c',       "VALUE",   OPTION_NO_USAGE, "Master cutoff value."                    },
+    { "noplot",    0xAA2,     NULL,      0,               "Do not sketch the solution."             },
+    { "cutup",     'c',       "VALUE",   OPTION_NO_USAGE, "Upper cutoff. Default: don't cut."       },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
                                                           "random, dummy, mtz, flow1, mtzlazy, "
                                                           "flow1lazy, dummyBB. "
                                                           "Default: dummyBB."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
+    { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
 
     /* Logging configuration */
     { "verbose",   LOG_INFO,      NULL,      OPTION_NO_USAGE, "Set program logging level."          },
@@ -95,9 +97,10 @@ main ( int argc, char *argv[] )
     init_instance( &problem );
 
     /* Initialize default configuration */
-    tspconf_init( NULL, &problem, 1,TSP_SOLVER_DUMMYBB, 0, 0, 0, 0., 0. );
+    tspconf_init( NULL, &problem, 1,TSP_SOLVER_DUMMYBB, 0, 0, 0, 0., 0., 0 );
 
-    argp_parse( &argp, argc, argv, 0, 0, &conf );
+    argp_parse( &argp, argc, argv, 0, 0, NULL );
+    problem.name = conf.name;
 
     parse_tsp_file( conf.filename, &problem );
 
@@ -156,6 +159,7 @@ main ( int argc, char *argv[] )
             flow1lazy_model( &problem );
             break;
 
+
         case TSP_SOLVER_DUMMYBB:
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running Dummy Branch and Bound model\n" );
@@ -188,7 +192,8 @@ main ( int argc, char *argv[] )
         fprintf( stdout, CSUCC "Time elapsed:  %13.3lf\n", problem.elapsedtime  );
         fprintf( stdout, CSUCC "Visited nodes: %13zu\n",   problem.visitednodes );
     } else {
-        fprintf( stdout, "%lf\n", problem.elapsedtime );
+        fprintf( stdout, "%lf\n", problem.elapsedtime  );
+        fprintf( stdout, "%zu\n", problem.visitednodes );
     }
 
     destroy_instance( &problem );
@@ -201,11 +206,11 @@ parse_opt ( int key, char *arg, struct argp_state *state )
     switch ( key )
     {
         case 'c':
-            conf.problem->cutoff = strtod( arg, NULL );
-            if ( errno || conf.problem->cutoff == 0. ) {
+            conf.cutup = strtod( arg, NULL );
+            if ( errno || conf.cutup == 0. ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -c --cutoff: %s.", strerror( errno ? errno : EDOM )
+                    CERROR "Bad value for option -c --cutup: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -282,6 +287,18 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             break;
 
 
+        case 's':
+            conf.seed = strtol( arg, NULL, 10 );
+            if ( errno || conf.seed == 0 ) {
+                argp_error(
+                    state,
+                    CERROR "Bad value for option -s --seed: %s.", strerror( errno ? errno : EDOM )
+                );
+            }
+
+            break;
+
+
         case 't':
             conf.timelimit = strtod( arg, NULL );
             if ( errno || conf.timelimit == 0ULL ) {
@@ -349,6 +366,11 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             break;
 
+        case 0xAA3:
+            conf.scrind = CPX_ON;
+
+            break;
+
 
         case 0xBB1:
             if ( strcspn( arg, "!@%%^*~|:" ) != strlen( arg ) ) {
@@ -358,8 +380,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 );
             }
 
-            conf.problem->name = calloc( strlen( arg ), sizeof( *arg ) );
-            if ( conf.problem->name == NULL ) {
+            conf.name = calloc( strlen( arg ), sizeof( *arg ) );
+            if ( conf.name == NULL ) {
                 argp_failure(
                     state,
                     1, errno,
@@ -367,7 +389,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 );
             }
 
-            conf.problem->name = strcpy( conf.problem->name, arg );
+            conf.name = strcpy( conf.name, arg );
 
             break;
 
