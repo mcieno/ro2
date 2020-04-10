@@ -20,7 +20,6 @@
 #define TSP_SOLVER_DUMMYBB    7U  /*!< Branch and Bound model.  */
 
 typedef unsigned model_t;
-extern double timelimit;
 
 
 /*!

@@ -44,13 +44,6 @@ static error_t
 parse_opt ( int key, char *arg, struct argp_state *state );
 
 /*
- * Debugging function to inspect parsed command line arguments.
- */
-void
-_print_configuration ();
-
-
-/*
  * Dynamically linked function from tsp_fileparser.c
  */
 void
@@ -71,6 +64,8 @@ static struct argp_option options[]  =
     { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL,
                                                           "Use multithread. Default ALL."           },
     { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE, "Maximum time the program may run."       },
+    { "nodelimit", 'n',       "NODES",   OPTION_NO_USAGE, "Maximum nodes the program may visit."    },
+    { "epgap",     'e',       "EPGAP",   OPTION_NO_USAGE, "Optimality gap."                         },
     { "tmpfile",   0xAA1,     "FNAME",   OPTION_HIDDEN,   "Set custom temporary file."              },
 
     /* Problem specific configuration */
@@ -104,15 +99,7 @@ main ( int argc, char *argv[] )
 
     argp_parse( &argp, argc, argv, 0, 0, &conf );
 
-    if ( loglevel >= LOG_INFO ) {
-        _print_configuration();
-    }
-
     parse_tsp_file( conf.filename, &problem );
-
-    if ( loglevel >= LOG_DEBUG ) {
-        repr_instance( &problem );
-    }
 
     if ( conf.shouldplot && loglevel >= LOG_INFO ) {
         /* Plot before solving only if verbose */
@@ -208,26 +195,6 @@ main ( int argc, char *argv[] )
 }
 
 
-void
-_print_configuration ()
-{
-    fprintf( stderr, CINFO "Arguments parsed:\n" );
-    fprintf( stderr, CINFO "    TSP file            : %s\n",                 conf.filename );
-    fprintf( stderr, CINFO "    Problem name        : %s\n",            conf.problem->name );
-    fprintf( stderr, CINFO "    Master cutoff value : %e\n",          conf.problem->cutoff );
-    fprintf( stderr, CINFO "    Time limit          : %zu hours %zu minutes %zu seconds\n",
-                                                         ((size_t) conf.timelimit) / 3600,
-                                                    ((size_t) conf.timelimit) % 3600 / 60,
-                                                            ((size_t) conf.timelimit) % 60 );
-    fprintf( stderr, CINFO "    Maximum memory      : %zu MB\n",               conf.memory );
-    fprintf( stderr, CINFO "    Store temporary file: %s\n",               tspplot_tmpfile );
-    conf.threads == SIZE_MAX ?
-    fprintf( stderr, CINFO "    Use multithread     : yes\n"                               ):
-    fprintf( stderr, CINFO "    Use multithread     : %s (%zu)\n",
-                                             conf.threads > 1 ? "yes" : "no", conf.threads );
-}
-
-
 static error_t
 parse_opt ( int key, char *arg, struct argp_state *state )
 {
@@ -239,6 +206,18 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_error(
                     state,
                     CERROR "Bad value for option -c --cutoff: %s.", strerror( errno ? errno : EDOM )
+                );
+            }
+
+            break;
+
+
+        case 'e':
+            conf.epgap = strtod( arg, NULL );
+            if ( errno || conf.epgap == 0. ) {
+                argp_error(
+                    state,
+                    CERROR "Bad value for option -e --epgap: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -312,7 +291,17 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 );
             }
 
-            timelimit = conf.timelimit;
+            break;
+
+
+        case 'n':
+            conf.nodelimit = strtoull( arg, NULL, 10 );
+            if ( errno || conf.nodelimit == 0 ) {
+                argp_error(
+                    state,
+                    CERROR "Bad value for option -n --nodelimit: %s.", strerror( errno ? errno : EDOM )
+                );
+            }
 
             break;
 
