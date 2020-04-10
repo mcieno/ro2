@@ -113,27 +113,27 @@ Functions</h2></td></tr>
 <tr class="memitem:a10d9614ef8f7d549bdb1b58044dc5b70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a10d9614ef8f7d549bdb1b58044dc5b70">_xopt2subtours</a> (const <a class="el" href="structinstance.html">instance</a> *problem, const double *xopt, size_t *next, size_t *comps, size_t *ncomps, size_t(*pos)(size_t, size_t, const <a class="el" href="structinstance.html">instance</a> *))</td></tr>
 <tr class="memdesc:a10d9614ef8f7d549bdb1b58044dc5b70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a CPLEX-generated solution, create a more convenient representation.  <a href="#a10d9614ef8f7d549bdb1b58044dc5b70">More...</a><br /></td></tr>
 <tr class="separator:a10d9614ef8f7d549bdb1b58044dc5b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4aec48e232ea6ba398259799efa1cf01"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a4aec48e232ea6ba398259799efa1cf01">random_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a4aec48e232ea6ba398259799efa1cf01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a random solution for the instance.  <a href="#a4aec48e232ea6ba398259799efa1cf01">More...</a><br /></td></tr>
-<tr class="separator:a4aec48e232ea6ba398259799efa1cf01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad811ce2875e6c7e5b1f44420064d8c3b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ad811ce2875e6c7e5b1f44420064d8c3b">dummy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:ad811ce2875e6c7e5b1f44420064d8c3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with degree constraints-only model.  <a href="#ad811ce2875e6c7e5b1f44420064d8c3b">More...</a><br /></td></tr>
-<tr class="separator:ad811ce2875e6c7e5b1f44420064d8c3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7ce381c5830d24c57bee2768cf61b1a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ab7ce381c5830d24c57bee2768cf61b1a">mtz_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:ab7ce381c5830d24c57bee2768cf61b1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Sequential Formulation" model by Miller, Tucker and Zemlin (1960).  <a href="#ab7ce381c5830d24c57bee2768cf61b1a">More...</a><br /></td></tr>
-<tr class="separator:ab7ce381c5830d24c57bee2768cf61b1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a598e8d2a37dd3daf2a3bffaa52fe00d8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a598e8d2a37dd3daf2a3bffaa52fe00d8">flow1_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a598e8d2a37dd3daf2a3bffaa52fe00d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Single Commodity Flow" model by Gavish and Graves (1978).  <a href="#a598e8d2a37dd3daf2a3bffaa52fe00d8">More...</a><br /></td></tr>
-<tr class="separator:a598e8d2a37dd3daf2a3bffaa52fe00d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6cd05885b1693d151ac217d2a0f95f1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ad6cd05885b1693d151ac217d2a0f95f1">mtzlazy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:ad6cd05885b1693d151ac217d2a0f95f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Sequential Formulation" model with lazy constraints.  <a href="#ad6cd05885b1693d151ac217d2a0f95f1">More...</a><br /></td></tr>
-<tr class="separator:ad6cd05885b1693d151ac217d2a0f95f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9a721763ca4010598e4156398e4a70b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ae9a721763ca4010598e4156398e4a70b">flow1lazy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:ae9a721763ca4010598e4156398e4a70b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Single Commodity Flow" model with lazy constraints.  <a href="#ae9a721763ca4010598e4156398e4a70b">More...</a><br /></td></tr>
-<tr class="separator:ae9a721763ca4010598e4156398e4a70b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a469571631741e0f4b9068cf981ecbaed"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a469571631741e0f4b9068cf981ecbaed">dummyBB_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a469571631741e0f4b9068cf981ecbaed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with dummy "Branch and Bound" model, restarting cplex after every intermediate solution.  <a href="#a469571631741e0f4b9068cf981ecbaed">More...</a><br /></td></tr>
-<tr class="separator:a469571631741e0f4b9068cf981ecbaed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada1a343e6259036cd2e3971d3f871cd6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ada1a343e6259036cd2e3971d3f871cd6">random_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:ada1a343e6259036cd2e3971d3f871cd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a random solution for the instance.  <a href="#ada1a343e6259036cd2e3971d3f871cd6">More...</a><br /></td></tr>
+<tr class="separator:ada1a343e6259036cd2e3971d3f871cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7722a7c35aa23a040a06729e8b0d9d81"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a7722a7c35aa23a040a06729e8b0d9d81">dummy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a7722a7c35aa23a040a06729e8b0d9d81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with degree constraints-only model.  <a href="#a7722a7c35aa23a040a06729e8b0d9d81">More...</a><br /></td></tr>
+<tr class="separator:a7722a7c35aa23a040a06729e8b0d9d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbfb20391e32bc3c7f0633802900860a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#adbfb20391e32bc3c7f0633802900860a">mtz_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:adbfb20391e32bc3c7f0633802900860a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Sequential Formulation" model by Miller, Tucker and Zemlin (1960).  <a href="#adbfb20391e32bc3c7f0633802900860a">More...</a><br /></td></tr>
+<tr class="separator:adbfb20391e32bc3c7f0633802900860a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab21f7cb6639b5c47a2ff0dedfe766685"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ab21f7cb6639b5c47a2ff0dedfe766685">flow1_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:ab21f7cb6639b5c47a2ff0dedfe766685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Single Commodity Flow" model by Gavish and Graves (1978).  <a href="#ab21f7cb6639b5c47a2ff0dedfe766685">More...</a><br /></td></tr>
+<tr class="separator:ab21f7cb6639b5c47a2ff0dedfe766685"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08a1fcbf7b2b67345ebb350f2ce0ce76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a08a1fcbf7b2b67345ebb350f2ce0ce76">mtzlazy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a08a1fcbf7b2b67345ebb350f2ce0ce76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Sequential Formulation" model with lazy constraints.  <a href="#a08a1fcbf7b2b67345ebb350f2ce0ce76">More...</a><br /></td></tr>
+<tr class="separator:a08a1fcbf7b2b67345ebb350f2ce0ce76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6695f471a3d8e34103673518fbed764"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ab6695f471a3d8e34103673518fbed764">flow1lazy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:ab6695f471a3d8e34103673518fbed764"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Single Commodity Flow" model with lazy constraints.  <a href="#ab6695f471a3d8e34103673518fbed764">More...</a><br /></td></tr>
+<tr class="separator:ab6695f471a3d8e34103673518fbed764"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a769c0a674a283434594472e148bb8312"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a769c0a674a283434594472e148bb8312">dummyBB_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a769c0a674a283434594472e148bb8312"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with dummy "Branch and Bound" model, restarting cplex after every intermediate solution.  <a href="#a769c0a674a283434594472e148bb8312">More...</a><br /></td></tr>
+<tr class="separator:a769c0a674a283434594472e148bb8312"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Methods for solving a TSP problem. </p>
@@ -356,14 +356,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad811ce2875e6c7e5b1f44420064d8c3b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad811ce2875e6c7e5b1f44420064d8c3b">&#9670;&nbsp;</a></span>dummy_model()</h2>
+<a id="a7722a7c35aa23a040a06729e8b0d9d81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7722a7c35aa23a040a06729e8b0d9d81">&#9670;&nbsp;</a></span>dummy_model()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double dummy_model </td>
+          <td class="memname">void dummy_model </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em></td><td>)</td>
@@ -379,19 +379,18 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Elapsed time.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This method does not include subtour elimination constraints. </dd></dl>
 
 </div>
 </div>
-<a id="a469571631741e0f4b9068cf981ecbaed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a469571631741e0f4b9068cf981ecbaed">&#9670;&nbsp;</a></span>dummyBB_model()</h2>
+<a id="a769c0a674a283434594472e148bb8312"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a769c0a674a283434594472e148bb8312">&#9670;&nbsp;</a></span>dummyBB_model()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double dummyBB_model </td>
+          <td class="memname">void dummyBB_model </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em></td><td>)</td>
@@ -403,22 +402,21 @@ Functions</h2></td></tr>
 <p>Solve with dummy "Branch and Bound" model, restarting cplex after every intermediate solution. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
 
 </div>
 </div>
-<a id="a598e8d2a37dd3daf2a3bffaa52fe00d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a598e8d2a37dd3daf2a3bffaa52fe00d8">&#9670;&nbsp;</a></span>flow1_model()</h2>
+<a id="ab21f7cb6639b5c47a2ff0dedfe766685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab21f7cb6639b5c47a2ff0dedfe766685">&#9670;&nbsp;</a></span>flow1_model()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double flow1_model </td>
+          <td class="memname">void flow1_model </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em></td><td>)</td>
@@ -430,22 +428,21 @@ Functions</h2></td></tr>
 <p>Solve with "Single Commodity Flow" model by Gavish and Graves (1978). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
 
 </div>
 </div>
-<a id="ae9a721763ca4010598e4156398e4a70b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae9a721763ca4010598e4156398e4a70b">&#9670;&nbsp;</a></span>flow1lazy_model()</h2>
+<a id="ab6695f471a3d8e34103673518fbed764"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6695f471a3d8e34103673518fbed764">&#9670;&nbsp;</a></span>flow1lazy_model()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double flow1lazy_model </td>
+          <td class="memname">void flow1lazy_model </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em></td><td>)</td>
@@ -457,22 +454,21 @@ Functions</h2></td></tr>
 <p>Solve with "Single Commodity Flow" model with lazy constraints. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
 
 </div>
 </div>
-<a id="ab7ce381c5830d24c57bee2768cf61b1a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab7ce381c5830d24c57bee2768cf61b1a">&#9670;&nbsp;</a></span>mtz_model()</h2>
+<a id="adbfb20391e32bc3c7f0633802900860a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbfb20391e32bc3c7f0633802900860a">&#9670;&nbsp;</a></span>mtz_model()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double mtz_model </td>
+          <td class="memname">void mtz_model </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em></td><td>)</td>
@@ -484,22 +480,21 @@ Functions</h2></td></tr>
 <p>Solve with "Sequential Formulation" model by Miller, Tucker and Zemlin (1960). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
 
 </div>
 </div>
-<a id="ad6cd05885b1693d151ac217d2a0f95f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6cd05885b1693d151ac217d2a0f95f1">&#9670;&nbsp;</a></span>mtzlazy_model()</h2>
+<a id="a08a1fcbf7b2b67345ebb350f2ce0ce76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08a1fcbf7b2b67345ebb350f2ce0ce76">&#9670;&nbsp;</a></span>mtzlazy_model()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double mtzlazy_model </td>
+          <td class="memname">void mtzlazy_model </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em></td><td>)</td>
@@ -511,22 +506,21 @@ Functions</h2></td></tr>
 <p>Solve with "Sequential Formulation" model with lazy constraints. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
 
 </div>
 </div>
-<a id="a4aec48e232ea6ba398259799efa1cf01"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4aec48e232ea6ba398259799efa1cf01">&#9670;&nbsp;</a></span>random_model()</h2>
+<a id="ada1a343e6259036cd2e3971d3f871cd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada1a343e6259036cd2e3971d3f871cd6">&#9670;&nbsp;</a></span>random_model()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double random_model </td>
+          <td class="memname">void random_model </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
           <td class="paramname"><em>problem</em></td><td>)</td>
@@ -538,11 +532,10 @@ Functions</h2></td></tr>
 <p>Generate a random solution for the instance. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure.</td></tr>
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Elapsed time. </dd></dl>
 
 </div>
 </div>

@@ -1,4 +1,4 @@
-.TH "src/main.c" 3 "Tue Apr 7 2020" "TSP Solver" \" -*- nroff -*-
+.TH "src/main.c" 3 "Fri Apr 10 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -31,23 +31,14 @@ src/main.c \- TSP solver\&.
 .br
 \fC#include 'tsp_solvers\&.h'\fP
 .br
+\fC#include 'tspconf\&.h'\fP
+.br
 \fC#include 'tspplot\&.h'\fP
 .br
 
-.SS "Data Structures"
-
-.in +1c
-.ti -1c
-.RI "struct \fBconfiguration\fP"
-.br
-.RI "Structure to help parsing the command line\&. "
-.in -1c
 .SS "Functions"
 
 .in +1c
-.ti -1c
-.RI "void \fB_print_configuration\fP (\fBconfiguration\fP *conf)"
-.br
 .ti -1c
 .RI "void \fBparse_tsp_file\fP (const char *, \fBinstance\fP *)"
 .br
