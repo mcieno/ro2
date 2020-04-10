@@ -43,14 +43,13 @@ init_instance ( instance *problem )
         exit( EXIT_FAILURE );
     }
 
-    problem->cutoff       = __DBL_MAX__;
     problem->name         = NULL;
     problem->nnodes       = 0;
     problem->xcoord       = NULL;
     problem->ycoord       = NULL;
     problem->solution     = NULL;
     problem->solcost      = 0;
-    problem->elapsedtime  = 0.0;
+    problem->elapsedtime  = 0.;
     problem->visitednodes = 0;
 
 }

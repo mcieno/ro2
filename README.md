@@ -37,16 +37,20 @@ More options are available. Give it a `tsp --help`.
 Usage: tsp [OPTION...] TSP_FILE
 Solve a Traveling Salesman Problem instance.
 
-  -c, --cutoff=VALUE         Master cutoff value.
-  -j, --threads[=N]          Use multithread. Default ALL.
-  -m, --memory=SIZE          Available memory (size in MB).
+  -c, --cutup=VALUE          Upper cutoff. Default: don't cut.
+  -e, --epgap=EPGAP          Relative MIP gap tolerance.
+  -j, --threads[=N]          Global thread count. Default ALL.
+  -m, --memory=SIZE          Maximum working memory (size in MB).
   -M, --model=MODEL          Solving technique. Available: random, dummy, mtz,
                              flow1, mtzlazy, flow1lazy, dummyBB. Default:
                              dummyBB.
+  -n, --nodelimit=NODES      MIP node limit.
       --name=TSPNAME         Name to assign to this problem.
       --noplot               Do not sketch the solution.
-  -t, --timelimit=SECONDS    Maximum time the program may run.
-      --verbose, --debug, --trace
+      --scrind               Display CPLEX messages on screen.
+  -s, --seed=RNDSEED         Random seed.
+  -t, --timelimit=SECONDS    Optimizer time limit in seconds.
+      --verbose, --debug, --trace, --quiet
                              Set program logging level.
   -?, --help                 Give this help list
       --usage                Give a short usage message

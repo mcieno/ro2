@@ -12,7 +12,7 @@ var searchData=
   ['tsp_5fsolvers_2eh',['tsp_solvers.h',['../tsp__solvers_8h.html',1,'']]],
   ['tspconf_2eh',['tspconf.h',['../tspconf_8h.html',1,'']]],
   ['tspconf_5fapply',['tspconf_apply',['../tspconf_8h.html#aae66c0ce7775c010f4694f8b7338c3b7',1,'tspconf.c']]],
-  ['tspconf_5finit',['tspconf_init',['../tspconf_8h.html#ac8c4a934a27844f22120ac20936d6973',1,'tspconf.c']]],
+  ['tspconf_5finit',['tspconf_init',['../tspconf_8h.html#a6fe28dc5389e39698e6d95a922ecdc64',1,'tspconf.c']]],
   ['tspconf_5ft',['tspconf_t',['../structtspconf__t.html',1,'']]],
   ['tspplot_2eh',['tspplot.h',['../tspplot_8h.html',1,'']]],
   ['tspplot_5ftmpfile',['tspplot_tmpfile',['../tspplot_8h.html#a1facbb721cde7d0816f47c799e99b80e',1,'tspplot.c']]]

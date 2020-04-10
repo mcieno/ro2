@@ -27,9 +27,9 @@ include/tspconf.h \- Configuration of a TSP instance that can be applied to CPLE
 
 .in +1c
 .ti -1c
-.RI "void \fBtspconf_init\fP (char *filename, \fBinstance\fP *problem, int shouldplot, model_t solving_method, size_t threads, size_t memory, size_t nodelimit, double timelimit, double epgap)"
+.RI "void \fBtspconf_init\fP ()"
 .br
-.RI "Populate fields of the global configuration\&. "
+.RI "Init TSP configuration global structure\&. "
 .ti -1c
 .RI "void \fBtspconf_apply\fP (CPXENVptr env)"
 .br

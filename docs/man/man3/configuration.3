@@ -17,21 +17,29 @@ This structure is used by parse_opt() to store command line arguments as they ar
 .PP
 \fBParameters:\fP
 .RS 4
-\fIepgap\fP CPLEX optimality gap\&.
-.br
 \fIfilename\fP Name of the TSP file to be parsed\&.
 .br
-\fImemory\fP Maximum amount of memory (in MB) the program may use\&. If the program cannot proceed without requesting more memory, it should be terminated\&. A meaningful value is between 1 and SIZE_MAX\&. Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer\&.
+\fIname\fP Name to assign to this problem\&. Default: parsed from file\&.
 .br
-\fInodelimit\fP Maximum number of nodes the program may visit\&. If the program does not find a solution within these nodes, it should be terminated anyway\&. A meaningful value is between 1 and SIZE_MAX\&.
+\fIcpxlog\fP Tune information display\&. Default: silent\&.
 .br
-\fIthreads\fP Number of threads to use\&.
+\fIshouldplot\fP If true, use GnuPlot to draw the tour\&. Default: yes\&.
 .br
-\fItimelimit\fP Maximum number of seconds the program may run\&. If the program does not terminate within this time, it should be terminated anyway\&. A meaningful value is between 1 and \fBDBL_MAX\fP\&.
+\fIsolving_method\fP Model/solver to be used\&. Default: Dummy Branch and Bound\&.
 .br
-\fIproblem\fP Pointer to the instance structure to setup\&.
+\fIthreads\fP Number of threads to use\&. Default: all\&.
 .br
-\fIshouldplot\fP If true, use GnuPlot to draw the tour\&. Default: 1\&. 
+\fImemory\fP Maximum amount of memory (in MB) the program may use\&. If the program cannot proceed without requesting more memory, it should be terminated\&. A meaningful value is between 1 and SIZE_MAX\&. Default: no limit\&. Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer\&.
+.br
+\fInodelimit\fP Maximum number of nodes the program may visit\&. If the program does not find a solution within these nodes, it should be terminated anyway\&. A meaningful value is between 1 and SIZE_MAX\&. Default: no limit\&.
+.br
+\fItimelimit\fP Maximum number of seconds the program may run\&. If the program does not terminate within this time, it should be terminated anyway\&. A meaningful value is between 1 and \fBDBL_MAX\fP\&. Default: no limit\&.
+.br
+\fIcutup\fP Upper cutoff value for the problem\&.
+.br
+\fIepgap\fP CPLEX optimality gap\&. Default: automatic\&.
+.br
+\fIseed\fP CPLEX random seed\&. Default: automatic\&. 
 .RE
 .PP
 
