@@ -37,7 +37,7 @@ _dummyBB_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
         errno = EFAULT;
-        perror( CFATAL "_flow1_xpos: i == j" );
+        perror( CFATAL "_dummyBB_xpos: i == j" );
         exit( EXIT_FAILURE );
     }
 
