@@ -6,11 +6,11 @@ timelimit=1800     # 30 minutes
 nodelimit=10000000 # 10 millions
 
 models=(
-    dummy
-    mtz
-    flow1
-    mtzlazy
-    flow1lazy
+    #dummy
+    #mtz
+    #flow1
+    #mtzlazy
+    #flow1lazy
     dummyBB
 )
 
@@ -30,15 +30,22 @@ testbed=(
     data/pr144.tsp
     data/kroA150.tsp
     data/pr152.tsp
-    data/rat195.tsp
-    data/kroA200.tsp
-    data/gr202.tsp
-    data/tsp225.tsp
-    data/gr229.tsp
-    data/pr264.tsp
-    data/pr299.tsp
-    data/fl417.tsp
-    data/pr439.tsp
+    #data/rat195.tsp
+    #data/kroA200.tsp
+    #data/gr202.tsp
+    #data/tsp225.tsp
+    #data/gr229.tsp
+    #data/pr264.tsp
+    #data/pr299.tsp
+    #data/fl417.tsp
+    #data/pr439.tsp
+)
+
+seeds=(
+    1234
+    4321
+    1111
+    9999
 )
 
 bmdir="benchmarks"
@@ -51,22 +58,26 @@ echo "Saving benchmark to $bmdir/$bmfile"
 echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' | tee "$bmdir/$bmfile"
 
 for tspfile in "${testbed[@]}"; do
-    echo -n $tspfile | tee -a "$bmdir/$bmfile"
-    for model in "${models[@]}"; do
-        testresult=( $(./bin/tsp $tspfile --model=$model --timelimit $timelimit --nodelimit $nodelimit --noplot --quiet) )
-        if [ $? -ne 0 ]; then
-            testresult=( $timelimit $nodelimit )
-        fi
-        echo -n ",${testresult[0]}" | tee -a "$bmdir/$bmfile"
+    for seed in "${seeds[@]}"; do
+        echo -n "$tspfile:$seed" | tee -a "$bmdir/$bmfile"
+        for model in "${models[@]}"; do
+            testresult=( $(./bin/tsp $tspfile --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit --noplot --quiet) )
+            if [ $? -ne 0 ]; then
+                testresult=( $timelimit $nodelimit )
+            fi
+            echo -n ",${testresult[0]}" | tee -a "$bmdir/$bmfile"
+        done
+        echo "" | tee -a "$bmdir/$bmfile"
     done
-    echo "" | tee -a "$bmdir/$bmfile"
 done
 
-python2 perfprof.py              \
-    -D ','                       \
-    -T 3600                      \
-    -S 2                         \
-    -M 20                        \
-    $bmdir/$bmfile               \
-    $bmdir/$bmfile.pdf           \
-    -P "all instances, shift 2s"
+sleep 1  # let file streams flush
+
+python2 perfprof.py                \
+    -D ','                         \
+    -T $timelimit                  \
+    -S 0.5                         \
+    -M 3                           \
+    $bmdir/$bmfile                 \
+    $bmdir/$bmfile.png             \
+    -P "all instances, shift 0.5s"
