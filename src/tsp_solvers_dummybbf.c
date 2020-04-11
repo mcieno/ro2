@@ -232,17 +232,22 @@ dummyBBf_model ( instance *problem )
 
     double default_ep = 1e-04;
     double ep = 0.01;
+    int flag_ep = 1;
 
-    for (size_t iter = 0; ncomps != 1 && ep!=default_ep; ++iter)
+    for (size_t iter = 0;flag_ep==1; ++iter)
     {
+
+
+        if(ncomps==1){
+            flag_ep =0;
+        CPXsetdblparam(env, CPX_PARAM_EPGAP, default_ep);}
+
+
         if ( CPXmipopt( env, lp ) ) {
             fprintf( stderr, CFATAL "dummyBBf_model: CPXmimopt error\n" );
             exit( EXIT_FAILURE );
         }
-
-        
       
-
         ftime( &end );
 
         visitednodes += CPXgetnodecnt( env, lp );
@@ -256,10 +261,15 @@ dummyBBf_model ( instance *problem )
                 ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
         }
 
-        ep = (1+4/((double)iter+1))*default_ep;
+        ep = (1+1*problem->nnodes/((double)iter+1))*default_ep;
         if(ncomps==1){ep=default_ep;}
         CPXsetdblparam(env, CPX_PARAM_EPGAP, ep);
         fprintf(stderr, "ncomps: %lu ep:%f\n", ncomps, ep);
+
+
+        if(ncomps!=1){
+            flag_ep=1;
+        }
 
         _add_subtour_constraints_bbf( problem, env, lp, next, comps, ncomps );
     }
