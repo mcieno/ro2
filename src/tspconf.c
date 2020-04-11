@@ -77,7 +77,7 @@ tspconf_apply ( CPXENVptr env )
     if ( conf.nodelimit > 0  ) CPXsetintparam( env, CPXPARAM_MIP_Limits_Nodes,           conf.nodelimit );
     if (    conf.memory > 0  ) CPXsetdblparam( env, CPXPARAM_WorkMem,                    conf.memory    );
     if (   conf.threads > 0  ) CPXsetintparam( env, CPXPARAM_Threads,                    conf.threads   );
-    if (     conf.cutup > 0. ) CPXsetdblparam( env, CPXPARAM_MIP_Tolerances_UpperCutoff, conf.epgap     );
+    if (     conf.cutup > 0. ) CPXsetdblparam( env, CPXPARAM_MIP_Tolerances_UpperCutoff, conf.cutup     );
     if (     conf.epgap > 0. ) CPXsetdblparam( env, CPXPARAM_MIP_Tolerances_MIPGap,      conf.epgap     );
     if (    conf.scrind > 0  ) CPXsetintparam( env, CPXPARAM_ScreenOutput,               conf.scrind    );
     if (      conf.seed > 0  ) CPXsetintparam( env, CPXPARAM_RandomSeed,                 conf.seed      );
