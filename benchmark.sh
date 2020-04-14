@@ -32,11 +32,11 @@ testbed=(
     data/pr144.tsp
     data/kroA150.tsp
     data/pr152.tsp
-    #data/rat195.tsp
-    #data/kroA200.tsp
-    #data/gr202.tsp
-    #data/tsp225.tsp
-    #data/gr229.tsp
+    data/rat195.tsp
+    data/kroA200.tsp
+    data/gr202.tsp
+    data/tsp225.tsp
+    data/gr229.tsp
     #data/pr264.tsp
     #data/pr299.tsp
     #data/fl417.tsp
@@ -44,10 +44,10 @@ testbed=(
 )
 
 seeds=(
-    1234
-    4321
-    1111
-    9999
+    2222
+    3333
+    4444
+    5555
 )
 
 bmdir="benchmarks"
@@ -63,7 +63,7 @@ for tspfile in "${testbed[@]}"; do
     for seed in "${seeds[@]}"; do
         echo -n "$tspfile:$seed" | tee -a "$bmdir/$bmfile"
         for model in "${models[@]}"; do
-            testresult=( $(./bin/tsp $tspfile --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit --noplot --quiet) )
+            testresult=( $(./bin/tsp $tspfile --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit -j1 --noplot --quiet) )
             if [ $? -ne 0 ]; then
                 testresult=( $timelimit $nodelimit )
             fi
@@ -78,8 +78,8 @@ sleep 1  # let file streams flush
 python2 perfprof.py                \
     -D ','                         \
     -T $timelimit                  \
-    -S 0.5                         \
-    -M 3                           \
+    -S 2                           \
+    -M 2                           \
     $bmdir/$bmfile                 \
     $bmdir/$bmfile.png             \
-    -P "all instances, shift 0.5s"
+    -P "all instances, shift 2s"
