@@ -12,6 +12,7 @@ models=(
     #mtzlazy
     #flow1lazy
     dummyBB
+	dummyBBf
 )
 
 testbed=(

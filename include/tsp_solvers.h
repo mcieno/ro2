@@ -18,6 +18,7 @@
 #define TSP_SOLVER_MTZLAZY    5U  /*!< Sequential Formulation model with lazy constraints.  */
 #define TSP_SOLVER_FLOW1LAZY  6U  /*!< Single Commodity Flow model with lazy constraints.  */
 #define TSP_SOLVER_DUMMYBB    7U  /*!< Branch and Bound model.  */
+#define TSP_SOLVER_DUMMYBBF   8U  /*!< Branch and Bound model with "quasi-expnential backoff".  */
 
 typedef unsigned model_t;
 
@@ -160,6 +161,16 @@ flow1lazy_model ( instance *problem );
  */
 void
 dummyBB_model ( instance *problem );
+
+/*!
+ * \brief Solve with dummy "Branch and Bound" model, restarting cplex after every intermediate solution.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+dummyBBf_model ( instance *problem );
 
 
 #endif
