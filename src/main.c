@@ -169,10 +169,18 @@ main ( int argc, char *argv[] )
 
         case TSP_SOLVER_DUMMYBBF:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running F Dummy Branch and Bound model\n" );
+                fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'F') model\n" );
             }
             dummyBBf_model( &problem );
-            break;    
+            break;
+
+
+        case TSP_SOLVER_DUMMYBBM:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'M') model\n" );
+            }
+            dummyBBm_model( &problem );
+            break;
 
 
         default:
@@ -283,8 +291,13 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "dummyBB", arg ) ) {
                 conf.solving_method = TSP_SOLVER_DUMMYBB;
+
             } else if ( !strcmp( "dummyBBf", arg ) ) {
                 conf.solving_method = TSP_SOLVER_DUMMYBBF;
+
+            } else if ( !strcmp( "dummyBBm", arg ) ) {
+                conf.solving_method = TSP_SOLVER_DUMMYBBM;
+
             } else {
                 argp_error(
                     state,

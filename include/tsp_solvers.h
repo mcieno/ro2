@@ -18,7 +18,8 @@
 #define TSP_SOLVER_MTZLAZY    5U  /*!< Sequential Formulation model with lazy constraints.  */
 #define TSP_SOLVER_FLOW1LAZY  6U  /*!< Single Commodity Flow model with lazy constraints.  */
 #define TSP_SOLVER_DUMMYBB    7U  /*!< Branch and Bound model.  */
-#define TSP_SOLVER_DUMMYBBF   8U  /*!< Branch and Bound model with "quasi-expnential backoff".  */
+#define TSP_SOLVER_DUMMYBBF   8U  /*!< Variant F of the Branch and Bound model.  */
+#define TSP_SOLVER_DUMMYBBM   9U  /*!< Variant M of the Branch and Bound model.  */
 
 typedef unsigned model_t;
 
@@ -153,7 +154,8 @@ flow1lazy_model ( instance *problem );
 
 
 /*!
- * \brief Solve with dummy "Branch and Bound" model, restarting cplex after every intermediate solution.
+ * \brief Solve with dummy "Branch and Bound" model,
+ *        restarting cplex after every intermediate solution.
  *
  *
  * \param problem
@@ -162,8 +164,10 @@ flow1lazy_model ( instance *problem );
 void
 dummyBB_model ( instance *problem );
 
+
 /*!
- * \brief Solve with dummy "Branch and Bound" model, restarting cplex after every intermediate solution.
+ * \brief Solve with dummy "Branch and Bound" model (variant 'F'),
+ *        restarting cplex after every intermediate solution.
  *
  *
  * \param problem
@@ -171,6 +175,18 @@ dummyBB_model ( instance *problem );
  */
 void
 dummyBBf_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with dummy "Branch and Bound" model (variant 'M'),
+ *        restarting cplex after every intermediate solution.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+dummyBBm_model ( instance *problem );
 
 
 #endif

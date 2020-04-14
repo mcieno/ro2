@@ -13,6 +13,7 @@ models=(
     #flow1lazy
     dummyBB
 	dummyBBf
+    dummyBBm
 )
 
 testbed=(
