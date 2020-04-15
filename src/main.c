@@ -73,7 +73,8 @@ static struct argp_option options[]  =
     { "cutup",     'c',       "VALUE",   OPTION_NO_USAGE, "Upper cutoff. Default: don't cut."       },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
                                                           "random, dummy, mtz, flow1, mtzlazy, "
-                                                          "flow1lazy, dummyBB. "
+                                                          "flow1lazy, dummyBB, dummyBBf, "
+                                                          "dummyBBm, dummyBBx."
                                                           "Default: dummyBB."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
@@ -165,6 +166,29 @@ main ( int argc, char *argv[] )
                 fprintf( stderr, CINFO "Running Dummy Branch and Bound model\n" );
             }
             dummyBB_model( &problem );
+            break;
+
+        case TSP_SOLVER_DUMMYBBF:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'F') model\n" );
+            }
+            dummyBBf_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_DUMMYBBM:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'M') model\n" );
+            }
+            dummyBBm_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_DUMMYBBX:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'X') model\n" );
+            }
+            dummyBBx_model( &problem );
             break;
 
 
@@ -276,6 +300,15 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "dummyBB", arg ) ) {
                 conf.solving_method = TSP_SOLVER_DUMMYBB;
+
+            } else if ( !strcmp( "dummyBBf", arg ) ) {
+                conf.solving_method = TSP_SOLVER_DUMMYBBF;
+
+            } else if ( !strcmp( "dummyBBm", arg ) ) {
+                conf.solving_method = TSP_SOLVER_DUMMYBBM;
+
+            } else if ( !strcmp( "dummyBBx", arg ) ) {
+                conf.solving_method = TSP_SOLVER_DUMMYBBX;
 
             } else {
                 argp_error(
