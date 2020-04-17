@@ -79,7 +79,7 @@ for file in "${testbed[@]}"; do
         echo -n "$file:$seed" >> $bmfile_nodes
 
         for model in "${models[@]}"; do
-            testresult=( $(timeout $timelimit ./bin/tsp $file -j1 --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit --noplot --quiet) )
+            testresult=( $(timeout $timelimit ./bin/tsp $file --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit --noplot --quiet) )
 
             if [ $? -ne 0 ]; then
                 testresult=( $timelimit $nodelimit )
@@ -106,7 +106,7 @@ python2 ./perfprof.py        \
     -D ','                   \
     -T $timelimit            \
     -S 1                     \
-    -M 10                    \
+    -M 5                     \
     $bmfile_times            \
     $bmfile_times_png        \
     -P "Times, shift 1s"     > /dev/null
@@ -114,8 +114,8 @@ python2 ./perfprof.py        \
 python2 ./perfprof.py        \
     -D ','                   \
     -T $nodelimit            \
-    -S 1000                  \
-    -M 10                    \
+    -S 100                   \
+    -M 5                     \
     $bmfile_nodes            \
     $bmfile_nodes_png        \
     -P "Nodes, shift 1000"   > /dev/null
