@@ -1,9 +1,24 @@
 #!/usr/bin/env sh
+# TIME CSV ON STDOUT, NODES CSV ON STDERR5
 
-# Benchmark all TSP solvers
+echo "[*] Building with make all"
+make all > /dev/null || exit 1
 
-timelimit=1800     # 30 minutes
-nodelimit=10000000 # 10 millions
+timelimit=3600      # 60 minutes
+nodelimit=10000000  # 10 million nodes
+
+bmdir="benchmarks"
+bmsig="bm_$(date +%F_%T)"
+
+bmfile_nodes="$bmdir/$bmsig.nodes.csv"
+bmfile_times="$bmdir/$bmsig.times.csv"
+
+bmfile_nodes_png="$bmdir/$bmsig.nodes.png"
+bmfile_times_png="$bmdir/$bmsig.times.png"
+
+mkdir -p $bmdir || exit 1
+
+echo "[*] Saving benchmark to $bmdir/$bmsig.[nodes|times].csv"
 
 models=(
     #dummy
@@ -12,8 +27,8 @@ models=(
     #mtzlazy
     #flow1lazy
     loopBB
-	loopBBf
-    loopBBm
+    lazyBB
+    lazyBBg
 )
 
 testbed=(
@@ -50,36 +65,59 @@ seeds=(
     5555
 )
 
-bmdir="benchmarks"
-bmfile="bm_$(date +%F_%T).csv"
+echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' > $bmfile_times
+echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' > $bmfile_nodes
 
-mkdir -p $bmdir || exit 1
+echo "[*] Testing ${#models[@]} models (${models[@]}) on ${#testbed[@]} files (${#seeds} seeds each)"
 
-echo "Saving benchmark to $bmdir/$bmfile"
 
-echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' | tee "$bmdir/$bmfile"
-
-for tspfile in "${testbed[@]}"; do
+for file in "${testbed[@]}"; do
     for seed in "${seeds[@]}"; do
-        echo -n "$tspfile:$seed" | tee -a "$bmdir/$bmfile"
+        echo -e "\n[*] ================ $file : $seed ================"
+
+        echo -n "$file:$seed" >> $bmfile_times
+        echo -n "$file:$seed" >> $bmfile_nodes
+
         for model in "${models[@]}"; do
-            testresult=( $(./bin/tsp $tspfile --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit -j1 --noplot --quiet) )
+            testresult=( $(timeout $timelimit ./bin/tsp $file -j1 --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit --noplot --quiet) )
+
             if [ $? -ne 0 ]; then
                 testresult=( $timelimit $nodelimit )
+                echo "[-] $model timed out ($timelimit)"
+            else
+                echo "[>] $model finished in ${testresult[0]}s (${testresult[1]} nodes)"
             fi
-            echo -n ",${testresult[0]}" | tee -a "$bmdir/$bmfile"
+
+            echo -n ",${testresult[0]}" >> $bmfile_times
+            echo -n ",${testresult[1]}" >> $bmfile_nodes
+
+            sleep 1
         done
-        echo "" | tee -a "$bmdir/$bmfile"
+
+        echo "" >> $bmfile_times
+        echo "" >> $bmfile_nodes
+
     done
 done
 
 sleep 1  # let file streams flush
 
-python2 perfprof.py                \
-    -D ','                         \
-    -T $timelimit                  \
-    -S 2                           \
-    -M 2                           \
-    $bmdir/$bmfile                 \
-    $bmdir/$bmfile.png             \
-    -P "all instances, shift 2s"
+python2 ./perfprof.py        \
+    -D ','                   \
+    -T $timelimit            \
+    -S 1                     \
+    -M 10                    \
+    $bmfile_times            \
+    $bmfile_times_png        \
+    -P "Times, shift 1s"     > /dev/null
+
+python2 ./perfprof.py        \
+    -D ','                   \
+    -T $nodelimit            \
+    -S 1000                  \
+    -M 10                    \
+    $bmfile_nodes            \
+    $bmfile_nodes_png        \
+    -P "Nodes, shift 1000"   > /dev/null
+
+echo -e "\n\n[+] All done"

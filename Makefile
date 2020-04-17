@@ -19,9 +19,10 @@ CLNDIRS   = -L$(CPLEXLIBDIR)
 CLNFLAGS  =  -lm -lpthread -ldl -lcplex
 
 CC         = gcc
-#COPT       = -O3 -m64 -fPIC
-COPT       = -g3 -O0 -m64 -Wall -Werror --pedantic
-CFLAGS     = $(COPT)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
+COPTPERF   = -O9 -m64 -fPIC -Wall -Werror --pedantic
+COPTDEBG   = -g3 -O0 -m64 -Wall -Werror --pedantic -fstack-protector-all
+CFLAGSPERF = $(COPTPERF)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
+CFLAGSDEBG = $(COPTDEBG)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
 
 FANCYLOG   = \033[96m[*]\033[0m
 
@@ -42,11 +43,16 @@ config:
 all:
 	-@echo -e "$(FANCYLOG) Building all"
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(CLNDIRS) -o $(BUILD_DIR)/tsp $(TSP_SRC_FILES) $(CLNFLAGS)
+	$(CC) $(CFLAGSPERF) $(CLNDIRS) -o $(BUILD_DIR)/tsp $(TSP_SRC_FILES) $(CLNFLAGS)
+
+debug:
+	-@echo -e "$(FANCYLOG) Building all for debugging"
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGSDEBG) $(CLNDIRS) -o $(BUILD_DIR)/tsp $(TSP_SRC_FILES) $(CLNFLAGS)
 
 clean:
 	-@echo -e "$(FANCYLOG) Cleaning all"
 	rm -f $(BUILD_DIR)/*
 	rmdir $(BUILD_DIR)
 
-.PHONY: all clean config
+.PHONY: debug perf clean config
