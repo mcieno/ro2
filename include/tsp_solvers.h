@@ -17,9 +17,11 @@
 #define TSP_SOLVER_FLOW1      4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
 #define TSP_SOLVER_MTZLAZY    5U  /*!< Sequential Formulation model with lazy constraints.  */
 #define TSP_SOLVER_FLOW1LAZY  6U  /*!< Single Commodity Flow model with lazy constraints.  */
-#define TSP_SOLVER_DUMMYBB    7U  /*!< Branch and Bound model.  */
-#define TSP_SOLVER_DUMMYBBF   8U  /*!< Variant F of the Branch and Bound model.  */
-#define TSP_SOLVER_DUMMYBBM   9U  /*!< Variant M of the Branch and Bound model.  */
+#define TSP_SOLVER_LOOPBB     7U  /*!< Branch and Bound model.  */
+#define TSP_SOLVER_LOOPBBF    8U  /*!< Variant F of the Branch and Bound model.  */
+#define TSP_SOLVER_LOOPBBM    9U  /*!< Variant M of the Branch and Bound model.  */
+#define TSP_SOLVER_LAZYBB    10U  /*!< Branch and Bound model with lazy constraint callback.  */
+#define TSP_SOLVER_LAZYBBG   11U  /*!< Branch and Bound model with generic callback.  */
 
 typedef unsigned model_t;
 
@@ -162,7 +164,7 @@ flow1lazy_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-dummyBB_model ( instance *problem );
+loopBB_model ( instance *problem );
 
 
 /*!
@@ -174,7 +176,7 @@ dummyBB_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-dummyBBf_model ( instance *problem );
+loopBBf_model ( instance *problem );
 
 
 /*!
@@ -186,7 +188,29 @@ dummyBBf_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-dummyBBm_model ( instance *problem );
+loopBBm_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with "Branch and Bound" model with lazy constraint callback.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+lazyBB_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with "Branch and Bound" model with lazy constraint generic callback.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+lazyBBg_model ( instance *problem );
 
 
 #endif

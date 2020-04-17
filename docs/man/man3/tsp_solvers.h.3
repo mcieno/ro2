@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Tue Apr 14 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Fri Apr 17 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -34,13 +34,19 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .RI "#define \fBTSP_SOLVER_FLOW1LAZY\fP   6U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_DUMMYBB\fP   7U"
+.RI "#define \fBTSP_SOLVER_LOOPBB\fP   7U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_DUMMYBBF\fP   8U"
+.RI "#define \fBTSP_SOLVER_LOOPBBF\fP   8U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_DUMMYBBM\fP   9U"
+.RI "#define \fBTSP_SOLVER_LOOPBBM\fP   9U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_LAZYBB\fP   10U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_LAZYBBG\fP   11U"
 .br
 .in -1c
 .SS "Typedefs"
@@ -86,17 +92,25 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .br
 .RI "Solve with 'Single Commodity Flow' model with lazy constraints\&. "
 .ti -1c
-.RI "void \fBdummyBB_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBloopBB_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with dummy 'Branch and Bound' model, restarting cplex after every intermediate solution\&. "
 .ti -1c
-.RI "void \fBdummyBBf_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBloopBBf_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with dummy 'Branch and Bound' model (variant 'F'), restarting cplex after every intermediate solution\&. "
 .ti -1c
-.RI "void \fBdummyBBm_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBloopBBm_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with dummy 'Branch and Bound' model (variant 'M'), restarting cplex after every intermediate solution\&. "
+.ti -1c
+.RI "void \fBlazyBB_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with 'Branch and Bound' model with lazy constraint callback\&. "
+.ti -1c
+.RI "void \fBlazyBBg_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with 'Branch and Bound' model with lazy constraint generic callback\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -114,16 +128,20 @@ Francesco Cazzaro, Marco Cieno
 .PP 
 .SS "#define TSP_SOLVER_DUMMY   2U"
 Dummy model\&. 
-.SS "#define TSP_SOLVER_DUMMYBB   7U"
-Branch and Bound model\&. 
-.SS "#define TSP_SOLVER_DUMMYBBF   8U"
-Variant F of the Branch and Bound model\&. 
-.SS "#define TSP_SOLVER_DUMMYBBM   9U"
-Variant M of the Branch and Bound model\&. 
 .SS "#define TSP_SOLVER_FLOW1   4U"
 Single Commodity Flow model (Gavish and Graves (1978))\&. 
 .SS "#define TSP_SOLVER_FLOW1LAZY   6U"
 Single Commodity Flow model with lazy constraints\&. 
+.SS "#define TSP_SOLVER_LAZYBB   10U"
+Branch and Bound model with lazy constraint callback\&. 
+.SS "#define TSP_SOLVER_LAZYBBG   11U"
+Branch and Bound model with generic callback\&. 
+.SS "#define TSP_SOLVER_LOOPBB   7U"
+Branch and Bound model\&. 
+.SS "#define TSP_SOLVER_LOOPBBF   8U"
+Variant F of the Branch and Bound model\&. 
+.SS "#define TSP_SOLVER_LOOPBBM   9U"
+Variant M of the Branch and Bound model\&. 
 .SS "#define TSP_SOLVER_MTZ   3U"
 Sequential Formulation model (Miller, Tucker and Zemlin (1960))\&. 
 .SS "#define TSP_SOLVER_MTZLAZY   5U"
@@ -186,39 +204,6 @@ This method does not include subtour elimination constraints\&.
 .RE
 .PP
 
-.SS "void dummyBB_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with dummy 'Branch and Bound' model, restarting cplex after every intermediate solution\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void dummyBBf_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with dummy 'Branch and Bound' model (variant 'F'), restarting cplex after every intermediate solution\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void dummyBBm_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with dummy 'Branch and Bound' model (variant 'M'), restarting cplex after every intermediate solution\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
 .SS "void flow1_model (\fBinstance\fP * problem)"
 
 .PP
@@ -234,6 +219,61 @@ Solve with 'Single Commodity Flow' model by Gavish and Graves (1978)\&.
 
 .PP
 Solve with 'Single Commodity Flow' model with lazy constraints\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void lazyBB_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with 'Branch and Bound' model with lazy constraint callback\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void lazyBBg_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with 'Branch and Bound' model with lazy constraint generic callback\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void loopBB_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with dummy 'Branch and Bound' model, restarting cplex after every intermediate solution\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void loopBBf_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with dummy 'Branch and Bound' model (variant 'F'), restarting cplex after every intermediate solution\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void loopBBm_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with dummy 'Branch and Bound' model (variant 'M'), restarting cplex after every intermediate solution\&. 
 .PP
 \fBParameters:\fP
 .RS 4

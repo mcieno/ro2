@@ -27,8 +27,8 @@ By default, the project binary will be in `./bin/tsp`.
 As simple as
 
 ```sh
-tsp [-?V] [-M MODEL] [--model=MODEL] [--plot] [--help] [--usage]
-     [--version] TSP_FILE
+Usage: tsp [-?V] [-M MODEL] [--model=MODEL] [--noplot] [--help] [--usage]
+            [--version] TSP_FILE
 ```
 
 More options are available. Give it a `tsp --help`.
@@ -42,8 +42,8 @@ Solve a Traveling Salesman Problem instance.
   -j, --threads[=N]          Global thread count. Default ALL.
   -m, --memory=SIZE          Maximum working memory (size in MB).
   -M, --model=MODEL          Solving technique. Available: random, dummy, mtz,
-                             flow1, mtzlazy, flow1lazy, dummyBB. Default:
-                             dummyBB.
+                             flow1, mtzlazy, flow1lazy, loopBB, loopBBf,
+                             lazyBB, lazyBBg Default: lazyBBg.
   -n, --nodelimit=NODES      MIP node limit.
       --name=TSPNAME         Name to assign to this problem.
       --noplot               Do not sketch the solution.

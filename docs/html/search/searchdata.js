@@ -3,7 +3,7 @@ var indexSectionsWithContent =
   0: "_cdfilmprst",
   1: "cit",
   2: "lmt",
-  3: "_cdfimprst",
+  3: "_cdfilmprst",
   4: "t",
   5: "clmt"
 };
