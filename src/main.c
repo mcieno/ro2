@@ -73,7 +73,7 @@ static struct argp_option options[]  =
     { "cutup",     'c',       "VALUE",   OPTION_NO_USAGE, "Upper cutoff. Default: don't cut."       },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
                                                           "random, dummy, mtz, flow1, mtzlazy, "
-                                                          "flow1lazy, loopBB, loopBBf. "
+                                                          "flow1lazy, loopBB, loopBBf, lazyBB. "
                                                           "Default: loopBB."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
@@ -180,6 +180,14 @@ main ( int argc, char *argv[] )
                 fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'M') model\n" );
             }
             loopBBm_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_LAZYBB:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Branch and Bound model with lazy constraint callback\n" );
+            }
+            lazyBB_model( &problem );
             break;
 
 
@@ -297,6 +305,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "loopBBm", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LOOPBBM;
+
+            } else if ( !strcmp( "lazyBB", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LAZYBB;
 
             } else {
                 argp_error(
