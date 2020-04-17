@@ -6,6 +6,7 @@
 
 #include "logging.h"
 #include "tspconf.h"
+#include <sys/sysinfo.h>
 
 
 /* Global configuration */
@@ -17,7 +18,7 @@ tspconf_init ()
     conf.filename       = NULL;
     conf.name           = NULL;
     conf.shouldplot     = 1;
-    conf.solving_method = TSP_SOLVER_DUMMYBB;
+    conf.solving_method = TSP_SOLVER_LOOPBB;
     conf.threads        = 0;
     conf.memory         = 0;
     conf.timelimit      = 0.;
@@ -77,6 +78,7 @@ tspconf_apply ( CPXENVptr env )
     if ( conf.nodelimit > 0  ) CPXsetintparam( env, CPXPARAM_MIP_Limits_Nodes,           conf.nodelimit );
     if (    conf.memory > 0  ) CPXsetdblparam( env, CPXPARAM_WorkMem,                    conf.memory    );
     if (   conf.threads > 0  ) CPXsetintparam( env, CPXPARAM_Threads,                    conf.threads   );
+    else                       CPXsetintparam( env, CPXPARAM_Threads,                    get_nprocs()   );
     if (     conf.cutup > 0. ) CPXsetdblparam( env, CPXPARAM_MIP_Tolerances_UpperCutoff, conf.cutup     );
     if (     conf.epgap > 0. ) CPXsetdblparam( env, CPXPARAM_MIP_Tolerances_MIPGap,      conf.epgap     );
     if (    conf.scrind > 0  ) CPXsetintparam( env, CPXPARAM_ScreenOutput,               conf.scrind    );

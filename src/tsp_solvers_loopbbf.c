@@ -33,15 +33,15 @@
  *     Pointer to the instance structure.
  */
 size_t
-_dummyBBf_xpos ( size_t i, size_t j, const instance *problem )
+_loopBBf_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
         errno = EFAULT;
-        perror( CFATAL "_dummyBBf_xpos: i == j" );
+        perror( CFATAL "_loopBBf_xpos: i == j" );
         exit( EXIT_FAILURE );
     }
 
-    if ( i > j ) return _dummyBBf_xpos( j, i, problem );
+    if ( i > j ) return _loopBBf_xpos( j, i, problem );
 
     return i * problem->nnodes + j - ( ( i + 1 ) * ( i + 2 ) / 2UL );
 }
@@ -61,7 +61,7 @@ _dummyBBf_xpos ( size_t i, size_t j, const instance *problem )
  *     CPLEX problem.
  */
 void
-_add_constraints_dummyBBf ( const instance *problem, CPXENVptr env, CPXLPptr lp )
+_add_constraints_loopBBf ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 {
     char ctype;
     double lb, ub, obj, rhs;
@@ -87,12 +87,12 @@ _add_constraints_dummyBBf ( const instance *problem, CPXENVptr env, CPXLPptr lp 
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_dummyBBf: CPXnewcols [%s]\n", cname );
+                fprintf( stderr, CFATAL "_add_constraints_loopBBf: CPXnewcols [%s]\n", cname );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXgetnumcols( env, lp ) - 1 != _dummyBBf_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_dummyBBf: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+            if ( CPXgetnumcols( env, lp ) - 1 != _loopBBf_xpos( i, j, problem ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_loopBBf: CPXgetnumcols [%s: x(%zu, %zu)]\n",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -107,7 +107,7 @@ _add_constraints_dummyBBf ( const instance *problem, CPXENVptr env, CPXLPptr lp 
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_dummyBBf: CPXnewrows [%s]\n", cname );
+            fprintf( stderr, CFATAL "_add_constraints_loopBBf: CPXnewrows [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -116,8 +116,8 @@ _add_constraints_dummyBBf ( const instance *problem, CPXENVptr env, CPXLPptr lp 
         for ( size_t i = 0; i < problem->nnodes; ++i )
         {
             if ( i == h ) continue;
-            if ( CPXchgcoef( env, lp, lastrow, _dummyBBf_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_dummyBBf: CPXchgcoef [%s: x(%zu, %zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _loopBBf_xpos( i, h, problem ), 1.0 ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_loopBBf: CPXchgcoef [%s: x(%zu, %zu)]\n",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -188,7 +188,7 @@ _add_subtour_constraints_dummyBBf ( const instance *problem,
         int nzcnt = 0;
         for (size_t i = 0; i < compsize; ++i) {
             for (size_t j = i + 1; j < compsize; ++j) {
-                rmatind[nzcnt] = _dummyBBf_xpos( cnodes[i], cnodes[j], problem );
+                rmatind[nzcnt] = _loopBBf_xpos( cnodes[i], cnodes[j], problem );
                 rmatval[nzcnt] = 1.0;
                 ++nzcnt;
             }
@@ -206,7 +206,7 @@ _add_subtour_constraints_dummyBBf ( const instance *problem,
 
 
 void
-dummyBBf_model ( instance *problem )
+loopBBf_model ( instance *problem )
 {
     int error;
 
@@ -219,7 +219,7 @@ dummyBBf_model ( instance *problem )
     //CPXsetintparam(env, CPX_PARAM_SCRIND, CPX_ON );
 
     /* BUILD MODEL */
-    _add_constraints_dummyBBf( problem, env, lp );
+    _add_constraints_loopBBf(problem, env, lp);
 
     size_t ncomps = 0;
     double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
@@ -242,7 +242,7 @@ dummyBBf_model ( instance *problem )
         }
 
         if ( CPXmipopt( env, lp ) ) {
-            fprintf( stderr, CFATAL "dummyBBf_model: CPXmimopt error\n" );
+            fprintf( stderr, CFATAL "loopBBf_model: CPXmimopt error\n" );
             exit( EXIT_FAILURE );
         }
 
@@ -250,7 +250,7 @@ dummyBBf_model ( instance *problem )
 
         visitednodes += CPXgetnodecnt( env, lp ) + 1;
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-        _xopt2subtours( problem, xopt, next, comps, &ncomps, _dummyBBf_xpos );
+        _xopt2subtours( problem, xopt, next, comps, &ncomps, _loopBBf_xpos );
 
         ep = ( 1 + problem->nnodes / ((double) iter + 1)) * default_ep;
 
@@ -261,11 +261,10 @@ dummyBBf_model ( instance *problem )
         }
 
         if ( loglevel >= LOG_INFO ) {
-            fprintf( stderr, CINFO "dummyBBf_model: iteration %zu\n",                    iter );
-            fprintf( stderr, CINFO "dummyBBf_model:     - components: %zu\n",          ncomps );
-            fprintf( stderr, CINFO "dummyBBf_model:     - epgap:      %lf\n",              ep );
-            fprintf( stderr, CINFO "dummyBBf_model:     - elapsed:    %lfs\n",
-                  ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+            fprintf( stderr, CINFO "loopBBf_model: iteration %zu\n",                   iter );
+            fprintf( stderr, CINFO "loopBBf_model:     - components: %zu\n",          ncomps );
+            fprintf( stderr, CINFO "loopBBf_model:     - elapsed:    %lfs\n",
+                ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
         }
 
         CPXsetdblparam( env, CPXPARAM_MIP_Tolerances_MIPGap, ep );
@@ -275,7 +274,7 @@ dummyBBf_model ( instance *problem )
 
     ftime( &end );
 
-    _xopt2solution( xopt, problem, &_dummyBBf_xpos );
+    _xopt2solution( xopt, problem, &_loopBBf_xpos );
 
     free( xopt );
 

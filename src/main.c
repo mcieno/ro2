@@ -73,9 +73,9 @@ static struct argp_option options[]  =
     { "cutup",     'c',       "VALUE",   OPTION_NO_USAGE, "Upper cutoff. Default: don't cut."       },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
                                                           "random, dummy, mtz, flow1, mtzlazy, "
-                                                          "flow1lazy, dummyBB, dummyBBf, "
-                                                          "dummyBBm, dummyBBx."
-                                                          "Default: dummyBB."                       },
+                                                          "flow1lazy, loopBB, loopBBf, lazyBB, "
+                                                          "lazyBBg "
+                                                          "Default: lazyBBg."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
 
@@ -98,7 +98,7 @@ main ( int argc, char *argv[] )
     init_instance( &problem );
 
     /* Initialize default configuration */
-    tspconf_init( NULL, &problem, 1,TSP_SOLVER_DUMMYBB, 0, 0, 0, 0., 0., 0 );
+    tspconf_init( NULL, &problem, 1, TSP_SOLVER_LAZYBBG, 0, 0, 0, 0., 0., 0 );
 
     argp_parse( &argp, argc, argv, 0, 0, NULL );
     problem.name = conf.name;
@@ -161,34 +161,50 @@ main ( int argc, char *argv[] )
             break;
 
 
-        case TSP_SOLVER_DUMMYBB:
+        case TSP_SOLVER_LOOPBB:
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running Dummy Branch and Bound model\n" );
             }
-            dummyBB_model( &problem );
+            loopBB_model( &problem );
             break;
 
-        case TSP_SOLVER_DUMMYBBF:
+        case TSP_SOLVER_LOOPBBF:
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'F') model\n" );
             }
-            dummyBBf_model( &problem );
+            loopBBf_model( &problem );
             break;
 
 
-        case TSP_SOLVER_DUMMYBBM:
+        case TSP_SOLVER_LOOPBBM:
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'M') model\n" );
             }
-            dummyBBm_model( &problem );
+            loopBBm_model( &problem );
             break;
 
 
-        case TSP_SOLVER_DUMMYBBX:
+        case TSP_SOLVER_LAZYBB:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Branch and Bound model with lazy constraint callback\n" );
+            }
+            lazyBB_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_LAZYBBG:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Branch and Bound model with lazy constraint generic callback\n" );
+            }
+            lazyBBg_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_LOOPBBX:
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'X') model\n" );
             }
-            dummyBBx_model( &problem );
+            loopBBx_model( &problem );
             break;
 
 
@@ -298,22 +314,28 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else if ( !strcmp( "flow1lazy", arg ) ) {
                 conf.solving_method = TSP_SOLVER_FLOW1LAZY;
 
-            } else if ( !strcmp( "dummyBB", arg ) ) {
-                conf.solving_method = TSP_SOLVER_DUMMYBB;
+            } else if ( !strcmp( "loopBB", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LOOPBB;
 
-            } else if ( !strcmp( "dummyBBf", arg ) ) {
-                conf.solving_method = TSP_SOLVER_DUMMYBBF;
+            } else if ( !strcmp( "loopBBf", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LOOPBBF;
 
-            } else if ( !strcmp( "dummyBBm", arg ) ) {
-                conf.solving_method = TSP_SOLVER_DUMMYBBM;
+            } else if ( !strcmp( "loopBBm", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LOOPBBM;
 
-            } else if ( !strcmp( "dummyBBx", arg ) ) {
-                conf.solving_method = TSP_SOLVER_DUMMYBBX;
+            } else if ( !strcmp( "loopBBx", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LOOPBBX;
+
+            } else if ( !strcmp( "lazyBB", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LAZYBB;
+
+            } else if ( !strcmp( "lazyBBg", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LAZYBBG;
 
             } else {
                 argp_error(
                     state,
-                    CERROR "Unknown solving method for option -ml --model: %s.", arg
+                    CERROR "Unknown solving method for option -M --model: %s.", arg
                 );
             }
 

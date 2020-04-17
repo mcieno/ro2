@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['cbinfo_5ft',['cbinfo_t',['../structcbinfo__t.html',1,'']]],
   ['cdebug',['CDEBUG',['../logging_8h.html#aa7444555626190dd4512ef95f4c8a234',1,'logging.h']]],
   ['cerror',['CERROR',['../logging_8h.html#a3b2acb17aceb0b216b92a4b930a1a987',1,'logging.h']]],
   ['cfatal',['CFATAL',['../logging_8h.html#a25ccf5b544c7f063eec6043bab8d493f',1,'logging.h']]],
