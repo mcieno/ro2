@@ -11,9 +11,9 @@ models=(
     #flow1
     #mtzlazy
     #flow1lazy
-    dummyBB
-	dummyBBf
-    dummyBBm
+    loopBB
+	loopBBf
+    loopBBm
 )
 
 testbed=(
