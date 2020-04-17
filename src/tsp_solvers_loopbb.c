@@ -237,7 +237,7 @@ loopBB_model ( instance *problem )
 
         ftime( &end );
 
-        visitednodes += CPXgetnodecnt( env, lp );
+        visitednodes += CPXgetnodecnt( env, lp ) + 1;
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
         _xopt2subtours( problem, xopt, next, comps, &ncomps, _loopBB_xpos );
 
