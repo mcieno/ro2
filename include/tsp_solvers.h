@@ -21,6 +21,7 @@
 #define TSP_SOLVER_LOOPBBF    8U  /*!< Variant F of the Branch and Bound model.  */
 #define TSP_SOLVER_LOOPBBM    9U  /*!< Variant M of the Branch and Bound model.  */
 #define TSP_SOLVER_LAZYBB    10U  /*!< Branch and Bound model with lazy constraint callback.  */
+#define TSP_SOLVER_LAZYBBG   11U  /*!< Branch and Bound model with generic callback.  */
 
 typedef unsigned model_t;
 
@@ -199,6 +200,17 @@ loopBBm_model ( instance *problem );
  */
 void
 lazyBB_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with "Branch and Bound" model with lazy constraint generic callback.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+lazyBBg_model ( instance *problem );
 
 
 #endif

@@ -73,8 +73,9 @@ static struct argp_option options[]  =
     { "cutup",     'c',       "VALUE",   OPTION_NO_USAGE, "Upper cutoff. Default: don't cut."       },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
                                                           "random, dummy, mtz, flow1, mtzlazy, "
-                                                          "flow1lazy, loopBB, loopBBf, lazyBB. "
-                                                          "Default: loopBB."                       },
+                                                          "flow1lazy, loopBB, loopBBf, lazyBB, "
+                                                          "lazyBBg "
+                                                          "Default: lazyBBg."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
 
@@ -97,7 +98,7 @@ main ( int argc, char *argv[] )
     init_instance( &problem );
 
     /* Initialize default configuration */
-    tspconf_init( NULL, &problem, 1,TSP_SOLVER_LOOPBB, 0, 0, 0, 0., 0., 0 );
+    tspconf_init( NULL, &problem, 1, TSP_SOLVER_LAZYBBG, 0, 0, 0, 0., 0., 0 );
 
     argp_parse( &argp, argc, argv, 0, 0, NULL );
     problem.name = conf.name;
@@ -188,6 +189,14 @@ main ( int argc, char *argv[] )
                 fprintf( stderr, CINFO "Running Branch and Bound model with lazy constraint callback\n" );
             }
             lazyBB_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_LAZYBBG:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Branch and Bound model with lazy constraint generic callback\n" );
+            }
+            lazyBBg_model( &problem );
             break;
 
 
@@ -308,6 +317,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "lazyBB", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LAZYBB;
+
+            } else if ( !strcmp( "lazyBBg", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LAZYBBG;
 
             } else {
                 argp_error(

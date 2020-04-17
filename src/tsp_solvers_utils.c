@@ -91,6 +91,13 @@ _xopt2subtours ( const instance *problem,
         }
     }
 
+    if ( loglevel >= LOG_TRACE ) {
+        fprintf( stderr, CTRACE "_xopt2subtours: adj created:\n" );
+        for (size_t i = 0; i < problem->nnodes; ++i) {
+            fprintf( stderr, CTRACE "%zu : (%zu, %zu)\n", i, adj[i][0], adj[i][1] );
+        }
+    }
+
     // Fill `next` and `comps`
     *ncomps = 0;
     for ( size_t start = 0; start < problem->nnodes; ++start ) {
@@ -98,10 +105,17 @@ _xopt2subtours ( const instance *problem,
 
         ++*ncomps;
 
+        if ( loglevel >= LOG_TRACE ) {
+            fprintf( stderr, CTRACE "_xopt2subtours: new comp (%zu) starts at %zu\n", *ncomps, start );
+        }
+
         size_t from = start;
         size_t to = adj[start][0];
 
         do {
+            if (loglevel >= LOG_TRACE) {
+                fprintf(stderr, CTRACE "_xopt2subtours: comp %zu: %zu --> %zu\n", *ncomps, from, to);
+            }
             next[from] = to;
             comps[from] = *ncomps;
             // One edge of `adj[to]` is equal to `from`. We care about the other.
