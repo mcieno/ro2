@@ -273,6 +273,7 @@ lazyBB_model ( instance *problem )
 
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
+    CPXsetintparam( env, CPXPARAM_MIP_Strategy_CallbackReducedLP, CPX_OFF );
 
 
     struct timeb start, end;
