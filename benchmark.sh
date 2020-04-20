@@ -27,7 +27,6 @@ models=(
     #mtzlazy
     #flow1lazy
     loopBB
-    loopBBx
     lazyBB
     lazyBBg
 )
@@ -80,7 +79,7 @@ for file in "${testbed[@]}"; do
         echo -n "$file:$seed" >> $bmfile_nodes
 
         for model in "${models[@]}"; do
-            testresult=( $(timeout $timelimit ./bin/tsp $file --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit --noplot --quiet) )
+            testresult=( $(timeout $timelimit ./bin/tsp $file --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit -j4 --noplot --quiet) )
 
             if [ $? -ne 0 ]; then
                 testresult=( $timelimit $nodelimit )
