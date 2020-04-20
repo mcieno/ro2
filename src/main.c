@@ -73,8 +73,8 @@ static struct argp_option options[]  =
     { "cutup",     'c',       "VALUE",   OPTION_NO_USAGE, "Upper cutoff. Default: don't cut."       },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
                                                           "random, dummy, mtz, flow1, mtzlazy, "
-                                                          "flow1lazy, loopBB, loopBBf, lazyBB, "
-                                                          "lazyBBg "
+                                                          "flow1lazy, loopBB, loopBBf, loopBBm, "
+                                                          "loopBBx, lazyBB, lazyBBg. "
                                                           "Default: lazyBBg."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
