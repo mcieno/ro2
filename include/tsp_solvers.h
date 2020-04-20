@@ -17,12 +17,12 @@
 #define TSP_SOLVER_FLOW1      4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
 #define TSP_SOLVER_MTZLAZY    5U  /*!< Sequential Formulation model with lazy constraints.  */
 #define TSP_SOLVER_FLOW1LAZY  6U  /*!< Single Commodity Flow model with lazy constraints.  */
-#define TSP_SOLVER_LOOPBB     7U  /*!< Loop Branch and Bound model.  */
-#define TSP_SOLVER_LOOPBBF    8U  /*!< Variant F of the loop Branch and Bound model.  */
-#define TSP_SOLVER_LOOPBBM    9U  /*!< Variant M of the loop Branch and Bound model.  */
-#define TSP_SOLVER_LOOPBBX   10U  /*!< Variant X of the loop Branch and Bound model.  */
-#define TSP_SOLVER_LAZYBB    11U  /*!< Branch and Bound model with lazy constraint callback.  */
-#define TSP_SOLVER_LAZYBBG   12U  /*!< Branch and Bound model with generic callback.  */
+#define TSP_SOLVER_LOOPBC     7U  /*!< Loop Branch and Cut model.  */
+#define TSP_SOLVER_LOOPBCF    8U  /*!< Variant F of the loop Branch and Cut model.  */
+#define TSP_SOLVER_LOOPBCM    9U  /*!< Variant M of the loop Branch and Cut model.  */
+#define TSP_SOLVER_LOOPBCX   10U  /*!< Variant X of the loop Branch and Cut model.  */
+#define TSP_SOLVER_LAZYBC    11U  /*!< Branch and Cut model with lazy constraint callback.  */
+#define TSP_SOLVER_LAZYBCG   12U  /*!< Branch and Cut model with generic callback.  */
 
 typedef unsigned model_t;
 
@@ -157,7 +157,7 @@ flow1lazy_model ( instance *problem );
 
 
 /*!
- * \brief Solve with dummy "Branch and Bound" model,
+ * \brief Solve with dummy "Branch and Cut" model,
  *        restarting cplex after every intermediate solution.
  *
  *
@@ -165,14 +165,14 @@ flow1lazy_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-loopBB_model ( instance *problem );
+loopBC_model ( instance *problem );
 
 
 /*!
- * \brief Solve with dummy "Branch and Bound" model (variant 'F'),
+ * \brief Solve with dummy "Branch and Cut" model (variant 'F'),
  *        restarting cplex after every intermediate solution.
  *
- * This model is similar to loopBB_model().
+ * This model is similar to loopBC_model().
  * The main difference is that it starts with a loose EPGAP and tightens it
  * iteration after iteration, until a single component is found, possibly
  * sub-optimal. At that point, the default MIP optimizer is run.
@@ -181,14 +181,14 @@ loopBB_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-loopBBf_model ( instance *problem );
+loopBCf_model ( instance *problem );
 
 
 /*!
- * \brief Solve with dummy "Branch and Bound" model (variant 'M'),
+ * \brief Solve with dummy "Branch and Cut" model (variant 'M'),
  *        restarting cplex after every intermediate solution.
  *
- * This model is similar to loopBB_model().
+ * This model is similar to loopBC_model().
  * The main difference is that it starts with a loose EPGAP and a small limit
  * of solutions. It tightens the gap and increases the solution limit until a
  * single component is found, possibly sub-optimal.
@@ -198,14 +198,14 @@ loopBBf_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-loopBBm_model ( instance *problem );
+loopBCm_model ( instance *problem );
 
 
 /*!
- * \brief Solve with dummy "Branch and Bound" model (variant 'X'),
+ * \brief Solve with dummy "Branch and Cut" model (variant 'X'),
  *        restarting cplex after every intermediate solution.
  *
- * This model is similar to loopBB_model().
+ * This model is similar to loopBC_model().
  * The main difference is that it starts with a tight EPGAP and a large limit
  * of solutions. It looses them according to the number of components it found
  * at each solution, until a single component is found, possibly sub-optimal.
@@ -215,29 +215,29 @@ loopBBm_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-loopBBx_model ( instance *problem );
+loopBCx_model ( instance *problem );
 
 
 /*!
- * \brief Solve with "Branch and Bound" model with lazy constraint callback.
+ * \brief Solve with "Branch and Cut" model with lazy constraint callback.
  *
  *
  * \param problem
  *     Pointer to the instance structure.
  */
 void
-lazyBB_model ( instance *problem );
+lazyBC_model ( instance *problem );
 
 
 /*!
- * \brief Solve with "Branch and Bound" model with lazy constraint generic callback.
+ * \brief Solve with "Branch and Cut" model with lazy constraint generic callback.
  *
  *
  * \param problem
  *     Pointer to the instance structure.
  */
 void
-lazyBBg_model ( instance *problem );
+lazyBCg_model ( instance *problem );
 
 
 #endif

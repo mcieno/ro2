@@ -34,22 +34,22 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .RI "#define \fBTSP_SOLVER_FLOW1LAZY\fP   6U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LOOPBB\fP   7U"
+.RI "#define \fBTSP_SOLVER_LOOPBC\fP   7U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LOOPBBF\fP   8U"
+.RI "#define \fBTSP_SOLVER_LOOPBCF\fP   8U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LOOPBBM\fP   9U"
+.RI "#define \fBTSP_SOLVER_LOOPBCM\fP   9U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LOOPBBX\fP   10U"
+.RI "#define \fBTSP_SOLVER_LOOPBCX\fP   10U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LAZYBB\fP   11U"
+.RI "#define \fBTSP_SOLVER_LAZYBC\fP   11U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LAZYBBG\fP   12U"
+.RI "#define \fBTSP_SOLVER_LAZYBCG\fP   12U"
 .br
 .in -1c
 .SS "Typedefs"
@@ -95,29 +95,29 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .br
 .RI "Solve with 'Single Commodity Flow' model with lazy constraints\&. "
 .ti -1c
-.RI "void \fBloopBB_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBloopBC_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with dummy 'Branch and Bound' model, restarting cplex after every intermediate solution\&. "
+.RI "Solve with dummy 'Branch and Cut' model, restarting cplex after every intermediate solution\&. "
 .ti -1c
-.RI "void \fBloopBBf_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBloopBCf_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with dummy 'Branch and Bound' model (variant 'F'), restarting cplex after every intermediate solution\&. "
+.RI "Solve with dummy 'Branch and Cut' model (variant 'F'), restarting cplex after every intermediate solution\&. "
 .ti -1c
-.RI "void \fBloopBBm_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBloopBCm_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with dummy 'Branch and Bound' model (variant 'M'), restarting cplex after every intermediate solution\&. "
+.RI "Solve with dummy 'Branch and Cut' model (variant 'M'), restarting cplex after every intermediate solution\&. "
 .ti -1c
-.RI "void \fBloopBBx_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBloopBCx_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with dummy 'Branch and Bound' model (variant 'X'), restarting cplex after every intermediate solution\&. "
+.RI "Solve with dummy 'Branch and Cut' model (variant 'X'), restarting cplex after every intermediate solution\&. "
 .ti -1c
-.RI "void \fBlazyBB_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBlazyBC_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with 'Branch and Bound' model with lazy constraint callback\&. "
+.RI "Solve with 'Branch and Cut' model with lazy constraint callback\&. "
 .ti -1c
-.RI "void \fBlazyBBg_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBlazyBCg_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with 'Branch and Bound' model with lazy constraint generic callback\&. "
+.RI "Solve with 'Branch and Cut' model with lazy constraint generic callback\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -139,18 +139,18 @@ Dummy model\&.
 Single Commodity Flow model (Gavish and Graves (1978))\&. 
 .SS "#define TSP_SOLVER_FLOW1LAZY   6U"
 Single Commodity Flow model with lazy constraints\&. 
-.SS "#define TSP_SOLVER_LAZYBB   11U"
-Branch and Bound model with lazy constraint callback\&. 
-.SS "#define TSP_SOLVER_LAZYBBG   12U"
-Branch and Bound model with generic callback\&. 
-.SS "#define TSP_SOLVER_LOOPBB   7U"
-Loop Branch and Bound model\&. 
-.SS "#define TSP_SOLVER_LOOPBBF   8U"
-Variant F of the loop Branch and Bound model\&. 
-.SS "#define TSP_SOLVER_LOOPBBM   9U"
-Variant M of the loop Branch and Bound model\&. 
-.SS "#define TSP_SOLVER_LOOPBBX   10U"
-Variant X of the loop Branch and Bound model\&. 
+.SS "#define TSP_SOLVER_LAZYBC   11U"
+Branch and Cut model with lazy constraint callback\&. 
+.SS "#define TSP_SOLVER_LAZYBCG   12U"
+Branch and Cut model with generic callback\&. 
+.SS "#define TSP_SOLVER_LOOPBC   7U"
+Loop Branch and Cut model\&. 
+.SS "#define TSP_SOLVER_LOOPBCF   8U"
+Variant F of the loop Branch and Cut model\&. 
+.SS "#define TSP_SOLVER_LOOPBCM   9U"
+Variant M of the loop Branch and Cut model\&. 
+.SS "#define TSP_SOLVER_LOOPBCX   10U"
+Variant X of the loop Branch and Cut model\&. 
 .SS "#define TSP_SOLVER_MTZ   3U"
 Sequential Formulation model (Miller, Tucker and Zemlin (1960))\&. 
 .SS "#define TSP_SOLVER_MTZLAZY   5U"
@@ -235,10 +235,10 @@ Solve with 'Single Commodity Flow' model with lazy constraints\&.
 .RE
 .PP
 
-.SS "void lazyBB_model (\fBinstance\fP * problem)"
+.SS "void lazyBC_model (\fBinstance\fP * problem)"
 
 .PP
-Solve with 'Branch and Bound' model with lazy constraint callback\&. 
+Solve with 'Branch and Cut' model with lazy constraint callback\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -246,10 +246,10 @@ Solve with 'Branch and Bound' model with lazy constraint callback\&.
 .RE
 .PP
 
-.SS "void lazyBBg_model (\fBinstance\fP * problem)"
+.SS "void lazyBCg_model (\fBinstance\fP * problem)"
 
 .PP
-Solve with 'Branch and Bound' model with lazy constraint generic callback\&. 
+Solve with 'Branch and Cut' model with lazy constraint generic callback\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -257,10 +257,10 @@ Solve with 'Branch and Bound' model with lazy constraint generic callback\&.
 .RE
 .PP
 
-.SS "void loopBB_model (\fBinstance\fP * problem)"
+.SS "void loopBC_model (\fBinstance\fP * problem)"
 
 .PP
-Solve with dummy 'Branch and Bound' model, restarting cplex after every intermediate solution\&. 
+Solve with dummy 'Branch and Cut' model, restarting cplex after every intermediate solution\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -268,10 +268,10 @@ Solve with dummy 'Branch and Bound' model, restarting cplex after every intermed
 .RE
 .PP
 
-.SS "void loopBBf_model (\fBinstance\fP * problem)"
+.SS "void loopBCf_model (\fBinstance\fP * problem)"
 
 .PP
-Solve with dummy 'Branch and Bound' model (variant 'F'), restarting cplex after every intermediate solution\&. This model is similar to \fBloopBB_model()\fP\&. The main difference is that it starts with a loose EPGAP and tightens it iteration after iteration, until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
+Solve with dummy 'Branch and Cut' model (variant 'F'), restarting cplex after every intermediate solution\&. This model is similar to \fBloopBC_model()\fP\&. The main difference is that it starts with a loose EPGAP and tightens it iteration after iteration, until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -279,10 +279,10 @@ Solve with dummy 'Branch and Bound' model (variant 'F'), restarting cplex after 
 .RE
 .PP
 
-.SS "void loopBBm_model (\fBinstance\fP * problem)"
+.SS "void loopBCm_model (\fBinstance\fP * problem)"
 
 .PP
-Solve with dummy 'Branch and Bound' model (variant 'M'), restarting cplex after every intermediate solution\&. This model is similar to \fBloopBB_model()\fP\&. The main difference is that it starts with a loose EPGAP and a small limit of solutions\&. It tightens the gap and increases the solution limit until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
+Solve with dummy 'Branch and Cut' model (variant 'M'), restarting cplex after every intermediate solution\&. This model is similar to \fBloopBC_model()\fP\&. The main difference is that it starts with a loose EPGAP and a small limit of solutions\&. It tightens the gap and increases the solution limit until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -290,10 +290,10 @@ Solve with dummy 'Branch and Bound' model (variant 'M'), restarting cplex after 
 .RE
 .PP
 
-.SS "void loopBBx_model (\fBinstance\fP * problem)"
+.SS "void loopBCx_model (\fBinstance\fP * problem)"
 
 .PP
-Solve with dummy 'Branch and Bound' model (variant 'X'), restarting cplex after every intermediate solution\&. This model is similar to \fBloopBB_model()\fP\&. The main difference is that it starts with a tight EPGAP and a large limit of solutions\&. It looses them according to the number of components it found at each solution, until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
+Solve with dummy 'Branch and Cut' model (variant 'X'), restarting cplex after every intermediate solution\&. This model is similar to \fBloopBC_model()\fP\&. The main difference is that it starts with a tight EPGAP and a large limit of solutions\&. It looses them according to the number of components it found at each solution, until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
 .PP
 \fBParameters:\fP
 .RS 4

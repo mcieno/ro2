@@ -33,7 +33,7 @@
  *      If true, use GnuPlot to draw the tour. Default: yes.
  *
  * \param solving_method
- *      Model/solver to be used. Default: Dummy Branch and Bound.
+ *      Model/solver to be used. Default: Dummy Branch and Cut.
  *
  * \param threads
  *     Number of threads to use. Default: all.

@@ -73,9 +73,9 @@ static struct argp_option options[]  =
     { "cutup",     'c',       "VALUE",   OPTION_NO_USAGE, "Upper cutoff. Default: don't cut."       },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
                                                           "random, dummy, mtz, flow1, mtzlazy, "
-                                                          "flow1lazy, loopBB, loopBBf, loopBBm, "
-                                                          "loopBBx, lazyBB, lazyBBg. "
-                                                          "Default: lazyBBg."                       },
+                                                          "flow1lazy, loopBC, loopBCf, loopBCm, "
+                                                          "loopBCx, lazyBC, lazyBCg. "
+                                                          "Default: lazyBCg."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
 
@@ -98,7 +98,7 @@ main ( int argc, char *argv[] )
     init_instance( &problem );
 
     /* Initialize default configuration */
-    tspconf_init( NULL, &problem, 1, TSP_SOLVER_LAZYBBG, 0, 0, 0, 0., 0., 0 );
+    tspconf_init( NULL, &problem, 1, TSP_SOLVER_LAZYBCG, 0, 0, 0, 0., 0., 0 );
 
     argp_parse( &argp, argc, argv, 0, 0, NULL );
     problem.name = conf.name;
@@ -161,50 +161,50 @@ main ( int argc, char *argv[] )
             break;
 
 
-        case TSP_SOLVER_LOOPBB:
+        case TSP_SOLVER_LOOPBC:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Dummy Branch and Bound model\n" );
+                fprintf( stderr, CINFO "Running Loop Branch and Cut model\n" );
             }
-            loopBB_model( &problem );
+            loopBC_model( &problem );
             break;
 
-        case TSP_SOLVER_LOOPBBF:
+        case TSP_SOLVER_LOOPBCF:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'F') model\n" );
+                fprintf( stderr, CINFO "Running Loop Branch and Cut (variant 'F') model\n" );
             }
-            loopBBf_model( &problem );
-            break;
-
-
-        case TSP_SOLVER_LOOPBBM:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'M') model\n" );
-            }
-            loopBBm_model( &problem );
+            loopBCf_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LAZYBB:
+        case TSP_SOLVER_LOOPBCM:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and Bound model with lazy constraint callback\n" );
+                fprintf( stderr, CINFO "Running Loop Branch and Cut (variant 'M') model\n" );
             }
-            lazyBB_model( &problem );
+            loopBCm_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LAZYBBG:
+        case TSP_SOLVER_LOOPBCX:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and Bound model with lazy constraint generic callback\n" );
+                fprintf( stderr, CINFO "Running Loop Branch and Cut (variant 'X') model\n" );
             }
-            lazyBBg_model( &problem );
+            loopBCx_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LOOPBBX:
+        case TSP_SOLVER_LAZYBC:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Dummy Branch and Bound (variant 'X') model\n" );
+                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint callback\n" );
             }
-            loopBBx_model( &problem );
+            lazyBC_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_LAZYBCG:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint generic callback\n" );
+            }
+            lazyBCg_model( &problem );
             break;
 
 
@@ -314,23 +314,23 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else if ( !strcmp( "flow1lazy", arg ) ) {
                 conf.solving_method = TSP_SOLVER_FLOW1LAZY;
 
-            } else if ( !strcmp( "loopBB", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBB;
+            } else if ( !strcmp( "loopBC", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LOOPBC;
 
-            } else if ( !strcmp( "loopBBf", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBBF;
+            } else if ( !strcmp( "loopBCf", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LOOPBCF;
 
-            } else if ( !strcmp( "loopBBm", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBBM;
+            } else if ( !strcmp( "loopBCm", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LOOPBCM;
 
-            } else if ( !strcmp( "loopBBx", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBBX;
+            } else if ( !strcmp( "loopBCx", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LOOPBCX;
 
-            } else if ( !strcmp( "lazyBB", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LAZYBB;
+            } else if ( !strcmp( "lazyBC", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LAZYBC;
 
-            } else if ( !strcmp( "lazyBBg", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LAZYBBG;
+            } else if ( !strcmp( "lazyBCg", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LAZYBCG;
 
             } else {
                 argp_error(

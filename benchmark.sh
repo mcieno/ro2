@@ -26,9 +26,9 @@ models=(
     #flow1
     #mtzlazy
     #flow1lazy
-    loopBB
-    lazyBB
-    lazyBBg
+    loopBC
+    lazyBC
+    lazyBCg
 )
 
 testbed=(

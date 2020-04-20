@@ -18,7 +18,7 @@ tspconf_init ()
     conf.filename       = NULL;
     conf.name           = NULL;
     conf.shouldplot     = 1;
-    conf.solving_method = TSP_SOLVER_LOOPBB;
+    conf.solving_method = TSP_SOLVER_LAZYBCG;
     conf.threads        = 0;
     conf.memory         = 0;
     conf.timelimit      = 0.;
