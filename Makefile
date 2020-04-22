@@ -17,7 +17,7 @@ LOCAL_INCDIR  = $(PWD)/include
 TSP_SRC_FILES = src/*.c
 
 CLNDIRS       = -L$(CPLEXLIBDIR) -L$(CONCORDEDIR)
-CLNFLAGS      = -lm -lpthread -ldl -lcplex -lconcorde
+CLNFLAGS      = -Wl,--start-group -lm -lpthread -ldl -lcplex -lconcorde	
 
 CC            = gcc
 COPTPERF      = -O9 -m64 -fPIC -Wall -Werror --pedantic

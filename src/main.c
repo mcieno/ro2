@@ -207,6 +207,13 @@ main ( int argc, char *argv[] )
             lazyBCg_model( &problem );
             break;
 
+        case TSP_SOLVER_LAZYBCC:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Branch and Cut model with concorde\n" );
+            }
+            lazyBCc_model( &problem );
+            break;    
+
 
         default:
             if (loglevel >= LOG_INFO) {
@@ -331,6 +338,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "lazyBCg", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LAZYBCG;
+
+            } else if ( !strcmp( "lazyBCc", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LAZYBCC;
 
             } else {
                 argp_error(
