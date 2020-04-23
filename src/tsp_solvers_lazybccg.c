@@ -268,16 +268,21 @@ TERMINATE :
     return status;
 }
 
+
 int
-_concorde_callback_lazyBCcg ( double cutval, int cutcount, int *cut, void *userhandle )
+_concorde_callback_lazyBCcg ( double val, int cutcount, int *cut, void *userhandle )
 {
     ccinfo_t *ccinfo = (ccinfo_t *) userhandle;
+
+    if ( loglevel >= LOG_DEBUG ) {
+        fprintf( stderr, CDEBUG "_concorde_callback_lazyBCcg: %d nodes in the cut\n", cutcount );
+    }
 
     char sense      = 'G';
     double rhs      = 2;
     int purgeable   = CPX_USECUT_PURGE;
     int local       = 0;
-    int rmatbeg = 0;
+    int rmatbeg     = 0;
 
     int *rmatind;
     double *rmatval;
@@ -330,6 +335,8 @@ _concorde_callback_lazyBCcg ( double cutval, int cutcount, int *cut, void *userh
         fprintf( stderr, CFATAL "_concorde_callback_lazyBCcg: CPXcutcallbackadd \n");
         exit( EXIT_FAILURE );
     }
+
+    free( memchunk );
 
     return 0;
 }
@@ -384,14 +391,20 @@ _usercutcallback_lazyBCcg ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, vo
         goto TERMINATE;
     }
 
+    if ( loglevel >= LOG_DEBUG ) {
+        fprintf( stderr, CDEBUG "_usercutcallback_lazyBCcg: relaxation graph is%s connected\n",
+            ncomp == 1 ? "" : " NOT" );
+    }
+
     if ( ncomp == 1 &&
-        CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x,
-                            2.0 - 0.1, _concorde_callback_lazyBCcg, &ccinfo ) )
+        CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.95,
+                             _concorde_callback_lazyBCcg, &ccinfo ) )
     {
         fprintf( stderr, CERROR "_usercutcallback_lazyBCcg: CCcut_violated_cuts.\n" );
         status = 1;
         goto TERMINATE;
     }
+
 
 TERMINATE:
 

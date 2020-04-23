@@ -33,9 +33,9 @@ typedef struct
     void *cbdata;
     int wherefrom;
     int *useraction_p;
-    instance *problem;
+    cbinfo_t *info;
 }
-doit_info;
+ccinfo_t;
 
 
 /*!
@@ -150,12 +150,12 @@ _add_constraints_lazyBCc ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
 void
 _add_subtour_constraints_lazyBCc ( const instance *problem,
-                                  CPXCENVptr     env,
-                                  size_t         *next,
-                                  size_t         *comps,
-                                  size_t         ncomps,
-                                  void           *cbdata,
-                                  int            wherefrom )
+                                   CPXCENVptr     env,
+                                   size_t         *next,
+                                   size_t         *comps,
+                                   size_t         ncomps,
+                                   void           *cbdata,
+                                   int            wherefrom )
 {
     if ( ncomps == 1 ) {
         return;
@@ -267,69 +267,74 @@ TERMINATE :
     return status;
 }
 
+
 int
-_concorde_callback_lazyBCc(double cutval, int cutcount, int *cut, void *inParam){
+_concorde_callback_lazyBCc( double val, int cutcount, int *cut, void *userhandle )
+{
+    ccinfo_t *ccinfo = (ccinfo_t *) userhandle;
 
-    doit_info *info = (doit_info *) inParam;
-
-    /*
-    fprintf(stderr, "gg\n");
-    fprintf(stderr, "cutval: %f\n", cutval);
-    fprintf(stderr, "cutcount: %u\n", cutcount);
-    for(int i=0; i<cutcount;i++){
-        fprintf(stderr, "cut: %u\n", cut[i]);
+    if ( loglevel >= LOG_DEBUG ) {
+        fprintf( stderr, CDEBUG "_concorde_callback_lazyBCc: %d nodes in the cut\n", cutcount );
     }
-    */
 
-    char sense = 'G';
+    char sense    = 'G';
     int purgeable = CPX_USECUT_PURGE;
+    double rhs    = 2.0;
 
-    /*
-    double rhs = cutval;
-    int cut_ind[cutcount];
-    double cut_val[cutcount];
-    for(int i=0; i<cutcount; i++){
-        cut_ind[i] = cut[i];
-        cut_val[i] = 1.0;
+    int *cutind;
+    double *cutval;
+
+    void *memchunk   = malloc( ccinfo->info->ncols * sizeof( *cutind )
+                               + ccinfo->info->ncols * sizeof( *cutval ) );
+
+    if ( memchunk == NULL ) {
+        fprintf( stderr, CFATAL "_concorde_callback_lazyBCcg: out of memory\n" );
+        return 1;
     }
-    */
 
+    cutind = memchunk;
+    cutval = (double*) (cutind + ccinfo->info->ncols );
 
-   double rhs = 2.0;
-   int nedges =  ( info->problem->nnodes * ( info->problem->nnodes ))/2;
-   int *cut_ind;
-   cut_ind = malloc( nedges * sizeof( cut_ind ) );
-   double *cut_val;
-   cut_val = malloc( nedges * sizeof( cut_val ) );
-   int edges_cut_count =0;
-   for(int i=0; i<cutcount; i++){
-       for(int j=0; j<info->problem->nnodes; j++){
-           int flag =0;
-           for(int k =0;k<cutcount;k++){
-               if(j==cut[k] ||  cut[i]==j){
-                   flag =1;
-               }
+    int nzcnt = 0;
+
+    int i;
+    for ( size_t l = 0; l < cutcount; ++l )
+    {
+        /* Node i is in S */
+        i = cut[l];
+
+        /* Find all nodes in V \ S and add the constraint */
+        for ( size_t j = 0; j < ccinfo->info->problem->nnodes; ++j ) {
+            if ( j == i ) {
+                goto SKIPTHIS;
             }
-            if(flag==0){
-                cut_ind[edges_cut_count] = _lazyBCc_xpos(cut[i],j,info->problem);
-                cut_val[edges_cut_count]=1.0;
-                edges_cut_count++;
+
+            for ( size_t k = 0; k < cutcount; ++k ) {
+                if ( cut[k] == j ) {
+                    goto SKIPTHIS;
+                }
             }
-            flag = 0;   
-           
-       }
-   }
+
+            /* Node j is in V \ S */
+            cutind[nzcnt] = _lazyBCc_xpos( i, j, ccinfo->info->problem );
+            cutval[nzcnt] = 1.0;
+            ++nzcnt;
+
+        SKIPTHIS:
+            continue;
+        }
+    }
 
 
-    if ( CPXcutcallbackadd( info->env, info->cbdata, info->wherefrom, edges_cut_count, rhs, sense, cut_ind, cut_val, purgeable ) ) {
+    if ( CPXcutcallbackadd( ccinfo->env, ccinfo->cbdata, ccinfo->wherefrom,
+                            nzcnt, rhs, sense, cutind, cutval, purgeable ) )
+    {
         fprintf( stderr, CFATAL "_concorde_callback_lazyBCc: CPXcutcallbackadd \n");
         exit( EXIT_FAILURE );
     }
 
-    free(cut_ind);
-    free(cut_val);
-
-    *info->useraction_p = CPX_CALLBACK_SET;
+    free( memchunk );
+    *ccinfo->useraction_p = CPX_CALLBACK_SET;
 
     return 0;
 }
@@ -347,7 +352,7 @@ _lazyBCc_cutcallback( CPXCENVptr env,
     *useraction_p = CPX_CALLBACK_DEFAULT;
     cbinfo_t *info = (cbinfo_t *) cbhandle;
 
-    doit_info doit_info = { env, cbdata, wherefrom, useraction_p, info->problem };
+    ccinfo_t ccinfo = { env, cbdata, wherefrom, useraction_p, info };
 
     int ncomp       = 0;
     int nedge       = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
@@ -385,20 +390,23 @@ _lazyBCc_cutcallback( CPXCENVptr env,
     }
 
 
-
     if ( CCcut_connect_components( info->problem->nnodes, nedge, elist, x, &ncomp, &compscount, &comps ) ) {
         fprintf( stderr, CERROR "_lazyBCc_cutcallback: CCcut_connect_components.\n" );
         goto TERMINATE;
     }
 
+    if ( loglevel >= LOG_DEBUG ) {
+        fprintf( stderr, CDEBUG "_usercutcallback_lazyBCc: relaxation graph is%s connected\n",
+            ncomp == 1 ? "" : " NOT" );
+    }
 
-    if ( ncomp == 1 ) {
-        if ( CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x,
-                                  2.0 - 0.1, _concorde_callback_lazyBCc, &doit_info ) )
-        {
-            fprintf( stderr, CERROR "_lazyBCc_cutcallback: CCcut_violated_cuts.\n" );
-            goto TERMINATE;
-        }
+    if ( ncomp == 1 &&
+        CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.95,
+                             _concorde_callback_lazyBCc, &ccinfo ) )
+    {
+        fprintf( stderr, CERROR "_lazyBCc_cutcallback: CCcut_violated_cuts.\n" );
+        status = 1;
+        goto TERMINATE;
     }
 
 
