@@ -108,6 +108,10 @@ Macros</h2></td></tr>
 <tr class="separator:ae4b09c2c27e3ea4ea5dc5f26aa458c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a390c4565bee07bb22b9f4413160e656d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a390c4565bee07bb22b9f4413160e656d">TSP_SOLVER_LAZYBCG</a>&#160;&#160;&#160;12U</td></tr>
 <tr class="separator:a390c4565bee07bb22b9f4413160e656d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fe85518beff07fc6d1e7c8a23a1ba34"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a7fe85518beff07fc6d1e7c8a23a1ba34">TSP_SOLVER_LAZYBCC</a>&#160;&#160;&#160;13U</td></tr>
+<tr class="separator:a7fe85518beff07fc6d1e7c8a23a1ba34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8989b2699e850151e88db764b6fc171"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ac8989b2699e850151e88db764b6fc171">TSP_SOLVER_LAZYBCCG</a>&#160;&#160;&#160;14U</td></tr>
+<tr class="separator:ac8989b2699e850151e88db764b6fc171"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -159,6 +163,12 @@ Functions</h2></td></tr>
 <tr class="memitem:afddd977acc43e51e29356f6da45e50a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#afddd977acc43e51e29356f6da45e50a8">lazyBCg_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
 <tr class="memdesc:afddd977acc43e51e29356f6da45e50a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Branch and Cut" model with lazy constraint generic callback.  <a href="#afddd977acc43e51e29356f6da45e50a8">More...</a><br /></td></tr>
 <tr class="separator:afddd977acc43e51e29356f6da45e50a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fc425a85187083a22b5bd60469794f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a1fc425a85187083a22b5bd60469794f5">lazyBCc_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a1fc425a85187083a22b5bd60469794f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Branch and Cut" model with lazy constraint callback and Concorde user cuts.  <a href="#a1fc425a85187083a22b5bd60469794f5">More...</a><br /></td></tr>
+<tr class="separator:a1fc425a85187083a22b5bd60469794f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe52dcec6a7fc5b2a5313b32b4989bb2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#abe52dcec6a7fc5b2a5313b32b4989bb2">lazyBCcg_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:abe52dcec6a7fc5b2a5313b32b4989bb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Branch and Cut" model with lazy constraint generic callback and Concorde user cuts.  <a href="#abe52dcec6a7fc5b2a5313b32b4989bb2">More...</a><br /></td></tr>
+<tr class="separator:abe52dcec6a7fc5b2a5313b32b4989bb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Methods for solving a TSP problem. </p>
@@ -221,6 +231,36 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Branch and Cut model with lazy constraint callback. </p>
+
+</div>
+</div>
+<a id="a7fe85518beff07fc6d1e7c8a23a1ba34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fe85518beff07fc6d1e7c8a23a1ba34">&#9670;&nbsp;</a></span>TSP_SOLVER_LAZYBCC</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_LAZYBCC&#160;&#160;&#160;13U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Branch and Cut model with Concorde callback. </p>
+
+</div>
+</div>
+<a id="ac8989b2699e850151e88db764b6fc171"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8989b2699e850151e88db764b6fc171">&#9670;&nbsp;</a></span>TSP_SOLVER_LAZYBCCG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_LAZYBCCG&#160;&#160;&#160;14U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Branch and Cut model with Concorde with generic callback. </p>
 
 </div>
 </div>
@@ -552,6 +592,60 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Solve with "Branch and Cut" model with lazy constraint callback. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1fc425a85187083a22b5bd60469794f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fc425a85187083a22b5bd60469794f5">&#9670;&nbsp;</a></span>lazyBCc_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lazyBCc_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solve with "Branch and Cut" model with lazy constraint callback and Concorde user cuts. </p>
+<p>This model uses Concorde to find cuts based on max-flow</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="abe52dcec6a7fc5b2a5313b32b4989bb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe52dcec6a7fc5b2a5313b32b4989bb2">&#9670;&nbsp;</a></span>lazyBCcg_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lazyBCcg_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solve with "Branch and Cut" model with lazy constraint generic callback and Concorde user cuts. </p>
+<p>This model uses Concorde to find cuts based on max-flow</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>

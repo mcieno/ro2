@@ -1,10 +1,11 @@
-BUILD_DIR  = $(PWD)/bin
-SYSTEM     = x86-64_linux
-LIBFORMAT  = static_pic
+BUILD_DIR     = $(PWD)/bin
+SYSTEM        = x86-64_linux
+LIBFORMAT     = static_pic
 
-COSCEDIR   = /opt/ibm/ILOG/CPLEX_Studio1210
-CPLEXDIR   = $(COSCEDIR)/cplex
-CONCERTDIR = $(COSCEDIR)/concert
+COSCEDIR      = /opt/ibm/ILOG/CPLEX_Studio1210
+CPLEXDIR      = $(COSCEDIR)/cplex
+CONCERTDIR    = $(COSCEDIR)/concert
+CONCORDEDIR   = ./concorde
 
 CPLEXBINDIR   = $(CPLEXDIR)/bin/$(SYSTEM)
 CPLEXLIBDIR   = $(CPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
@@ -15,16 +16,16 @@ CPLEXINCDIR   = $(CPLEXDIR)/include/ilcplex
 LOCAL_INCDIR  = $(PWD)/include
 TSP_SRC_FILES = src/*.c
 
-CLNDIRS   = -L$(CPLEXLIBDIR)
-CLNFLAGS  =  -lm -lpthread -ldl -lcplex
+CLNDIRS       = -L$(CPLEXLIBDIR) -L$(CONCORDEDIR)
+CLNFLAGS      = -Wl,--start-group -lm -lpthread -ldl -lcplex -lconcorde
 
-CC         = gcc
-COPTPERF   = -O9 -m64 -fPIC -Wall -Werror --pedantic
-COPTDEBG   = -g3 -O0 -m64 -Wall -Werror --pedantic -fstack-protector-all
-CFLAGSPERF = $(COPTPERF)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
-CFLAGSDEBG = $(COPTDEBG)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
+CC            = gcc
+COPTPERF      = -O9 -m64 -fPIC -Wall -Werror --pedantic -no-pie -fno-PIE
+COPTDEBG      = -g3 -O0 -m64 -Wall -Werror --pedantic -fstack-protector-all -no-pie -fno-PIE
+CFLAGSPERF    = $(COPTPERF)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
+CFLAGSDEBG    = $(COPTDEBG)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
 
-FANCYLOG   = \033[96m[*]\033[0m
+FANCYLOG      = \033[96m[*]\033[0m
 
 
 config:

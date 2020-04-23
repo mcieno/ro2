@@ -43,8 +43,8 @@ Solve a Traveling Salesman Problem instance.
   -m, --memory=SIZE          Maximum working memory (size in MB).
   -M, --model=MODEL          Solving technique. Available: random, dummy, mtz,
                              flow1, mtzlazy, flow1lazy, loopBC, loopBCf,
-                             loopBCm, loopBCx, lazyBC, lazyBCg. Default:
-                             lazyBCg.
+                             loopBCm, loopBCx, lazyBC, lazyBCg lazyBCc,
+                             lazyBCcg. Default: lazyBCg.
   -n, --nodelimit=NODES      MIP node limit.
       --name=TSPNAME         Name to assign to this problem.
       --noplot               Do not sketch the solution.
@@ -65,7 +65,7 @@ Report bugs to {marco.cieno, francesco.cazzaro}@studenti.unipd.it.
 
 Sample files are provided in folder `data` and come courtesy of the [TSPLIB](http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/).
 
-Available models are `random`, `dummy`, `mtz`, `flow1`, `mtzlazy`, `flow1lazy`, `loopBC`, `loopBCf`, `loopBCm`, `loopBCx`, `lazyBC`, and `lazyBCg`.
+Available models are `random`, `dummy`, `mtz`, `flow1`, `mtzlazy`, `flow1lazy`, `loopBC`, `loopBCf`, `loopBCm`, `loopBCx`, `lazyBC`, `lazyBCg`, `lazyBCc`, and `lazyBCcg`.
 
 Here's an example, just for fun:
 

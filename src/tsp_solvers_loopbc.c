@@ -17,6 +17,7 @@
 #include "logging.h"
 #include "tsp.h"
 #include "tspconf.h"
+#include "concorde.h"
 
 
 /*!
@@ -209,6 +210,8 @@ void
 loopBC_model ( instance *problem )
 {
     int error;
+
+    
 
     CPXENVptr env = CPXopenCPLEX( &error );
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );

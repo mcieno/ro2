@@ -1,6 +1,8 @@
 var searchData=
 [
   ['lazybc_5fmodel',['lazyBC_model',['../tsp__solvers_8h.html#a4d53a79738c349419a714df7b751050b',1,'tsp_solvers_lazybc.c']]],
+  ['lazybcc_5fmodel',['lazyBCc_model',['../tsp__solvers_8h.html#a1fc425a85187083a22b5bd60469794f5',1,'tsp_solvers_lazybcc.c']]],
+  ['lazybccg_5fmodel',['lazyBCcg_model',['../tsp__solvers_8h.html#abe52dcec6a7fc5b2a5313b32b4989bb2',1,'tsp_solvers_lazybccg.c']]],
   ['lazybcg_5fmodel',['lazyBCg_model',['../tsp__solvers_8h.html#afddd977acc43e51e29356f6da45e50a8',1,'tsp_solvers_lazybcg.c']]],
   ['log_5fdebug',['LOG_DEBUG',['../logging_8h.html#a6ff63e8955665c4a58b1598f2b07c51a',1,'logging.h']]],
   ['log_5ferror',['LOG_ERROR',['../logging_8h.html#aced66975c154ea0e2a8ec3bc818b4e08',1,'logging.h']]],

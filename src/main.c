@@ -74,7 +74,8 @@ static struct argp_option options[]  =
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
                                                           "random, dummy, mtz, flow1, mtzlazy, "
                                                           "flow1lazy, loopBC, loopBCf, loopBCm, "
-                                                          "loopBCx, lazyBC, lazyBCg. "
+                                                          "loopBCx, lazyBC, lazyBCg lazyBCc, "
+                                                          "lazyBCcg. "
                                                           "Default: lazyBCg."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
@@ -207,6 +208,20 @@ main ( int argc, char *argv[] )
             lazyBCg_model( &problem );
             break;
 
+        case TSP_SOLVER_LAZYBCC:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint and Concorde user cut callback.\n" );
+            }
+            lazyBCc_model( &problem );
+            break;
+
+        case TSP_SOLVER_LAZYBCCG:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint and Concorde user cut generic callback.\n" );
+            }
+            lazyBCcg_model( &problem );
+            break;
+
 
         default:
             if (loglevel >= LOG_INFO) {
@@ -331,6 +346,12 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "lazyBCg", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LAZYBCG;
+
+            } else if ( !strcmp( "lazyBCc", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LAZYBCC;
+
+            } else if ( !strcmp( "lazyBCcg", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LAZYBCCG;
 
             } else {
                 argp_error(

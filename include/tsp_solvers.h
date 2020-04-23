@@ -23,6 +23,8 @@
 #define TSP_SOLVER_LOOPBCX   10U  /*!< Variant X of the loop Branch and Cut model.  */
 #define TSP_SOLVER_LAZYBC    11U  /*!< Branch and Cut model with lazy constraint callback.  */
 #define TSP_SOLVER_LAZYBCG   12U  /*!< Branch and Cut model with generic callback.  */
+#define TSP_SOLVER_LAZYBCC   13U  /*!< Branch and Cut model with Concorde callback.  */
+#define TSP_SOLVER_LAZYBCCG  14U  /*!< Branch and Cut model with Concorde with generic callback.  */
 
 typedef unsigned model_t;
 
@@ -238,6 +240,31 @@ lazyBC_model ( instance *problem );
  */
 void
 lazyBCg_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with "Branch and Cut" model with lazy constraint callback and Concorde user cuts.
+ *
+ * This model uses Concorde to find cuts based on max-flow
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+lazyBCc_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with "Branch and Cut" model with lazy constraint generic callback and Concorde user cuts.
+ *
+ *
+ * This model uses Concorde to find cuts based on max-flow
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+lazyBCcg_model ( instance *problem );
 
 
 #endif
