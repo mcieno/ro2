@@ -17,10 +17,10 @@ LOCAL_INCDIR  = $(PWD)/include
 TSP_SRC_FILES = src/*.c
 
 CLNDIRS       = -L$(CPLEXLIBDIR) -L$(CONCORDEDIR)
-CLNFLAGS      = -Wl,--start-group -lm -lpthread -ldl -lcplex -lconcorde	
+CLNFLAGS      = -Wl,--start-group -lm -lpthread -ldl -lcplex -lconcorde	-no-pie -fno-PIE
 
 CC            = gcc
-COPTPERF      = -O9 -m64 -fPIC -Wall -Werror --pedantic
+COPTPERF      = -O9 -m64 -fPIC -Wall --pedantic -no-pie -fno-PIE
 COPTDEBG      = -g3 -O0 -m64 -Wall -Werror --pedantic -fstack-protector-all
 CFLAGSPERF    = $(COPTPERF)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
 CFLAGSDEBG    = $(COPTDEBG)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)

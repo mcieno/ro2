@@ -1,5 +1,5 @@
 /*
- * \brief   Branch and Cut model with concorde callback.
+ * \brief   Branch and Cut model with lazy constraint callback.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
@@ -26,6 +26,15 @@ typedef struct
     int ncols;
 }
 cbinfo_t;
+
+typedef struct
+{
+    const CPXENVptr env;
+    void *cbdata;
+    int wherefrom;
+    int *useraction_p;
+}
+doit_info;
 
 
 /*!
@@ -96,7 +105,7 @@ _add_constraints_lazyBCc ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_lazyBC: CPXnewcols [%s]\n", cname );
+                fprintf( stderr, CFATAL "_add_constraints_lazyBCc: CPXnewcols [%s]\n", cname );
                 exit( EXIT_FAILURE );
             }
 
@@ -223,23 +232,6 @@ _lazyconstraintcallback_lazyBCc ( CPXCENVptr env, void *cbdata, int wherefrom, v
     size_t *next  = calloc( info->problem->nnodes, sizeof( *next ) );
     size_t *comps = calloc( info->problem->nnodes, sizeof( *comps ) );
 
-    
-    int nedge = info->problem->nnodes *(info->problem->nnodes-1)/2;
-    int elist[nedge*2];
-    int i,j;
-    int loader =0;
-    for(i=0; i<info->problem->nnodes; ++i){
-        for(j=i+1; j<info->problem->nnodes; ++j){
-            elist[loader++]=i;
-            elist[loader++]=j;
-        }
-    }
-    int ncomp=0;
-    int *comps2 = (int*) malloc(info->problem->nnodes * sizeof(int));
-    int *compscount = (int*) malloc(info->problem->nnodes * sizeof(int));
-    
-
-
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
@@ -254,21 +246,10 @@ _lazyconstraintcallback_lazyBCc ( CPXCENVptr env, void *cbdata, int wherefrom, v
         goto TERMINATE;
     }
 
-    
-    if(CCcut_connect_components(info->problem->nnodes, nedge, elist, x, &ncomp, &compscount, &comps2)){
-        status = 1;
-        fprintf( stderr, CERROR "_lazyconstraintcallback_lazyBCc: CCcut_connect_commponents error.\n" );
-        goto TERMINATE;
-    }
-    else{
-        fprintf( stderr, CERROR "CONCORDE WAS CALLED AND WORKED.\n" );
-    }
-    
-
     _xopt2subtours( info->problem, x, next, comps, &ncomps, _lazyBCc_xpos );
 
     if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, CINFO "_lazyconstraintcallback_lazyBC: got %zu components.\n", ncomps );
+        fprintf( stderr, CINFO "_lazyconstraintcallback_lazyBCc: got %zu components.\n", ncomps );
     }
 
     if ( ncomps > 1 ) {
@@ -285,6 +266,118 @@ TERMINATE :
     return status;
 }
 
+int
+doit_fn_concorde(double cutval, int cutcount, int *cut, void *inParam){
+
+    doit_info *info = (doit_info *) inParam;
+
+    /*
+    fprintf(stderr, "gg\n");
+    fprintf(stderr, "cutval: %f\n", cutval);
+    fprintf(stderr, "cutcount: %u\n", cutcount);
+    for(int i=0; i<cutcount;i++){
+        fprintf(stderr, "cut: %u\n", cut[i]);
+    }
+    */
+
+    char sense = 'L';
+    int purgeable = CPX_USECUT_PURGE;
+
+    double rhs = cutval;
+    int cut_ind[cutcount];
+    double cut_val[cutcount];
+    for(int i=0; i<cutcount; i++){
+        cut_ind[i] = cut[i];
+        cut_val[i] = 1.0;
+    }
+ 
+
+    if ( CPXcutcallbackadd( info->env, info->cbdata, info->wherefrom, cutcount, rhs, sense, cut_ind, cut_val, purgeable ) ) {
+        fprintf( stderr, CFATAL "doit_fn_concorde: CPXcutcallbackadd \n");
+        exit( EXIT_FAILURE );
+    }    
+
+    *info->useraction_p = CPX_CALLBACK_SET;
+
+    return 0;
+}
+
+int
+_lazyBCc_cutcallback(CPXCENVptr env,
+           void *cbdata,
+           int wherefrom,
+           void *cbhandle,
+           int *useraction_p){
+
+ int status = 0;
+
+    *useraction_p = CPX_CALLBACK_DEFAULT;
+    cbinfo_t *info = (cbinfo_t *) cbhandle;
+
+    doit_info doit_info = {env, cbdata, wherefrom, useraction_p}; 
+
+    //size_t ncomps = 0;
+    double *x     = malloc( info->ncols * sizeof( *x ) );
+    size_t *next  = calloc( info->problem->nnodes, sizeof( *next ) );
+    size_t *comps = calloc( info->problem->nnodes, sizeof( *comps ) );
+
+    int nedge = info->problem->nnodes *(info->problem->nnodes-1)/2;
+    int elist[nedge*2];
+    int i,j;
+    int loader =0;
+    for(i=0; i<info->problem->nnodes; ++i){
+        for(j=i+1; j<info->problem->nnodes; ++j){
+            elist[loader++]=i;
+            elist[loader++]=j;
+        }
+    }
+    int ncomp=0;
+    int *comps2 = (int*) malloc(info->problem->nnodes * sizeof(int));
+    int *compscount = (int*) malloc(info->problem->nnodes * sizeof(int));
+    
+
+    if ( x     == NULL ||
+         next  == NULL ||
+         comps == NULL  ) {
+        fprintf(stderr, CERROR "_lazyBCc_cutcallback: Out of memory.\n");
+        goto TERMINATE;
+    }
+
+    status = CPXgetcallbacknodex( env, cbdata, wherefrom, x, 0, info->ncols - 1 );
+
+    if ( status ) {
+        fprintf( stderr, CERROR "_lazyBCc_cutcallback: CPXgetcallbacknodex.\n" );
+        goto TERMINATE;
+    }
+
+    fprintf(stderr, "QUANTe VOLTE?\n");
+
+    if(CCcut_connect_components(info->problem->nnodes, nedge, elist, x, &ncomp, &compscount, &comps2)){
+        fprintf( stderr, CERROR "_lazyBCc_cutcallback: CCcut_connect_components.\n" );
+        goto TERMINATE;
+    }
+
+    if(ncomp==1){
+        if(CCcut_violated_cuts(info->problem->nnodes, nedge, elist, x, 2.0-0.1, doit_fn_concorde, (void*) &doit_info)){
+            fprintf( stderr, CERROR "_lazyBCc_cutcallback: CCcut_violated_cuts.\n" );
+            goto TERMINATE;
+        }
+    }
+
+
+
+
+TERMINATE :
+
+    if (x     != NULL)  free( x     );
+    if (next  != NULL)  free( next  );
+    if (comps != NULL)  free( comps );
+
+    return status;
+
+
+}
+
 
 void
 lazyBCc_model ( instance *problem )
@@ -298,7 +391,9 @@ lazyBCc_model ( instance *problem )
     _add_constraints_lazyBCc( problem, env, lp );
 
     cbinfo_t info = { problem, CPXgetnumcols( env, lp ) };
-    CPXsetusercutcallbackfunc( env, _lazyconstraintcallback_lazyBCc, &info );
+    CPXsetlazyconstraintcallbackfunc( env, _lazyconstraintcallback_lazyBCc, &info );
+
+    CPXsetusercutcallbackfunc(env, _lazyBCc_cutcallback, &info);
 
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
