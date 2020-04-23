@@ -33,6 +33,7 @@ typedef struct
     void *cbdata;
     int wherefrom;
     int *useraction_p;
+    instance *problem;
 }
 doit_info;
 
@@ -280,9 +281,10 @@ _concorde_callback_lazyBCc(double cutval, int cutcount, int *cut, void *inParam)
     }
     */
 
-    char sense = 'L';
+    char sense = 'G';
     int purgeable = CPX_USECUT_PURGE;
 
+    /*
     double rhs = cutval;
     int cut_ind[cutcount];
     double cut_val[cutcount];
@@ -290,12 +292,42 @@ _concorde_callback_lazyBCc(double cutval, int cutcount, int *cut, void *inParam)
         cut_ind[i] = cut[i];
         cut_val[i] = 1.0;
     }
+    */
 
 
-    if ( CPXcutcallbackadd( info->env, info->cbdata, info->wherefrom, cutcount, rhs, sense, cut_ind, cut_val, purgeable ) ) {
+   double rhs = 2.0;
+   int nedges =  ( info->problem->nnodes * ( info->problem->nnodes ))/2;
+   int *cut_ind;
+   cut_ind = malloc( nedges * sizeof( cut_ind ) );
+   double *cut_val;
+   cut_val = malloc( nedges * sizeof( cut_val ) );
+   int edges_cut_count =0;
+   for(int i=0; i<cutcount; i++){
+       for(int j=0; j<info->problem->nnodes; j++){
+           int flag =0;
+           for(int k =0;k<cutcount;k++){
+               if(j==cut[k] ||  cut[i]==j){
+                   flag =1;
+               }
+            }
+            if(flag==0){
+                cut_ind[edges_cut_count] = _lazyBCc_xpos(cut[i],j,info->problem);
+                cut_val[edges_cut_count]=1.0;
+                edges_cut_count++;
+            }
+            flag = 0;   
+           
+       }
+   }
+
+
+    if ( CPXcutcallbackadd( info->env, info->cbdata, info->wherefrom, edges_cut_count, rhs, sense, cut_ind, cut_val, purgeable ) ) {
         fprintf( stderr, CFATAL "_concorde_callback_lazyBCc: CPXcutcallbackadd \n");
         exit( EXIT_FAILURE );
     }
+
+    free(cut_ind);
+    free(cut_val);
 
     *info->useraction_p = CPX_CALLBACK_SET;
 
@@ -315,7 +347,7 @@ _lazyBCc_cutcallback( CPXCENVptr env,
     *useraction_p = CPX_CALLBACK_DEFAULT;
     cbinfo_t *info = (cbinfo_t *) cbhandle;
 
-    doit_info doit_info = { env, cbdata, wherefrom, useraction_p };
+    doit_info doit_info = { env, cbdata, wherefrom, useraction_p, info->problem };
 
     int ncomp       = 0;
     int nedge       = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
@@ -352,12 +384,13 @@ _lazyBCc_cutcallback( CPXCENVptr env,
         goto TERMINATE;
     }
 
-    fprintf(stderr, "QUANTe VOLTE?\n");
+
 
     if ( CCcut_connect_components( info->problem->nnodes, nedge, elist, x, &ncomp, &compscount, &comps ) ) {
         fprintf( stderr, CERROR "_lazyBCc_cutcallback: CCcut_connect_components.\n" );
         goto TERMINATE;
     }
+
 
     if ( ncomp == 1 ) {
         if ( CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x,
@@ -367,6 +400,7 @@ _lazyBCc_cutcallback( CPXCENVptr env,
             goto TERMINATE;
         }
     }
+
 
 TERMINATE :
 
