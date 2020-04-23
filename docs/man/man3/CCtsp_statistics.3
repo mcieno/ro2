@@ -1,0 +1,247 @@
+.TH "CCtsp_statistics" 3 "Thu Apr 23 2020" "TSP Solver" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+CCtsp_statistics
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcutting_loop\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcutting_inner_loop\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_filecut\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_filecut_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_cutpool\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_cutpool_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_connect\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_connect_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_segment\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_segment_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_remotepool\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_remotepool_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_blockcomb\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_blockcomb_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_growcomb\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_growcomb_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_exactsubtour\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_exactsubtour_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_tighten_lp\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_tighten_lp_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_tighten_lp_close\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_tighten_lp_close_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_decker_lp\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_decker_lp_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_decker_lp_close\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_decker_lp_close_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_star_lp\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_star_lp_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_handling_lp\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_handling_lp_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_cliquetree_lp\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_cliquetree_lp_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_teething_lp\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_teething_lp_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_fastblossom\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_fastblossom_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_ghfastblossom\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_ghfastblossom_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_exactblossom\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_exactblossom_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_tighten_pool\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_tighten_pool_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_decker_pool\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_decker_pool_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_star_pool\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_star_pool_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_handling_pool\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_handling_pool_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_teething_pool\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_teething_pool_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_consecutiveones\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_consecutiveones_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_necklace\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_necklace_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_localcut\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_localcut_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_extraconnect\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBcuts_extraconnect_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBsparse_edge_check\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBfull_edge_check\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBaddcuts\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBaddcuts_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBagecuts\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBagecuts_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBageedges\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBageedges_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBaddbad\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBaddbad_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBstrongbranch\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBstrongbranch_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBlinkern\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBmisc\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBmisc_opt\fP"
+.br
+.ti -1c
+.RI "\fBCCutil_timer\fP \fBtotal\fP"
+.br
+.ti -1c
+.RI "int \fBproblem_cnt\fP"
+.br
+.ti -1c
+.RI "\fBCCtsp_tighten_info\fP \fBtighten_stats\fP"
+.br
+.ti -1c
+.RI "\fBCCtsp_tighten_info\fP \fBextra_tighten_stats\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TSP Solver from the source code\&.

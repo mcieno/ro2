@@ -74,7 +74,8 @@ static struct argp_option options[]  =
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
                                                           "random, dummy, mtz, flow1, mtzlazy, "
                                                           "flow1lazy, loopBC, loopBCf, loopBCm, "
-                                                          "loopBCx, lazyBC, lazyBCg. "
+                                                          "loopBCx, lazyBC, lazyBCg lazyBCc, "
+                                                          "lazyBCcg. "
                                                           "Default: lazyBCg."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
