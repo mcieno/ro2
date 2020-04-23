@@ -209,10 +209,17 @@ main ( int argc, char *argv[] )
 
         case TSP_SOLVER_LAZYBCC:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and Cut model with concorde\n" );
+                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint and Concorde user cut callback.\n" );
             }
             lazyBCc_model( &problem );
-            break;    
+            break;
+
+        case TSP_SOLVER_LAZYBCCG:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint and Concorde user cut generic callback.\n" );
+            }
+            lazyBCcg_model( &problem );
+            break;
 
 
         default:
@@ -341,6 +348,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "lazyBCc", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LAZYBCC;
+
+            } else if ( !strcmp( "lazyBCcg", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LAZYBCCG;
 
             } else {
                 argp_error(
