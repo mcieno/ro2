@@ -29,7 +29,7 @@ cbinfo_t;
 
 typedef struct
 {
-    const CPXENVptr env;
+    const CPXCENVptr env;
     void *cbdata;
     int wherefrom;
     int *useraction_p;
@@ -38,7 +38,7 @@ doit_info;
 
 
 /*!
- * \brief Get the position of variable x(i,j) in B&B model with lazy constraint callback.
+ * \brief Get the position of variable x(i,j) in B&C model with concorde user-cuts.
  *
  *
  * \param i
@@ -267,7 +267,7 @@ TERMINATE :
 }
 
 int
-doit_fn_concorde(double cutval, int cutcount, int *cut, void *inParam){
+_concorde_callback_lazyBCc(double cutval, int cutcount, int *cut, void *inParam){
 
     doit_info *info = (doit_info *) inParam;
 
@@ -290,55 +290,57 @@ doit_fn_concorde(double cutval, int cutcount, int *cut, void *inParam){
         cut_ind[i] = cut[i];
         cut_val[i] = 1.0;
     }
- 
+
 
     if ( CPXcutcallbackadd( info->env, info->cbdata, info->wherefrom, cutcount, rhs, sense, cut_ind, cut_val, purgeable ) ) {
-        fprintf( stderr, CFATAL "doit_fn_concorde: CPXcutcallbackadd \n");
+        fprintf( stderr, CFATAL "_concorde_callback_lazyBCc: CPXcutcallbackadd \n");
         exit( EXIT_FAILURE );
-    }    
+    }
 
     *info->useraction_p = CPX_CALLBACK_SET;
 
     return 0;
 }
 
-int
-_lazyBCc_cutcallback(CPXCENVptr env,
-           void *cbdata,
-           int wherefrom,
-           void *cbhandle,
-           int *useraction_p){
 
- int status = 0;
+int
+_lazyBCc_cutcallback( CPXCENVptr env,
+                      void       *cbdata,
+                      int        wherefrom,
+                      void       *cbhandle,
+                      int        *useraction_p )
+{
+    int status = 0;
 
     *useraction_p = CPX_CALLBACK_DEFAULT;
     cbinfo_t *info = (cbinfo_t *) cbhandle;
 
-    doit_info doit_info = {env, cbdata, wherefrom, useraction_p}; 
+    doit_info doit_info = { env, cbdata, wherefrom, useraction_p };
 
-    //size_t ncomps = 0;
-    double *x     = malloc( info->ncols * sizeof( *x ) );
-    size_t *next  = calloc( info->problem->nnodes, sizeof( *next ) );
-    size_t *comps = calloc( info->problem->nnodes, sizeof( *comps ) );
+    int ncomp       = 0;
+    int nedge       = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
 
-    int nedge = info->problem->nnodes *(info->problem->nnodes-1)/2;
-    int elist[nedge*2];
-    int i,j;
-    int loader =0;
-    for(i=0; i<info->problem->nnodes; ++i){
-        for(j=i+1; j<info->problem->nnodes; ++j){
-            elist[loader++]=i;
-            elist[loader++]=j;
+    int *elist      = malloc( nedge * 2             * sizeof( *elist      ) );
+    int *comps      = malloc( info->problem->nnodes * sizeof( *comps      ) );
+    int *compscount = malloc( info->problem->nnodes * sizeof( *compscount ) );
+    double *x       = malloc( info->ncols           * sizeof( *x          ) );
+
+
+    int loader = 0;
+
+    for ( int i = 0; i < info->problem->nnodes; ++i ) {
+        for ( int j = i + 1; j < info->problem->nnodes; ++j ) {
+            elist[ loader++ ] = i;
+            elist[ loader++ ] = j;
         }
     }
-    int ncomp=0;
-    int *comps2 = (int*) malloc(info->problem->nnodes * sizeof(int));
-    int *compscount = (int*) malloc(info->problem->nnodes * sizeof(int));
-    
 
-    if ( x     == NULL ||
-         next  == NULL ||
-         comps == NULL  ) {
+
+
+    if ( x          == NULL ||
+         elist      == NULL ||
+         comps      == NULL ||
+         compscount == NULL  ) {
         fprintf(stderr, CERROR "_lazyBCc_cutcallback: Out of memory.\n");
         goto TERMINATE;
     }
@@ -352,30 +354,28 @@ _lazyBCc_cutcallback(CPXCENVptr env,
 
     fprintf(stderr, "QUANTe VOLTE?\n");
 
-    if(CCcut_connect_components(info->problem->nnodes, nedge, elist, x, &ncomp, &compscount, &comps2)){
+    if ( CCcut_connect_components( info->problem->nnodes, nedge, elist, x, &ncomp, &compscount, &comps ) ) {
         fprintf( stderr, CERROR "_lazyBCc_cutcallback: CCcut_connect_components.\n" );
         goto TERMINATE;
     }
 
-    if(ncomp==1){
-        if(CCcut_violated_cuts(info->problem->nnodes, nedge, elist, x, 2.0-0.1, doit_fn_concorde, (void*) &doit_info)){
+    if ( ncomp == 1 ) {
+        if ( CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x,
+                                  2.0 - 0.1, _concorde_callback_lazyBCc, &doit_info ) )
+        {
             fprintf( stderr, CERROR "_lazyBCc_cutcallback: CCcut_violated_cuts.\n" );
             goto TERMINATE;
         }
     }
 
-
-
-
 TERMINATE :
 
-    if (x     != NULL)  free( x     );
-    if (next  != NULL)  free( next  );
-    if (comps != NULL)  free( comps );
+    if ( x           != NULL )  free( x           );
+    if ( elist       != NULL )  free( elist       );
+    if ( comps       != NULL )  free( comps       );
+    if ( compscount  != NULL )  free( compscount  );
 
     return status;
-
-
 }
 
 
@@ -404,7 +404,7 @@ lazyBCc_model ( instance *problem )
     ftime( &start );
 
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "lazyBC_model: CPXmimopt error\n" );
+        fprintf( stderr, CFATAL "lazyBCc_model: CPXmimopt error\n" );
         exit( EXIT_FAILURE );
     }
 
