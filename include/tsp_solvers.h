@@ -11,18 +11,19 @@
 #include "tsp.h"
 
 
-#define TSP_SOLVER_RANDOM     1U  /*!< Random model.  */
-#define TSP_SOLVER_DUMMY      2U  /*!< Dummy model.  */
-#define TSP_SOLVER_MTZ        3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
-#define TSP_SOLVER_FLOW1      4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
-#define TSP_SOLVER_MTZLAZY    5U  /*!< Sequential Formulation model with lazy constraints.  */
-#define TSP_SOLVER_FLOW1LAZY  6U  /*!< Single Commodity Flow model with lazy constraints.  */
-#define TSP_SOLVER_LOOPBC     7U  /*!< Loop Branch and Cut model.  */
-#define TSP_SOLVER_LOOPBCF    8U  /*!< Variant F of the loop Branch and Cut model.  */
-#define TSP_SOLVER_LOOPBCM    9U  /*!< Variant M of the loop Branch and Cut model.  */
-#define TSP_SOLVER_LOOPBCX   10U  /*!< Variant X of the loop Branch and Cut model.  */
-#define TSP_SOLVER_LAZYBC    11U  /*!< Branch and Cut model with lazy constraint callback.  */
-#define TSP_SOLVER_LAZYBCG   12U  /*!< Branch and Cut model with generic callback.  */
+#define TSP_SOLVER_RANDOM      1U  /*!< Random model.  */
+#define TSP_SOLVER_DUMMY       2U  /*!< Dummy model.  */
+#define TSP_SOLVER_MTZ         3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
+#define TSP_SOLVER_FLOW1       4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
+#define TSP_SOLVER_MTZLAZY     5U  /*!< Sequential Formulation model with lazy constraints.  */
+#define TSP_SOLVER_FLOW1LAZY   6U  /*!< Single Commodity Flow model with lazy constraints.  */
+#define TSP_SOLVER_LOOPBC      7U  /*!< Loop Branch and Cut model.  */
+#define TSP_SOLVER_LOOPBCF     8U  /*!< Variant F of the loop Branch and Cut model.  */
+#define TSP_SOLVER_LOOPBCM     9U  /*!< Variant M of the loop Branch and Cut model.  */
+#define TSP_SOLVER_LOOPBCX    10U  /*!< Variant X of the loop Branch and Cut model.  */
+#define TSP_SOLVER_LAZYBC     11U  /*!< Branch and Cut model with lazy constraint callback.  */
+#define TSP_SOLVER_LAZYBCG    12U  /*!< Branch and Cut model with generic callback.  */
+#define TSP_SOLVER_LAZYBCCG   14U  /*!< Branch and Cut model with Concorde with generic callback.  */
 
 typedef unsigned model_t;
 
@@ -238,6 +239,17 @@ lazyBC_model ( instance *problem );
  */
 void
 lazyBCg_model ( instance *problem );
+
+
+/*!
+ * \brief Solve with "Branch and Cut" model with lazy constraint generic callback and Concorde user cuts.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+lazyBCcg_model ( instance *problem );
 
 
 #endif
