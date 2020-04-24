@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
+# See: https://www.dei.unipd.it/bladecluster
 
 echo "[*] Building with make all"
-make all > /dev/null || exit 1
+make -f Makefile.blade all > /dev/null || exit 1
 
 timelimit=3600      # 60 minutes
 nodelimit=10000000  # 10 million nodes
@@ -25,7 +26,7 @@ models=(
     #Flow1
     #LazyMTZ
     #LazyFlow1
-    #Loop
+    Loop
     Legacy
     Generic
     LegacyConcorde
@@ -83,22 +84,22 @@ testbed=(
     data/pr299.tsp
     data/lin318.tsp
     data/linhp318.tsp
-    ###data/rd400.tsp
-    ###data/fl417.tsp
-    ###data/gr431.tsp
-    ###data/pr439.tsp
-    ###data/pcb442.tsp
-    ###data/d493.tsp
-    ###data/att532.tsp
-    ###data/ali535.tsp
-    ###data/u574.tsp
-    ###data/rat575.tsp
-    ###data/p654.tsp
-    ###data/d657.tsp
-    ###data/gr666.tsp
-    ###data/u724.tsp
-    ###data/rat783.tsp
-    ###data/dsj1000.tsp
+    data/rd400.tsp
+    data/fl417.tsp
+    data/gr431.tsp
+    data/pr439.tsp
+    data/pcb442.tsp
+    data/d493.tsp
+    data/att532.tsp
+    data/ali535.tsp
+    data/u574.tsp
+    data/rat575.tsp
+    data/p654.tsp
+    data/d657.tsp
+    data/gr666.tsp
+    data/u724.tsp
+    data/rat783.tsp
+    data/dsj1000.tsp
     ###data/pr1002.tsp
     ###data/u1060.tsp
     ###data/vm1084.tsp
@@ -134,10 +135,12 @@ testbed=(
 )
 
 seeds=(
-    2222
-    3333
-    4444
-    #5555
+    21357
+    78986
+    86874
+    10856
+    83214
+    13476
 )
 
 echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' > $bmfile_times
