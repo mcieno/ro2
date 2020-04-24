@@ -1,5 +1,5 @@
 /*
- * \brief   Variant of the Basic Branch and Cut model.
+ * \brief   Variant X of Loop model.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

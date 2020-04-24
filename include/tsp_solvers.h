@@ -11,20 +11,24 @@
 #include "tsp.h"
 
 
-#define TSP_SOLVER_Random            1U  /*!< Random model.  */
-#define TSP_SOLVER_Dummy             2U  /*!< Dummy model.  */
-#define TSP_SOLVER_MTZ               3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
-#define TSP_SOLVER_Flow1             4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
-#define TSP_SOLVER_LazyMTZ           5U  /*!< Sequential Formulation model with lazy constraints.  */
-#define TSP_SOLVER_LazyFlow1         6U  /*!< Single Commodity Flow model with lazy constraints.  */
-#define TSP_SOLVER_Loop              7U  /*!< Loop Branch and Cut model.  */
-#define TSP_SOLVER_LoopF             8U  /*!< Variant F of the loop Branch and Cut model.  */
-#define TSP_SOLVER_LoopM             9U  /*!< Variant M of the loop Branch and Cut model.  */
-#define TSP_SOLVER_LoopX            10U  /*!< Variant X of the loop Branch and Cut model.  */
-#define TSP_SOLVER_Legacy           11U  /*!< Branch and Cut model with lazy constraint callback.  */
-#define TSP_SOLVER_Generic          12U  /*!< Branch and Cut model with generic callback.  */
-#define TSP_SOLVER_LegacyConcorde   13U  /*!< Branch and Cut model with Concorde callback.  */
-#define TSP_SOLVER_GenericConcorde  14U  /*!< Branch and Cut model with Concorde with generic callback.  */
+#define TSP_SOLVER_Random                   1U  /*!< Random model.  */
+#define TSP_SOLVER_Dummy                    2U  /*!< Dummy model.  */
+#define TSP_SOLVER_MTZ                      3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
+#define TSP_SOLVER_Flow1                    4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
+#define TSP_SOLVER_LazyMTZ                  5U  /*!< Sequential Formulation model with lazy constraints.  */
+#define TSP_SOLVER_LazyFlow1                6U  /*!< Single Commodity Flow model with lazy constraints.  */
+#define TSP_SOLVER_Loop                     7U  /*!< Branch and Cut model with SEC added at every restart.  */
+#define TSP_SOLVER_LoopF                    8U  /*!< Variant F of Loop model.  */
+#define TSP_SOLVER_LoopM                    9U  /*!< Variant M of Loop model.  */
+#define TSP_SOLVER_LoopX                   10U  /*!< Variant X of Loop model.  */
+#define TSP_SOLVER_Legacy                  11U  /*!< Branch and Cut model with legacy lazy cut callback.  */
+#define TSP_SOLVER_Generic                 12U  /*!< Branch and Cut model with generic candidate cut callback.  */
+#define TSP_SOLVER_LegacyConcorde          13U  /*!< Like Legacy, but also cuts the relaxation using Concorde routines.  */
+#define TSP_SOLVER_GenericConcorde         14U  /*!< Like Generic, but also cuts the relaxation using Concorde routines.  */
+#define TSP_SOLVER_LegacyConcordeShallow   15U  /*!< Like LegacyConcorde but only cuts nodes close to the root.  */
+#define TSP_SOLVER_GenericConcordeShallow  16U  /*!< Like GenericConcorde but only cuts nodes close to the root.  */
+#define TSP_SOLVER_LegacyConcordeRand      17U  /*!< Like LegacyConcorde but only cuts nodes with decreasing probability.  */
+#define TSP_SOLVER_GenericConcordeRand     18U  /*!< Like GenericConcorde but only cuts nodes with decreasing probability.  */
 
 typedef unsigned model_t;
 
@@ -159,8 +163,7 @@ LazyFlow1_model ( instance *problem );
 
 
 /*!
- * \brief Solve with Dummy "Branch and Cut" model,
- *        restarting cplex after every intermediate solution.
+ * \brief Branch and Cut model with SEC added at every restart.
  *
  *
  * \param problem
@@ -171,8 +174,7 @@ Loop_model ( instance *problem );
 
 
 /*!
- * \brief Solve with Dummy "Branch and Cut" model (variant 'F'),
- *        restarting cplex after every intermediate solution.
+ * \brief Variant F of Loop model.
  *
  * This model is similar to Loop_model().
  * The main difference is that it starts with a loose EPGAP and tightens it
@@ -187,8 +189,7 @@ LoopF_model ( instance *problem );
 
 
 /*!
- * \brief Solve with Dummy "Branch and Cut" model (variant 'M'),
- *        restarting cplex after every intermediate solution.
+ * \brief Variant M of Loop model.
  *
  * This model is similar to Loop_model().
  * The main difference is that it starts with a loose EPGAP and a small limit
@@ -204,8 +205,7 @@ LoopM_model ( instance *problem );
 
 
 /*!
- * \brief Solve with Dummy "Branch and Cut" model (variant 'X'),
- *        restarting cplex after every intermediate solution.
+ * \brief Variant X of Loop model.
  *
  * This model is similar to Loop_model().
  * The main difference is that it starts with a tight EPGAP and a large limit
@@ -221,7 +221,7 @@ LoopX_model ( instance *problem );
 
 
 /*!
- * \brief Solve with "Branch and Cut" model with lazy constraint callback.
+ * \brief Branch and Cut model with legacy lazy cut callback.
  *
  *
  * \param problem
@@ -232,7 +232,7 @@ Legacy_model ( instance *problem );
 
 
 /*!
- * \brief Solve with "Branch and Cut" model with lazy constraint generic callback.
+ * \brief Branch and Cut model with generic candidate cut callback.
  *
  *
  * \param problem
@@ -243,7 +243,7 @@ Generic_model ( instance *problem );
 
 
 /*!
- * \brief Solve with "Branch and Cut" model with lazy constraint callback and Concorde user cuts.
+ * \brief Like Legacy, but also cuts the relaxation using Concorde routines.
  *
  * This model uses Concorde to find cuts based on max-flow
  *
@@ -255,16 +255,60 @@ LegacyConcorde_model ( instance *problem );
 
 
 /*!
- * \brief Solve with "Branch and Cut" model with lazy constraint generic callback and Concorde user cuts.
+ * \brief Like Generic, but also cuts the relaxation using Concorde routines.
  *
  *
- * This model uses Concorde to find cuts based on max-flow
+ * This model uses Concorde to find cuts based on max-flow.
  *
  * \param problem
  *     Pointer to the instance structure.
  */
 void
 GenericConcorde_model ( instance *problem );
+
+
+/*!
+ * \brief Like LegacyConcorde but only cuts nodes close to the root.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+LegacyConcordeShallow_model ( instance *problem );
+
+
+/*!
+ * \brief Like GenericConcorde but only cuts nodes close to the root.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+GenericConcordeShallow_model ( instance *problem );
+
+
+/*!
+ * \brief Like LegacyConcorde but only cuts nodes with decreasing probability.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+LegacyConcordeRand_model ( instance *problem );
+
+
+/*!
+ * \brief Like GenericConcorde but only cuts nodes with decreasing probability.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+GenericConcordeRand_model ( instance *problem );
 
 
 #endif

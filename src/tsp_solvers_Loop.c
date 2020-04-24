@@ -1,5 +1,5 @@
 /*
- * \brief   Basic Branch and Cut model.
+ * \brief   Branch and Cut model with SEC added at every restart.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

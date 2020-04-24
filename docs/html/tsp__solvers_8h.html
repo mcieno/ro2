@@ -112,6 +112,14 @@ Macros</h2></td></tr>
 <tr class="separator:ad5e1f955f1b8dd185b48483e7f822ac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab599dc5fa8dfd3cbdf77e15a0c6a575c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ab599dc5fa8dfd3cbdf77e15a0c6a575c">TSP_SOLVER_GenericConcorde</a>&#160;&#160;&#160;14U</td></tr>
 <tr class="separator:ab599dc5fa8dfd3cbdf77e15a0c6a575c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d3a8720d95d466495c22db82ac6e303"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a8d3a8720d95d466495c22db82ac6e303">TSP_SOLVER_LegacyConcordeShallow</a>&#160;&#160;&#160;15U</td></tr>
+<tr class="separator:a8d3a8720d95d466495c22db82ac6e303"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a488294db43442435277401c4b2ab436f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a488294db43442435277401c4b2ab436f">TSP_SOLVER_GenericConcordeShallow</a>&#160;&#160;&#160;16U</td></tr>
+<tr class="separator:a488294db43442435277401c4b2ab436f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0b60fb9eabad76adbe0bb102845abc7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ae0b60fb9eabad76adbe0bb102845abc7">TSP_SOLVER_LegacyConcordeRand</a>&#160;&#160;&#160;17U</td></tr>
+<tr class="separator:ae0b60fb9eabad76adbe0bb102845abc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3671260b7b06b26dbecbb445d0f3e5b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ae3671260b7b06b26dbecbb445d0f3e5b">TSP_SOLVER_GenericConcordeRand</a>&#160;&#160;&#160;18U</td></tr>
+<tr class="separator:ae3671260b7b06b26dbecbb445d0f3e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -146,29 +154,41 @@ Functions</h2></td></tr>
 <tr class="memdesc:a89d66357e93869a961be0e922757bb12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Single Commodity Flow" model with lazy constraints.  <a href="#a89d66357e93869a961be0e922757bb12">More...</a><br /></td></tr>
 <tr class="separator:a89d66357e93869a961be0e922757bb12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac30161adf45e1bc7a9ea09fac09159ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ac30161adf45e1bc7a9ea09fac09159ef">Loop_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:ac30161adf45e1bc7a9ea09fac09159ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with Dummy "Branch and Cut" model, restarting cplex after every intermediate solution.  <a href="#ac30161adf45e1bc7a9ea09fac09159ef">More...</a><br /></td></tr>
+<tr class="memdesc:ac30161adf45e1bc7a9ea09fac09159ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Branch and Cut model with SEC added at every restart.  <a href="#ac30161adf45e1bc7a9ea09fac09159ef">More...</a><br /></td></tr>
 <tr class="separator:ac30161adf45e1bc7a9ea09fac09159ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38d807ff29b64d239752ff30d8d16982"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a38d807ff29b64d239752ff30d8d16982">LoopF_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a38d807ff29b64d239752ff30d8d16982"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with Dummy "Branch and Cut" model (variant 'F'), restarting cplex after every intermediate solution.  <a href="#a38d807ff29b64d239752ff30d8d16982">More...</a><br /></td></tr>
+<tr class="memdesc:a38d807ff29b64d239752ff30d8d16982"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variant F of Loop model.  <a href="#a38d807ff29b64d239752ff30d8d16982">More...</a><br /></td></tr>
 <tr class="separator:a38d807ff29b64d239752ff30d8d16982"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf6748b0859ebc4f60e14d26ec243fe2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#aaf6748b0859ebc4f60e14d26ec243fe2">LoopM_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:aaf6748b0859ebc4f60e14d26ec243fe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with Dummy "Branch and Cut" model (variant 'M'), restarting cplex after every intermediate solution.  <a href="#aaf6748b0859ebc4f60e14d26ec243fe2">More...</a><br /></td></tr>
+<tr class="memdesc:aaf6748b0859ebc4f60e14d26ec243fe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variant M of Loop model.  <a href="#aaf6748b0859ebc4f60e14d26ec243fe2">More...</a><br /></td></tr>
 <tr class="separator:aaf6748b0859ebc4f60e14d26ec243fe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2cfe81528f4dd2870d56824dba8fb4be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a2cfe81528f4dd2870d56824dba8fb4be">LoopX_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a2cfe81528f4dd2870d56824dba8fb4be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with Dummy "Branch and Cut" model (variant 'X'), restarting cplex after every intermediate solution.  <a href="#a2cfe81528f4dd2870d56824dba8fb4be">More...</a><br /></td></tr>
+<tr class="memdesc:a2cfe81528f4dd2870d56824dba8fb4be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variant X of Loop model.  <a href="#a2cfe81528f4dd2870d56824dba8fb4be">More...</a><br /></td></tr>
 <tr class="separator:a2cfe81528f4dd2870d56824dba8fb4be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0aa1f0a85e9efa24d7bd9d3fc1696f3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a0aa1f0a85e9efa24d7bd9d3fc1696f3c">Legacy_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a0aa1f0a85e9efa24d7bd9d3fc1696f3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Branch and Cut" model with lazy constraint callback.  <a href="#a0aa1f0a85e9efa24d7bd9d3fc1696f3c">More...</a><br /></td></tr>
+<tr class="memdesc:a0aa1f0a85e9efa24d7bd9d3fc1696f3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Branch and Cut model with legacy lazy cut callback.  <a href="#a0aa1f0a85e9efa24d7bd9d3fc1696f3c">More...</a><br /></td></tr>
 <tr class="separator:a0aa1f0a85e9efa24d7bd9d3fc1696f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62d6524426502dd397bedb7b18796f2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a62d6524426502dd397bedb7b18796f2c">Generic_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a62d6524426502dd397bedb7b18796f2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Branch and Cut" model with lazy constraint generic callback.  <a href="#a62d6524426502dd397bedb7b18796f2c">More...</a><br /></td></tr>
+<tr class="memdesc:a62d6524426502dd397bedb7b18796f2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Branch and Cut model with generic candidate cut callback.  <a href="#a62d6524426502dd397bedb7b18796f2c">More...</a><br /></td></tr>
 <tr class="separator:a62d6524426502dd397bedb7b18796f2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3472239f5a9c10c01a370d1a8cb50115"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a3472239f5a9c10c01a370d1a8cb50115">LegacyConcorde_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a3472239f5a9c10c01a370d1a8cb50115"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Branch and Cut" model with lazy constraint callback and Concorde user cuts.  <a href="#a3472239f5a9c10c01a370d1a8cb50115">More...</a><br /></td></tr>
+<tr class="memdesc:a3472239f5a9c10c01a370d1a8cb50115"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like Legacy, but also cuts the relaxation using Concorde routines.  <a href="#a3472239f5a9c10c01a370d1a8cb50115">More...</a><br /></td></tr>
 <tr class="separator:a3472239f5a9c10c01a370d1a8cb50115"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4db4e109edd8549a0fa885329d795ba8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a4db4e109edd8549a0fa885329d795ba8">GenericConcorde_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a4db4e109edd8549a0fa885329d795ba8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with "Branch and Cut" model with lazy constraint generic callback and Concorde user cuts.  <a href="#a4db4e109edd8549a0fa885329d795ba8">More...</a><br /></td></tr>
+<tr class="memdesc:a4db4e109edd8549a0fa885329d795ba8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like Generic, but also cuts the relaxation using Concorde routines.  <a href="#a4db4e109edd8549a0fa885329d795ba8">More...</a><br /></td></tr>
 <tr class="separator:a4db4e109edd8549a0fa885329d795ba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c7c78c71d1bdbefae0d5685e6b3a1ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a4c7c78c71d1bdbefae0d5685e6b3a1ed">LegacyConcordeShallow_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a4c7c78c71d1bdbefae0d5685e6b3a1ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like LegacyConcorde but only cuts nodes close to the root.  <a href="#a4c7c78c71d1bdbefae0d5685e6b3a1ed">More...</a><br /></td></tr>
+<tr class="separator:a4c7c78c71d1bdbefae0d5685e6b3a1ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab48de8671a1e8d008bd11045f53dae28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ab48de8671a1e8d008bd11045f53dae28">GenericConcordeShallow_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:ab48de8671a1e8d008bd11045f53dae28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like GenericConcorde but only cuts nodes close to the root.  <a href="#ab48de8671a1e8d008bd11045f53dae28">More...</a><br /></td></tr>
+<tr class="separator:ab48de8671a1e8d008bd11045f53dae28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12cfacd533460af4482466dd99f550b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a12cfacd533460af4482466dd99f550b0">LegacyConcordeRand_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a12cfacd533460af4482466dd99f550b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like LegacyConcorde but only cuts nodes with decreasing probability.  <a href="#a12cfacd533460af4482466dd99f550b0">More...</a><br /></td></tr>
+<tr class="separator:a12cfacd533460af4482466dd99f550b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3787ce5c9d5b5e9d2e33dabea03ed00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ac3787ce5c9d5b5e9d2e33dabea03ed00">GenericConcordeRand_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:ac3787ce5c9d5b5e9d2e33dabea03ed00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like GenericConcorde but only cuts nodes with decreasing probability.  <a href="#ac3787ce5c9d5b5e9d2e33dabea03ed00">More...</a><br /></td></tr>
+<tr class="separator:ac3787ce5c9d5b5e9d2e33dabea03ed00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Methods for solving a TSP problem. </p>
@@ -215,7 +235,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Branch and Cut model with generic callback. </p>
+<p>Branch and Cut model with generic candidate cut callback. </p>
 
 </div>
 </div>
@@ -230,7 +250,37 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Branch and Cut model with Concorde with generic callback. </p>
+<p>Like Generic, but also cuts the relaxation using Concorde routines. </p>
+
+</div>
+</div>
+<a id="ae3671260b7b06b26dbecbb445d0f3e5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3671260b7b06b26dbecbb445d0f3e5b">&#9670;&nbsp;</a></span>TSP_SOLVER_GenericConcordeRand</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_GenericConcordeRand&#160;&#160;&#160;18U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Like GenericConcorde but only cuts nodes with decreasing probability. </p>
+
+</div>
+</div>
+<a id="a488294db43442435277401c4b2ab436f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a488294db43442435277401c4b2ab436f">&#9670;&nbsp;</a></span>TSP_SOLVER_GenericConcordeShallow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_GenericConcordeShallow&#160;&#160;&#160;16U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Like GenericConcorde but only cuts nodes close to the root. </p>
 
 </div>
 </div>
@@ -275,7 +325,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Branch and Cut model with lazy constraint callback. </p>
+<p>Branch and Cut model with legacy lazy cut callback. </p>
 
 </div>
 </div>
@@ -290,7 +340,37 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Branch and Cut model with Concorde callback. </p>
+<p>Like Legacy, but also cuts the relaxation using Concorde routines. </p>
+
+</div>
+</div>
+<a id="ae0b60fb9eabad76adbe0bb102845abc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0b60fb9eabad76adbe0bb102845abc7">&#9670;&nbsp;</a></span>TSP_SOLVER_LegacyConcordeRand</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_LegacyConcordeRand&#160;&#160;&#160;17U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Like LegacyConcorde but only cuts nodes with decreasing probability. </p>
+
+</div>
+</div>
+<a id="a8d3a8720d95d466495c22db82ac6e303"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d3a8720d95d466495c22db82ac6e303">&#9670;&nbsp;</a></span>TSP_SOLVER_LegacyConcordeShallow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_LegacyConcordeShallow&#160;&#160;&#160;15U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Like LegacyConcorde but only cuts nodes close to the root. </p>
 
 </div>
 </div>
@@ -305,7 +385,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Loop Branch and Cut model. </p>
+<p>Branch and Cut model with SEC added at every restart. </p>
 
 </div>
 </div>
@@ -320,7 +400,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Variant F of the loop Branch and Cut model. </p>
+<p>Variant F of Loop model. </p>
 
 </div>
 </div>
@@ -335,7 +415,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Variant M of the loop Branch and Cut model. </p>
+<p>Variant M of Loop model. </p>
 
 </div>
 </div>
@@ -350,7 +430,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Variant X of the loop Branch and Cut model. </p>
+<p>Variant X of Loop model. </p>
 
 </div>
 </div>
@@ -565,7 +645,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Solve with "Branch and Cut" model with lazy constraint generic callback. </p>
+<p>Branch and Cut model with generic candidate cut callback. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
@@ -591,8 +671,60 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Solve with "Branch and Cut" model with lazy constraint generic callback and Concorde user cuts. </p>
-<p>This model uses Concorde to find cuts based on max-flow</p>
+<p>Like Generic, but also cuts the relaxation using Concorde routines. </p>
+<p>This model uses Concorde to find cuts based on max-flow.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac3787ce5c9d5b5e9d2e33dabea03ed00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3787ce5c9d5b5e9d2e33dabea03ed00">&#9670;&nbsp;</a></span>GenericConcordeRand_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GenericConcordeRand_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Like GenericConcorde but only cuts nodes with decreasing probability. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab48de8671a1e8d008bd11045f53dae28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab48de8671a1e8d008bd11045f53dae28">&#9670;&nbsp;</a></span>GenericConcordeShallow_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GenericConcordeShallow_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Like GenericConcorde but only cuts nodes close to the root. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
@@ -670,7 +802,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Solve with "Branch and Cut" model with lazy constraint callback. </p>
+<p>Branch and Cut model with legacy lazy cut callback. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
@@ -696,8 +828,60 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Solve with "Branch and Cut" model with lazy constraint callback and Concorde user cuts. </p>
+<p>Like Legacy, but also cuts the relaxation using Concorde routines. </p>
 <p>This model uses Concorde to find cuts based on max-flow</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a12cfacd533460af4482466dd99f550b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12cfacd533460af4482466dd99f550b0">&#9670;&nbsp;</a></span>LegacyConcordeRand_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LegacyConcordeRand_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Like LegacyConcorde but only cuts nodes with decreasing probability. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4c7c78c71d1bdbefae0d5685e6b3a1ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c7c78c71d1bdbefae0d5685e6b3a1ed">&#9670;&nbsp;</a></span>LegacyConcordeShallow_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LegacyConcordeShallow_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Like LegacyConcorde but only cuts nodes close to the root. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
@@ -723,7 +907,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Solve with Dummy "Branch and Cut" model, restarting cplex after every intermediate solution. </p>
+<p>Branch and Cut model with SEC added at every restart. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
@@ -749,8 +933,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Solve with Dummy "Branch and Cut" model (variant 'F'), restarting cplex after every intermediate solution. </p>
-<p>This model is similar to <a class="el" href="tsp__solvers_8h.html#ac30161adf45e1bc7a9ea09fac09159ef" title="Solve with Dummy &quot;Branch and Cut&quot; model, restarting cplex after every intermediate solution.">Loop_model()</a>. The main difference is that it starts with a loose EPGAP and tightens it iteration after iteration, until a single component is found, possibly sub-optimal. At that point, the default MIP optimizer is run.</p>
+<p>Variant F of Loop model. </p>
+<p>This model is similar to <a class="el" href="tsp__solvers_8h.html#ac30161adf45e1bc7a9ea09fac09159ef" title="Branch and Cut model with SEC added at every restart.">Loop_model()</a>. The main difference is that it starts with a loose EPGAP and tightens it iteration after iteration, until a single component is found, possibly sub-optimal. At that point, the default MIP optimizer is run.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
@@ -776,8 +960,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Solve with Dummy "Branch and Cut" model (variant 'M'), restarting cplex after every intermediate solution. </p>
-<p>This model is similar to <a class="el" href="tsp__solvers_8h.html#ac30161adf45e1bc7a9ea09fac09159ef" title="Solve with Dummy &quot;Branch and Cut&quot; model, restarting cplex after every intermediate solution.">Loop_model()</a>. The main difference is that it starts with a loose EPGAP and a small limit of solutions. It tightens the gap and increases the solution limit until a single component is found, possibly sub-optimal. At that point, the default MIP optimizer is run.</p>
+<p>Variant M of Loop model. </p>
+<p>This model is similar to <a class="el" href="tsp__solvers_8h.html#ac30161adf45e1bc7a9ea09fac09159ef" title="Branch and Cut model with SEC added at every restart.">Loop_model()</a>. The main difference is that it starts with a loose EPGAP and a small limit of solutions. It tightens the gap and increases the solution limit until a single component is found, possibly sub-optimal. At that point, the default MIP optimizer is run.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
@@ -803,8 +987,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Solve with Dummy "Branch and Cut" model (variant 'X'), restarting cplex after every intermediate solution. </p>
-<p>This model is similar to <a class="el" href="tsp__solvers_8h.html#ac30161adf45e1bc7a9ea09fac09159ef" title="Solve with Dummy &quot;Branch and Cut&quot; model, restarting cplex after every intermediate solution.">Loop_model()</a>. The main difference is that it starts with a tight EPGAP and a large limit of solutions. It looses them according to the number of components it found at each solution, until a single component is found, possibly sub-optimal. At that point, the default MIP optimizer is run.</p>
+<p>Variant X of Loop model. </p>
+<p>This model is similar to <a class="el" href="tsp__solvers_8h.html#ac30161adf45e1bc7a9ea09fac09159ef" title="Branch and Cut model with SEC added at every restart.">Loop_model()</a>. The main difference is that it starts with a tight EPGAP and a large limit of solutions. It looses them according to the number of components it found at each solution, until a single component is found, possibly sub-optimal. At that point, the default MIP optimizer is run.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>

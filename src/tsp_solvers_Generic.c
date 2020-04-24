@@ -1,5 +1,5 @@
 /*
- * \brief   Branch and Cut model with generic callback.
+ * \brief   Branch and Cut model with generic candidate cut callback.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

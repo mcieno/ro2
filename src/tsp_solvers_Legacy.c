@@ -1,5 +1,5 @@
 /*
- * \brief   Branch and Cut model with lazy constraint callback.
+ * \brief   Branch and Cut model with legacy lazy cut callback.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

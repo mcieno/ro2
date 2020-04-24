@@ -44,7 +44,9 @@ Solve a Traveling Salesman Problem instance.
   -M, --model=MODEL          Solving technique. Available: Random, Dummy, MTZ,
                              Flow1, LazyMTZ, LazyFlow1, Loop, LoopF, LoopM,
                              LoopX, Legacy, Generic LegacyConcorde,
-                             GenericConcorde. Default: Generic.
+                             GenericConcorde, LegacyConcordeShallow,
+                             GenericConcordeShallow, LegacyConcordeRand,
+                             GenericConcordeRand. Default: Generic.
   -n, --nodelimit=NODES      MIP node limit.
       --name=TSPNAME         Name to assign to this problem.
       --noplot               Do not sketch the solution.
@@ -65,7 +67,28 @@ Report bugs to {marco.cieno, francesco.cazzaro}@studenti.unipd.it.
 
 Sample files are provided in folder `data` and come courtesy of the [TSPLIB](http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/).
 
-Available models are `Random`, `Dummy`, `MTZ`, `Flow1`, `LazyMTZ`, `LazyFlow1`, `Loop`, `LoopF`, `LoopM`, `LoopX`, `Legacy`, `Generic`, `LegacyConcorde`, and `GenericConcorde`.
+Available models are:
+
+- `Random`,
+- `Dummy`,
+- `MTZ`,
+- `Flow1`,
+- `LazyMTZ`,
+- `LazyFlow1`,
+- `Loop`,
+- `LoopF`,
+- `LoopM`,
+- `LoopX`,
+- `Legacy`,
+- `Generic`,
+- `LegacyConcorde`,
+- `GenericConcorde`,
+- `LegacyConcordeShallow,`
+- `GenericConcordeShallow,`
+- `LegacyConcordeRand,`
+- `GenericConcordeRand.`
+
+Default model is `Generic`, i.e., branch and cut model with generic "candidate cut" callback.
 
 Here's an example, just for fun:
 

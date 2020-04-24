@@ -1,5 +1,5 @@
 /*
- * \brief   Branch and Cut model with lazy constraint callback and Concorde user cut callback.
+ * \brief   Like Generic, but also cuts the relaxation using Concorde routines.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

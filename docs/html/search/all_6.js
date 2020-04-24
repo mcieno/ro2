@@ -4,6 +4,8 @@ var searchData=
   ['lazymtz_5fmodel',['LazyMTZ_model',['../tsp__solvers_8h.html#a7d38fad71e86b713d4a683cb3acdcfa8',1,'tsp_solvers_LazyMTZ.c']]],
   ['legacy_5fmodel',['Legacy_model',['../tsp__solvers_8h.html#a0aa1f0a85e9efa24d7bd9d3fc1696f3c',1,'tsp_solvers_Legacy.c']]],
   ['legacyconcorde_5fmodel',['LegacyConcorde_model',['../tsp__solvers_8h.html#a3472239f5a9c10c01a370d1a8cb50115',1,'tsp_solvers_LegacyConcorde.c']]],
+  ['legacyconcorderand_5fmodel',['LegacyConcordeRand_model',['../tsp__solvers_8h.html#a12cfacd533460af4482466dd99f550b0',1,'tsp_solvers_LegacyConcordeRand.c']]],
+  ['legacyconcordeshallow_5fmodel',['LegacyConcordeShallow_model',['../tsp__solvers_8h.html#a4c7c78c71d1bdbefae0d5685e6b3a1ed',1,'tsp_solvers_LegacyConcordeShallow.c']]],
   ['log_5fdebug',['LOG_DEBUG',['../logging_8h.html#a6ff63e8955665c4a58b1598f2b07c51a',1,'logging.h']]],
   ['log_5ferror',['LOG_ERROR',['../logging_8h.html#aced66975c154ea0e2a8ec3bc818b4e08',1,'logging.h']]],
   ['log_5ffatal',['LOG_FATAL',['../logging_8h.html#ac2164369b4d2bf72296f8ba6ea576ecf',1,'logging.h']]],

@@ -1,5 +1,5 @@
 /*
- * \brief   Basic Branch and Cut model with "quasi-exponential backoff".
+ * \brief   Variant F of Loop model.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
