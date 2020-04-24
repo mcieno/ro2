@@ -396,13 +396,69 @@ _relaxationcutcallback_GenericConcorde ( CPXCALLBACKCONTEXTptr context, CPXLONG 
             ncomp == 1 ? "" : " NOT" );
     }
 
-    if ( ncomp == 1 &&
-        CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.95,
-                             _concorde_callback_GenericConcorde, &ccinfo ) )
-    {
-        fprintf( stderr, CERROR "_relaxationcutcallback_GenericConcorde: CCcut_violated_cuts.\n" );
-        status = 1;
-        goto TERMINATE;
+    if ( ncomp == 1 ) {
+        /* The solution is connected, search for violated cuts */
+
+        if ( CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.99,
+                                  _concorde_callback_GenericConcorde, &ccinfo ) )
+        {
+            fprintf( stderr, CERROR "_relaxationcutcallback_GenericConcorde: CCcut_violated_cuts.\n" );
+            status = 1;
+            goto TERMINATE;
+        }
+
+    } else {
+        /* The solution has subtours and we can add the corresponding SEC's */
+
+        int *rmatind;
+        double *rmatval;
+        void *memchunk = malloc(   info->problem->nnodes * info->problem->nnodes * sizeof( *rmatind )
+                                 + info->problem->nnodes * info->problem->nnodes * sizeof( *rmatval ) );
+
+        if ( memchunk == NULL ) {
+            fprintf( stderr, CFATAL "_relaxationcutcallback_GenericConcorde: out of memory.\n" );
+            exit( EXIT_FAILURE );
+        }
+
+        rmatind =           ( memchunk );
+        rmatval = (double*) ( rmatind + info->problem->nnodes * info->problem->nnodes );
+
+        char sense = 'L';
+        int purgeable = CPX_USECUT_PURGE;
+        int rmatbeg = 0;
+        int local = 0;
+
+        int i = 0;
+        int compend = i;
+        double rhs;
+        int nzcnt;
+
+        for ( size_t k = 0; k < ncomp; ++k ) {
+            rhs = compscount[k] - 1.0;
+            compend += compscount[k];
+
+            nzcnt = 0;
+
+            for ( ; i < compend; ++i ) {
+                for ( int j = i + 1; j < compend; ++j ) {
+                    rmatind[nzcnt] = _GenericConcorde_xpos( comps[i], comps[j], info->problem );
+                    rmatval[nzcnt] = 1.0;
+                    ++nzcnt;
+                }
+            }
+
+            if ( CPXcallbackaddusercuts( context, 1, nzcnt, &rhs, &sense,
+                                         &rmatbeg, rmatind, rmatval, &purgeable, &local ) )
+            {
+                fprintf( stderr, CFATAL
+                    "_relaxationcutcallback_GenericConcorde: CPXcutcallbackadd [SEC(%zu/%d)]\n", k + 1, ncomp );
+                exit( EXIT_FAILURE );
+            }
+
+            i = compend;
+        }
+
+        free( memchunk );
     }
 
 
@@ -422,7 +478,7 @@ _callbackfunc_GenericConcorde ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid
 {
     int status = 1;
 
-    switch (contextid)
+    switch ( contextid )
     {
         case CPX_CALLBACKCONTEXT_RELAXATION:
             status = _relaxationcutcallback_GenericConcorde( context, contextid, userhandle );

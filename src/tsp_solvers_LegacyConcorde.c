@@ -221,7 +221,11 @@ _add_subtour_constraints_LegacyConcorde ( const instance *problem,
 
 
 static int CPXPUBLIC
-_lazyconstraintcallback_LegacyConcorde ( CPXCENVptr env, void *cbdata, int wherefrom, void *cbhandle, int *useraction_p )
+_lazyconstraintcallback_LegacyConcorde ( CPXCENVptr env,
+                                         void       *cbdata,
+                                         int        wherefrom,
+                                         void       *cbhandle,
+                                         int        *useraction_p )
 {
     int status = 0;
 
@@ -342,10 +346,10 @@ _concorde_callback_LegacyConcorde( double val, int cutcount, int *cut, void *use
 
 int
 _usercutcallback_LegacyConcorde( CPXCENVptr env,
-                             void       *cbdata,
-                             int        wherefrom,
-                             void       *cbhandle,
-                             int        *useraction_p )
+                                 void       *cbdata,
+                                 int        wherefrom,
+                                 void       *cbhandle,
+                                 int        *useraction_p )
 {
     int status = 0;
 
@@ -400,13 +404,65 @@ _usercutcallback_LegacyConcorde( CPXCENVptr env,
             ncomp == 1 ? "" : " NOT" );
     }
 
-    if ( ncomp == 1 &&
-        CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.95,
-                             _concorde_callback_LegacyConcorde, &ccinfo ) )
-    {
-        fprintf( stderr, CERROR "_usercutcallback_LegacyConcorde: CCcut_violated_cuts.\n" );
-        status = 1;
-        goto TERMINATE;
+    if ( ncomp == 1 ) {
+        /* The solution is connected, search for violated cuts */
+
+        if ( CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.99,
+                                  _concorde_callback_LegacyConcorde, &ccinfo ) )
+        {
+            fprintf( stderr, CERROR "_usercutcallback_LegacyConcorde: CCcut_violated_cuts.\n" );
+            status = 1;
+            goto TERMINATE;
+        }
+
+    } else {
+        /* The solution has subtours and we can add the corresponding SEC's */
+
+        int *rmatind;
+        double *rmatval;
+        void *memchunk = malloc(   info->problem->nnodes * info->problem->nnodes * sizeof( *rmatind )
+                                 + info->problem->nnodes * info->problem->nnodes * sizeof( *rmatval ) );
+
+        if ( memchunk == NULL ) {
+            fprintf( stderr, CFATAL "_usercutcallback_LegacyConcorde: out of memory.\n" );
+            exit( EXIT_FAILURE );
+        }
+
+        rmatind =           ( memchunk );
+        rmatval = (double*) ( rmatind + info->problem->nnodes * info->problem->nnodes );
+
+        char sense = 'L';
+        int purgeable = CPX_USECUT_PURGE;
+
+        int i = 0;
+        int compend = i;
+        double rhs;
+        int nzcnt;
+
+        for ( size_t k = 0; k < ncomp; ++k ) {
+            rhs = compscount[k] - 1.0;
+            compend += compscount[k];
+
+            nzcnt = 0;
+
+            for ( ; i < compend; ++i ) {
+                for ( int j = i + 1; j < compend; ++j ) {
+                    rmatind[nzcnt] = _LegacyConcorde_xpos( comps[i], comps[j], info->problem );
+                    rmatval[nzcnt] = 1.0;
+                    ++nzcnt;
+                }
+            }
+
+            if ( CPXcutcallbackadd( env, cbdata, wherefrom, nzcnt, rhs, sense, rmatind, rmatval, purgeable ) ) {
+                fprintf( stderr, CFATAL "_usercutcallback_LegacyConcorde: CPXcutcallbackadd [SEC(%zu/%d)]\n",
+                    k + 1, ncomp );
+                exit( EXIT_FAILURE );
+            }
+
+            i = compend;
+        }
+
+        free( memchunk );
     }
 
 
