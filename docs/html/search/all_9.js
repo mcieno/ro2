@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['solution_5fto_5fplot_5fdat',['solution_to_plot_dat',['../tspplot_8h.html#ad2b92863be743409bf4cab367d3897aa',1,'tspplot.c']]]
+  ['random_5fmodel',['Random_model',['../tsp__solvers_8h.html#acfc52ebf4ed24cc001f877b9f2ce171a',1,'tsp_solvers_random.c']]],
+  ['repr_5finstance',['repr_instance',['../tsp_8h.html#a02a28b328856edb5be50a840d0bd2d7b',1,'tsp.c']]]
 ];

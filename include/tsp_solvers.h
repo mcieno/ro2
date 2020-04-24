@@ -11,20 +11,20 @@
 #include "tsp.h"
 
 
-#define TSP_SOLVER_RANDOM     1U  /*!< Random model.  */
-#define TSP_SOLVER_DUMMY      2U  /*!< Dummy model.  */
-#define TSP_SOLVER_MTZ        3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
-#define TSP_SOLVER_FLOW1      4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
-#define TSP_SOLVER_MTZLAZY    5U  /*!< Sequential Formulation model with lazy constraints.  */
-#define TSP_SOLVER_FLOW1LAZY  6U  /*!< Single Commodity Flow model with lazy constraints.  */
-#define TSP_SOLVER_LOOPBC     7U  /*!< Loop Branch and Cut model.  */
-#define TSP_SOLVER_LOOPBCF    8U  /*!< Variant F of the loop Branch and Cut model.  */
-#define TSP_SOLVER_LOOPBCM    9U  /*!< Variant M of the loop Branch and Cut model.  */
-#define TSP_SOLVER_LOOPBCX   10U  /*!< Variant X of the loop Branch and Cut model.  */
-#define TSP_SOLVER_LAZYBC    11U  /*!< Branch and Cut model with lazy constraint callback.  */
-#define TSP_SOLVER_LAZYBCG   12U  /*!< Branch and Cut model with generic callback.  */
-#define TSP_SOLVER_LAZYBCC   13U  /*!< Branch and Cut model with Concorde callback.  */
-#define TSP_SOLVER_LAZYBCCG  14U  /*!< Branch and Cut model with Concorde with generic callback.  */
+#define TSP_SOLVER_Random            1U  /*!< Random model.  */
+#define TSP_SOLVER_Dummy             2U  /*!< Dummy model.  */
+#define TSP_SOLVER_MTZ               3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
+#define TSP_SOLVER_Flow1             4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
+#define TSP_SOLVER_LazyMTZ           5U  /*!< Sequential Formulation model with lazy constraints.  */
+#define TSP_SOLVER_LazyFlow1         6U  /*!< Single Commodity Flow model with lazy constraints.  */
+#define TSP_SOLVER_Loop              7U  /*!< Loop Branch and Cut model.  */
+#define TSP_SOLVER_LoopF             8U  /*!< Variant F of the loop Branch and Cut model.  */
+#define TSP_SOLVER_LoopM             9U  /*!< Variant M of the loop Branch and Cut model.  */
+#define TSP_SOLVER_LoopX            10U  /*!< Variant X of the loop Branch and Cut model.  */
+#define TSP_SOLVER_Legacy           11U  /*!< Branch and Cut model with lazy constraint callback.  */
+#define TSP_SOLVER_Generic          12U  /*!< Branch and Cut model with generic callback.  */
+#define TSP_SOLVER_LegacyConcorde   13U  /*!< Branch and Cut model with Concorde callback.  */
+#define TSP_SOLVER_GenericConcorde  14U  /*!< Branch and Cut model with Concorde with generic callback.  */
 
 typedef unsigned model_t;
 
@@ -91,14 +91,14 @@ _xopt2subtours ( const instance *problem,
 
 
 /*!
- * \brief Generate a random solution for the instance.
+ * \brief Generate a Random solution for the instance.
  *
  *
  * \param problem
  *     Pointer to the instance structure.
  */
 void
-random_model ( instance *problem );
+Random_model ( instance *problem );
 
 
 /*!
@@ -111,7 +111,7 @@ random_model ( instance *problem );
  * \note This method does not include subtour elimination constraints.
  */
 void
-dummy_model ( instance *problem );
+Dummy_model ( instance *problem );
 
 
 /*!
@@ -122,7 +122,7 @@ dummy_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-mtz_model ( instance *problem );
+MTZ_model ( instance *problem );
 
 
 /*!
@@ -133,7 +133,7 @@ mtz_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-flow1_model ( instance *problem );
+Flow1_model ( instance *problem );
 
 
 /*!
@@ -144,7 +144,7 @@ flow1_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-mtzlazy_model ( instance *problem );
+LazyMTZ_model ( instance *problem );
 
 
 /*!
@@ -155,11 +155,11 @@ mtzlazy_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-flow1lazy_model ( instance *problem );
+LazyFlow1_model ( instance *problem );
 
 
 /*!
- * \brief Solve with dummy "Branch and Cut" model,
+ * \brief Solve with Dummy "Branch and Cut" model,
  *        restarting cplex after every intermediate solution.
  *
  *
@@ -167,14 +167,14 @@ flow1lazy_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-loopBC_model ( instance *problem );
+Loop_model ( instance *problem );
 
 
 /*!
- * \brief Solve with dummy "Branch and Cut" model (variant 'F'),
+ * \brief Solve with Dummy "Branch and Cut" model (variant 'F'),
  *        restarting cplex after every intermediate solution.
  *
- * This model is similar to loopBC_model().
+ * This model is similar to Loop_model().
  * The main difference is that it starts with a loose EPGAP and tightens it
  * iteration after iteration, until a single component is found, possibly
  * sub-optimal. At that point, the default MIP optimizer is run.
@@ -183,14 +183,14 @@ loopBC_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-loopBCf_model ( instance *problem );
+LoopF_model ( instance *problem );
 
 
 /*!
- * \brief Solve with dummy "Branch and Cut" model (variant 'M'),
+ * \brief Solve with Dummy "Branch and Cut" model (variant 'M'),
  *        restarting cplex after every intermediate solution.
  *
- * This model is similar to loopBC_model().
+ * This model is similar to Loop_model().
  * The main difference is that it starts with a loose EPGAP and a small limit
  * of solutions. It tightens the gap and increases the solution limit until a
  * single component is found, possibly sub-optimal.
@@ -200,14 +200,14 @@ loopBCf_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-loopBCm_model ( instance *problem );
+LoopM_model ( instance *problem );
 
 
 /*!
- * \brief Solve with dummy "Branch and Cut" model (variant 'X'),
+ * \brief Solve with Dummy "Branch and Cut" model (variant 'X'),
  *        restarting cplex after every intermediate solution.
  *
- * This model is similar to loopBC_model().
+ * This model is similar to Loop_model().
  * The main difference is that it starts with a tight EPGAP and a large limit
  * of solutions. It looses them according to the number of components it found
  * at each solution, until a single component is found, possibly sub-optimal.
@@ -217,7 +217,7 @@ loopBCm_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-loopBCx_model ( instance *problem );
+LoopX_model ( instance *problem );
 
 
 /*!
@@ -228,7 +228,7 @@ loopBCx_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-lazyBC_model ( instance *problem );
+Legacy_model ( instance *problem );
 
 
 /*!
@@ -239,7 +239,7 @@ lazyBC_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-lazyBCg_model ( instance *problem );
+Generic_model ( instance *problem );
 
 
 /*!
@@ -251,7 +251,7 @@ lazyBCg_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-lazyBCc_model ( instance *problem );
+LegacyConcorde_model ( instance *problem );
 
 
 /*!
@@ -264,7 +264,7 @@ lazyBCc_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-lazyBCcg_model ( instance *problem );
+GenericConcorde_model ( instance *problem );
 
 
 #endif

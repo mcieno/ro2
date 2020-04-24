@@ -33,11 +33,11 @@
  *     Pointer to the instance structure.
  */
 size_t
-_mtz_xpos ( size_t i, size_t j, const instance *problem )
+_MTZ_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
         errno = EFAULT;
-        perror( CFATAL "_mtz_xpos: i == j" );
+        perror( CFATAL "_MTZ_xpos: i == j" );
         exit( EXIT_FAILURE );
     }
 
@@ -56,7 +56,7 @@ _mtz_xpos ( size_t i, size_t j, const instance *problem )
  *     Pointer to the instance structure.
  */
 size_t
-_mtz_upos ( size_t i, const instance *problem )
+_MTZ_upos ( size_t i, const instance *problem )
 {
     return problem->nnodes * ( problem->nnodes - 1UL ) + i - 1UL;
 }
@@ -76,7 +76,7 @@ _mtz_upos ( size_t i, const instance *problem )
  *     CPLEX problem.
  */
 void
-_add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
+_add_constraints_MTZ ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 {
     char ctype = CPX_BINARY;
     double lb = 0.0;
@@ -105,12 +105,12 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_mtz: CPXnewcols [%s]\n", cname );
+                fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXnewcols [%s]\n", cname );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXgetnumcols( env, lp ) - 1 != _mtz_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_mtz: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+            if ( CPXgetnumcols( env, lp ) - 1 != _MTZ_xpos( i, j, problem ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXgetnumcols [%s: x(%zu, %zu)]\n",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -126,7 +126,7 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_mtz: CPXnewrows [%s]\n", cname );
+            fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXnewrows [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -136,8 +136,8 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         {
             if ( i == h ) continue;
 
-            if ( CPXchgcoef( env, lp, lastrow, _mtz_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_mtz: CPXchgcoef [%s: x(%zu, %zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _MTZ_xpos( i, h, problem ), 1.0 ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXchgcoef [%s: x(%zu, %zu)]\n",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -149,7 +149,7 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_mtz: CPXnewrows [%s]\n", cname );
+            fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXnewrows [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -159,8 +159,8 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         {
             if ( i == h ) continue;
 
-            if ( CPXchgcoef( env, lp, lastrow, _mtz_xpos( h, i, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_mtz: CPXchgcoef [%s: x(%zu, %zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _MTZ_xpos( h, i, problem ), 1.0 ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXchgcoef [%s: x(%zu, %zu)]\n",
                     cname, h + 1, i + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -178,12 +178,12 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         snprintf( cname, CPX_STR_PARAM_MAX, "u(%zu)", i + 1 );
 
         if( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_mtz: CPXnewcols [%s]\n", cname );
+            fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXnewcols [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
 
-        if ( CPXgetnumcols( env, lp ) - 1 != _mtz_upos( i, problem ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_mtz: CPXgetnumcols [%s]\n", cname );
+        if ( CPXgetnumcols( env, lp ) - 1 != _MTZ_upos( i, problem ) ) {
+            fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXgetnumcols [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
     }
@@ -202,24 +202,24 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             snprintf( cname, CPX_STR_PARAM_MAX, "sequence(%zu)", j + 1 );
 
             if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_mtz: CPXnewrows [%s]\n", cname );
+                fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXnewrows [%s]\n", cname );
                 exit( EXIT_FAILURE );
             }
 
             lastrow = CPXgetnumrows( env, lp ) - 1;
 
-            if ( CPXchgcoef( env, lp, lastrow, _mtz_upos( j, problem ), -1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_mtz: CPXchgcoef [%s: u(%zu)]\n", cname, j + 1 );
+            if ( CPXchgcoef( env, lp, lastrow, _MTZ_upos( j, problem ), -1.0 ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXchgcoef [%s: u(%zu)]\n", cname, j + 1 );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXchgcoef( env, lp, lastrow, _mtz_upos( i, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_mtz: CPXchgcoef [%s: u(%zu)]\n", cname, i + 1 );
+            if ( CPXchgcoef( env, lp, lastrow, _MTZ_upos( i, problem ), 1.0 ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXchgcoef [%s: u(%zu)]\n", cname, i + 1 );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXchgcoef( env, lp, lastrow, _mtz_xpos( i, j, problem ), problem->nnodes ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_mtz: CPXchgcoef [%s: x(%zu,%zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _MTZ_xpos( i, j, problem ), problem->nnodes ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_MTZ: CPXchgcoef [%s: x(%zu,%zu)]\n",
                     cname, i + 1, j + 1);
                 exit( EXIT_FAILURE );
             }
@@ -231,7 +231,7 @@ _add_constraints_mtz ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
 
 void
-mtz_model ( instance *problem )
+MTZ_model ( instance *problem )
 {
 
     int error;
@@ -243,13 +243,13 @@ mtz_model ( instance *problem )
     tspconf_apply( env );
 
     /* BUILD MODEL */
-    _add_constraints_mtz( problem, env, lp );
+    _add_constraints_MTZ( problem, env, lp );
 
     struct timeb start, end;
     ftime( &start );
 
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "mtz_model: CPXmimopt error\n" );
+        fprintf( stderr, CFATAL "MTZ_model: CPXmimopt error\n" );
         exit( EXIT_FAILURE );
     }
 
@@ -258,7 +258,7 @@ mtz_model ( instance *problem )
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
 
-    _xopt2solution( xopt, problem, &_mtz_xpos );
+    _xopt2solution( xopt, problem, &_MTZ_xpos );
 
     free( xopt );
 

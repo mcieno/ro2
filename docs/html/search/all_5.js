@@ -1,19 +1,6 @@
 var searchData=
 [
-  ['lazybc_5fmodel',['lazyBC_model',['../tsp__solvers_8h.html#a4d53a79738c349419a714df7b751050b',1,'tsp_solvers_lazybc.c']]],
-  ['lazybcc_5fmodel',['lazyBCc_model',['../tsp__solvers_8h.html#a1fc425a85187083a22b5bd60469794f5',1,'tsp_solvers_lazybcc.c']]],
-  ['lazybccg_5fmodel',['lazyBCcg_model',['../tsp__solvers_8h.html#abe52dcec6a7fc5b2a5313b32b4989bb2',1,'tsp_solvers_lazybccg.c']]],
-  ['lazybcg_5fmodel',['lazyBCg_model',['../tsp__solvers_8h.html#afddd977acc43e51e29356f6da45e50a8',1,'tsp_solvers_lazybcg.c']]],
-  ['log_5fdebug',['LOG_DEBUG',['../logging_8h.html#a6ff63e8955665c4a58b1598f2b07c51a',1,'logging.h']]],
-  ['log_5ferror',['LOG_ERROR',['../logging_8h.html#aced66975c154ea0e2a8ec3bc818b4e08',1,'logging.h']]],
-  ['log_5ffatal',['LOG_FATAL',['../logging_8h.html#ac2164369b4d2bf72296f8ba6ea576ecf',1,'logging.h']]],
-  ['log_5finfo',['LOG_INFO',['../logging_8h.html#aeb4f36db01bd128c7afeac5889dac311',1,'logging.h']]],
-  ['log_5foff',['LOG_OFF',['../logging_8h.html#aa8bd3e9913d9068e20ef061a58672967',1,'logging.h']]],
-  ['log_5ftrace',['LOG_TRACE',['../logging_8h.html#af7abc145380f1916838e42f9272aa0f6',1,'logging.h']]],
-  ['log_5fwarn',['LOG_WARN',['../logging_8h.html#aea3f57d6dcc5b4ac957e2679e87dde27',1,'logging.h']]],
-  ['logging_2eh',['logging.h',['../logging_8h.html',1,'']]],
-  ['loopbc_5fmodel',['loopBC_model',['../tsp__solvers_8h.html#a3e162252ec21fba362a771395dde84c5',1,'tsp_solvers_loopbc.c']]],
-  ['loopbcf_5fmodel',['loopBCf_model',['../tsp__solvers_8h.html#ae49bbb00ef72457955f1b2d4908755fa',1,'tsp_solvers_loopbcf.c']]],
-  ['loopbcm_5fmodel',['loopBCm_model',['../tsp__solvers_8h.html#aede2e24751a7d8a767357a52d4bd53a2',1,'tsp_solvers_loopbcm.c']]],
-  ['loopbcx_5fmodel',['loopBCx_model',['../tsp__solvers_8h.html#a31b4b428b7abd64afba55290793ef78c',1,'tsp_solvers_loopbcx.c']]]
+  ['init_5finstance',['init_instance',['../tsp_8h.html#ab25d8f0a014badebe0d7b338e9c49697',1,'tsp.c']]],
+  ['instance',['instance',['../structinstance.html',1,'']]],
+  ['instance_5fto_5fplot_5fdat',['instance_to_plot_dat',['../tspplot_8h.html#a1fe08417a1888e4cfd335a8fcc1e5493',1,'tspplot.c']]]
 ];

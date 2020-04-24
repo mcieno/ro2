@@ -1,5 +1,5 @@
 /*
- * \brief   Branch and Cut model with lazy constraint callback.
+ * \brief   Branch and Cut model with generic callback.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
@@ -18,6 +18,8 @@
 #include "tsp.h"
 #include "tspconf.h"
 
+#include "tspplot.h"
+
 
 typedef struct
 {
@@ -28,7 +30,7 @@ cbinfo_t;
 
 
 /*!
- * \brief Get the position of variable x(i,j) in B&B model with lazy constraint callback.
+ * \brief Get the position of variable x(i,j) in B&B model with generic callback.
  *
  *
  * \param i
@@ -41,15 +43,15 @@ cbinfo_t;
  *     Pointer to the instance structure.
  */
 size_t
-_lazyBC_xpos ( size_t i, size_t j, const instance *problem )
+_Generic_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
         errno = EFAULT;
-        perror( CFATAL "_lazyBC_xpos: i == j" );
+        perror( CFATAL "_Generic_xpos: i == j" );
         exit( EXIT_FAILURE );
     }
 
-    if ( i > j ) return _lazyBC_xpos( j, i, problem );
+    if ( i > j ) return _Generic_xpos( j, i, problem );
 
     return i * problem->nnodes + j - ( ( i + 1 ) * ( i + 2 ) / 2UL );
 }
@@ -69,7 +71,7 @@ _lazyBC_xpos ( size_t i, size_t j, const instance *problem )
  *     CPLEX problem.
  */
 void
-_add_constraints_lazyBC ( const instance *problem, CPXENVptr env, CPXLPptr lp )
+_add_constraints_Generic ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 {
     char ctype;
     double lb, ub, obj, rhs;
@@ -95,12 +97,12 @@ _add_constraints_lazyBC ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_lazyBC: CPXnewcols [%s]\n", cname );
+                fprintf( stderr, CFATAL "_add_constraints_Generic: CPXnewcols [%s]\n", cname );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXgetnumcols( env, lp ) - 1 != _lazyBC_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_lazyBC: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+            if ( CPXgetnumcols( env, lp ) - 1 != _Generic_xpos( i, j, problem ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_Generic: CPXgetnumcols [%s: x(%zu, %zu)]\n",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -115,7 +117,7 @@ _add_constraints_lazyBC ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_lazyBC: CPXnewrows [%s]\n", cname );
+            fprintf( stderr, CFATAL "_add_constraints_Generic: CPXnewrows [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -124,8 +126,8 @@ _add_constraints_lazyBC ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         for ( size_t i = 0; i < problem->nnodes; ++i )
         {
             if ( i == h ) continue;
-            if ( CPXchgcoef( env, lp, lastrow, _lazyBC_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_lazyBC: CPXchgcoef [%s: x(%zu, %zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _Generic_xpos( i, h, problem ), 1.0 ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_Generic: CPXchgcoef [%s: x(%zu, %zu)]\n",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -138,13 +140,11 @@ _add_constraints_lazyBC ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
 
 void
-_add_subtour_constraints_lazyBC ( const instance *problem,
-                                  CPXCENVptr     env,
-                                  size_t         *next,
-                                  size_t         *comps,
-                                  size_t         ncomps,
-                                  void           *cbdata,
-                                  int            wherefrom )
+_add_subtour_constraints_Generic ( const instance       *problem,
+                                   CPXCALLBACKCONTEXTptr context,
+                                   size_t                *next,
+                                   size_t                *comps,
+                                   size_t                ncomps )
 {
     if ( ncomps == 1 ) {
         return;
@@ -158,8 +158,8 @@ _add_subtour_constraints_lazyBC ( const instance *problem,
                              + problem->nnodes * problem->nnodes * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_add_subtour_constraints_lazyBC: out of memory\n" );
-        exit( EXIT_FAILURE );
+        fprintf( stderr, CFATAL "_add_subtour_constraints_Generic: out of memory\n" );
+        CPXcallbackabort( context );
     }
 
     cnodes  =           ( memchunk );
@@ -167,7 +167,7 @@ _add_subtour_constraints_lazyBC ( const instance *problem,
     rmatval = (double*) ( rmatind + problem->nnodes * problem->nnodes );
 
     char sense = 'L';
-    int purgeable = CPX_USECUT_PURGE;
+    int rmatbeg = 0;
 
     /* Add constraint for k-th component */
     double rhs;
@@ -192,16 +192,16 @@ _add_subtour_constraints_lazyBC ( const instance *problem,
         int nzcnt = 0;
         for (size_t i = 0; i < compsize; ++i) {
             for (size_t j = i + 1; j < compsize; ++j) {
-                rmatind[nzcnt] = _lazyBC_xpos( cnodes[i], cnodes[j], problem );
+                rmatind[nzcnt] = _Generic_xpos( cnodes[i], cnodes[j], problem );
                 rmatval[nzcnt] = 1.0;
                 ++nzcnt;
             }
         }
 
-        if ( CPXcutcallbackadd( env, cbdata, wherefrom, nzcnt, rhs, sense, rmatind, rmatval, purgeable ) ) {
-            fprintf( stderr, CFATAL "_add_subtour_constraints_lazyBC: CPXcutcallbackadd [SEC(%zu/%zu)]\n",
+        if ( CPXcallbackrejectcandidate( context, 1, nzcnt, &rhs, &sense, &rmatbeg, rmatind, rmatval ) ) {
+            fprintf( stderr, CFATAL "_add_subtour_constraints_Generic: CPXcallbackaddusercuts [SEC(%zu/%zu)]\n",
                 k + 1, ncomps );
-            exit( EXIT_FAILURE );
+            CPXcallbackabort( context );
         }
     }
 
@@ -210,12 +210,11 @@ _add_subtour_constraints_lazyBC ( const instance *problem,
 
 
 static int CPXPUBLIC
-_lazyconstraintcallback_lazyBC ( CPXCENVptr env, void *cbdata, int wherefrom, void *cbhandle, int *useraction_p )
+_callbackfunc_Generic ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
 {
     int status = 0;
 
-    *useraction_p = CPX_CALLBACK_DEFAULT;
-    cbinfo_t *info = (cbinfo_t *) cbhandle;
+    cbinfo_t *info = (cbinfo_t *) userhandle;
 
     size_t ncomps = 0;
     double *x     = malloc( info->ncols * sizeof( *x ) );
@@ -225,26 +224,33 @@ _lazyconstraintcallback_lazyBC ( CPXCENVptr env, void *cbdata, int wherefrom, vo
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        fprintf(stderr, CERROR "_lazyconstraintcallback_lazyBC: Out of memory.\n");
+        fprintf(stderr, CERROR "_callbackfunc_Generic: out of memory.\n");
         goto TERMINATE;
     }
 
-    status = CPXgetcallbacknodex( env, cbdata, wherefrom, x, 0, info->ncols - 1 );
+    int ispoint;
+    status = CPXcallbackcandidateispoint( context, &ispoint );
+
+    if ( status || !ispoint ) {
+        /* Not a feasible solution */
+        goto TERMINATE;
+    }
+
+    status = CPXcallbackgetcandidatepoint(context, x, 0, info->ncols - 1, NULL);
 
     if ( status ) {
-        fprintf( stderr, CERROR "_lazyconstraintcallback_lazyBC: CPXgetcallbacknodex.\n" );
+        fprintf( stderr, CERROR "_callbackfunc_Generic: CPXcallbackgetcandidatepoint.\n" );
         goto TERMINATE;
     }
 
-    _xopt2subtours( info->problem, x, next, comps, &ncomps, _lazyBC_xpos );
+    _xopt2subtours( info->problem, x, next, comps, &ncomps, _Generic_xpos );
 
     if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, CINFO "_lazyconstraintcallback_lazyBC: got %zu components.\n", ncomps );
+        fprintf( stderr, CINFO "_callbackfunc_Generic: got %zu components.\n", ncomps );
     }
 
     if ( ncomps > 1 ) {
-        _add_subtour_constraints_lazyBC( info->problem, env, next, comps, ncomps, cbdata, wherefrom );
-        *useraction_p = CPX_CALLBACK_SET;
+        _add_subtour_constraints_Generic( info->problem, context, next, comps, ncomps );
     }
 
 TERMINATE :
@@ -258,7 +264,7 @@ TERMINATE :
 
 
 void
-lazyBC_model ( instance *problem )
+Generic_model ( instance *problem )
 {
     int error;
 
@@ -266,10 +272,10 @@ lazyBC_model ( instance *problem )
     CPXLPptr  lp  = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
     /* BUILD MODEL */
-    _add_constraints_lazyBC( problem, env, lp );
+    _add_constraints_Generic( problem, env, lp );
 
     cbinfo_t info = { problem, CPXgetnumcols( env, lp ) };
-    CPXsetlazyconstraintcallbackfunc( env, _lazyconstraintcallback_lazyBC, &info );
+    CPXcallbacksetfunc( env, lp, CPX_CALLBACKCONTEXT_CANDIDATE, _callbackfunc_Generic, &info );
 
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
@@ -280,7 +286,7 @@ lazyBC_model ( instance *problem )
     ftime( &start );
 
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "lazyBC_model: CPXmimopt error\n" );
+        fprintf( stderr, CFATAL "Generic_model: CPXmimopt error\n" );
         exit( EXIT_FAILURE );
     }
 
@@ -289,7 +295,7 @@ lazyBC_model ( instance *problem )
     double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
 
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-    _xopt2solution( xopt, problem, &_lazyBC_xpos );
+    _xopt2solution( xopt, problem, &_Generic_xpos );
 
     free( xopt );
 

@@ -1,5 +1,5 @@
 /*
- * \brief   Branch and Cut model with lazy constraint callback.
+ * \brief   Branch and Cut model with lazy constraint callback and Concorde user cut callback.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
@@ -29,10 +29,7 @@ cbinfo_t;
 
 typedef struct
 {
-    const CPXCENVptr env;
-    void *cbdata;
-    int wherefrom;
-    int *useraction_p;
+    const CPXCALLBACKCONTEXTptr context;
     cbinfo_t *info;
 }
 ccinfo_t;
@@ -52,15 +49,15 @@ ccinfo_t;
  *     Pointer to the instance structure.
  */
 size_t
-_lazyBCc_xpos ( size_t i, size_t j, const instance *problem )
+_GenericConcorde_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
         errno = EFAULT;
-        perror( CFATAL "_lazyBCc_xpos: i == j" );
+        perror( CFATAL "_GenericConcorde_xpos: i == j" );
         exit( EXIT_FAILURE );
     }
 
-    if ( i > j ) return _lazyBCc_xpos( j, i, problem );
+    if ( i > j ) return _GenericConcorde_xpos( j, i, problem );
 
     return i * problem->nnodes + j - ( ( i + 1 ) * ( i + 2 ) / 2UL );
 }
@@ -80,7 +77,7 @@ _lazyBCc_xpos ( size_t i, size_t j, const instance *problem )
  *     CPLEX problem.
  */
 void
-_add_constraints_lazyBCc ( const instance *problem, CPXENVptr env, CPXLPptr lp )
+_add_constraints_GenericConcorde ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 {
     char ctype;
     double lb, ub, obj, rhs;
@@ -106,12 +103,12 @@ _add_constraints_lazyBCc ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_lazyBCc: CPXnewcols [%s]\n", cname );
+                fprintf( stderr, CFATAL "_add_constraints_GenericConcorde: CPXnewcols [%s]\n", cname );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXgetnumcols( env, lp ) - 1 != _lazyBCc_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_lazyBCc: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+            if ( CPXgetnumcols( env, lp ) - 1 != _GenericConcorde_xpos( i, j, problem ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_GenericConcorde: CPXgetnumcols [%s: x(%zu, %zu)]\n",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -126,7 +123,7 @@ _add_constraints_lazyBCc ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_lazyBCc: CPXnewrows [%s]\n", cname );
+            fprintf( stderr, CFATAL "_add_constraints_GenericConcorde: CPXnewrows [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -135,8 +132,8 @@ _add_constraints_lazyBCc ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         for ( size_t i = 0; i < problem->nnodes; ++i )
         {
             if ( i == h ) continue;
-            if ( CPXchgcoef( env, lp, lastrow, _lazyBCc_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_lazyBCc: CPXchgcoef [%s: x(%zu, %zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _GenericConcorde_xpos( i, h, problem ), 1.0 ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_GenericConcorde: CPXchgcoef [%s: x(%zu, %zu)]\n",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -149,13 +146,11 @@ _add_constraints_lazyBCc ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
 
 void
-_add_subtour_constraints_lazyBCc ( const instance *problem,
-                                   CPXCENVptr     env,
-                                   size_t         *next,
-                                   size_t         *comps,
-                                   size_t         ncomps,
-                                   void           *cbdata,
-                                   int            wherefrom )
+_add_subtour_constraints_GenericConcorde ( const instance       *problem,
+                                           CPXCALLBACKCONTEXTptr context,
+                                           size_t                *next,
+                                           size_t                *comps,
+                                           size_t                ncomps )
 {
     if ( ncomps == 1 ) {
         return;
@@ -169,8 +164,8 @@ _add_subtour_constraints_lazyBCc ( const instance *problem,
                              + problem->nnodes * problem->nnodes * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_add_subtour_constraints_lazyBCc: out of memory\n" );
-        exit( EXIT_FAILURE );
+        fprintf( stderr, CFATAL "_add_subtour_constraints_GenericConcorde: out of memory\n" );
+        CPXcallbackabort( context );
     }
 
     cnodes  =           ( memchunk );
@@ -178,7 +173,7 @@ _add_subtour_constraints_lazyBCc ( const instance *problem,
     rmatval = (double*) ( rmatind + problem->nnodes * problem->nnodes );
 
     char sense = 'L';
-    int purgeable = CPX_USECUT_PURGE;
+    int rmatbeg = 0;
 
     /* Add constraint for k-th component */
     double rhs;
@@ -203,16 +198,16 @@ _add_subtour_constraints_lazyBCc ( const instance *problem,
         int nzcnt = 0;
         for (size_t i = 0; i < compsize; ++i) {
             for (size_t j = i + 1; j < compsize; ++j) {
-                rmatind[nzcnt] = _lazyBCc_xpos( cnodes[i], cnodes[j], problem );
+                rmatind[nzcnt] = _GenericConcorde_xpos( cnodes[i], cnodes[j], problem );
                 rmatval[nzcnt] = 1.0;
                 ++nzcnt;
             }
         }
 
-        if ( CPXcutcallbackadd( env, cbdata, wherefrom, nzcnt, rhs, sense, rmatind, rmatval, purgeable ) ) {
-            fprintf( stderr, CFATAL "_add_subtour_constraints_lazyBCc: CPXcutcallbackadd [SEC(%zu/%zu)]\n",
+        if ( CPXcallbackrejectcandidate( context, 1, nzcnt, &rhs, &sense, &rmatbeg, rmatind, rmatval ) ) {
+            fprintf( stderr, CFATAL "_add_subtour_constraints_GenericConcorde: CPXcallbackaddusercuts [SEC(%zu/%zu)]\n",
                 k + 1, ncomps );
-            exit( EXIT_FAILURE );
+            CPXcallbackabort( context );
         }
     }
 
@@ -221,12 +216,11 @@ _add_subtour_constraints_lazyBCc ( const instance *problem,
 
 
 static int CPXPUBLIC
-_lazyconstraintcallback_lazyBCc ( CPXCENVptr env, void *cbdata, int wherefrom, void *cbhandle, int *useraction_p )
+_candidatecutcallback_GenericConcorde ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
 {
     int status = 0;
 
-    *useraction_p = CPX_CALLBACK_DEFAULT;
-    cbinfo_t *info = (cbinfo_t *) cbhandle;
+    cbinfo_t *info = (cbinfo_t *) userhandle;
 
     size_t ncomps = 0;
     double *x     = malloc( info->ncols * sizeof( *x ) );
@@ -236,26 +230,33 @@ _lazyconstraintcallback_lazyBCc ( CPXCENVptr env, void *cbdata, int wherefrom, v
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        fprintf(stderr, CERROR "_lazyconstraintcallback_lazyBCc: Out of memory.\n");
+        fprintf(stderr, CERROR "_candidatecutcallback_GenericConcorde: out of memory.\n");
         goto TERMINATE;
     }
 
-    status = CPXgetcallbacknodex( env, cbdata, wherefrom, x, 0, info->ncols - 1 );
+    int ispoint;
+    status = CPXcallbackcandidateispoint( context, &ispoint );
+
+    if ( status || !ispoint ) {
+        /* Not a feasible solution */
+        goto TERMINATE;
+    }
+
+    status = CPXcallbackgetcandidatepoint(context, x, 0, info->ncols - 1, NULL);
 
     if ( status ) {
-        fprintf( stderr, CERROR "_lazyconstraintcallback_lazyBCc: CPXgetcallbacknodex.\n" );
+        fprintf( stderr, CERROR "_candidatecutcallback_GenericConcorde: CPXcallbackgetcandidatepoint.\n" );
         goto TERMINATE;
     }
 
-    _xopt2subtours( info->problem, x, next, comps, &ncomps, _lazyBCc_xpos );
+    _xopt2subtours( info->problem, x, next, comps, &ncomps, _GenericConcorde_xpos );
 
     if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, CINFO "_lazyconstraintcallback_lazyBCc: got %zu components.\n", ncomps );
+        fprintf( stderr, CINFO "_candidatecutcallback_GenericConcorde: got %zu components.\n", ncomps );
     }
 
     if ( ncomps > 1 ) {
-        _add_subtour_constraints_lazyBCc( info->problem, env, next, comps, ncomps, cbdata, wherefrom );
-        *useraction_p = CPX_CALLBACK_SET;
+        _add_subtour_constraints_GenericConcorde( info->problem, context, next, comps, ncomps );
     }
 
 TERMINATE :
@@ -269,31 +270,33 @@ TERMINATE :
 
 
 int
-_concorde_callback_lazyBCc( double val, int cutcount, int *cut, void *userhandle )
+_concorde_callback_GenericConcorde ( double val, int cutcount, int *cut, void *userhandle )
 {
     ccinfo_t *ccinfo = (ccinfo_t *) userhandle;
 
     if ( loglevel >= LOG_DEBUG ) {
-        fprintf( stderr, CDEBUG "_concorde_callback_lazyBCc: %d nodes in the cut\n", cutcount );
+        fprintf( stderr, CDEBUG "_concorde_callback_GenericConcorde: %d nodes in the cut\n", cutcount );
     }
 
-    char sense    = 'G';
-    int purgeable = CPX_USECUT_PURGE;
-    double rhs    = 2.0;
+    char sense      = 'G';
+    double rhs      = 2;
+    int purgeable   = CPX_USECUT_PURGE;
+    int local       = 0;
+    int rmatbeg     = 0;
 
-    int *cutind;
-    double *cutval;
+    int *rmatind;
+    double *rmatval;
 
-    void *memchunk   = malloc( ccinfo->info->ncols * sizeof( *cutind )
-                               + ccinfo->info->ncols * sizeof( *cutval ) );
+    void *memchunk   = malloc( ccinfo->info->ncols * sizeof( *rmatind )
+                               + ccinfo->info->ncols * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_concorde_callback_lazyBCcg: out of memory\n" );
+        fprintf( stderr, CFATAL "_concorde_callback_GenericConcorde: out of memory\n" );
         return 1;
     }
 
-    cutind = memchunk;
-    cutval = (double*) (cutind + ccinfo->info->ncols );
+    rmatind = memchunk;
+    rmatval = (double*) (rmatind + ccinfo->info->ncols );
 
     int nzcnt = 0;
 
@@ -316,8 +319,8 @@ _concorde_callback_lazyBCc( double val, int cutcount, int *cut, void *userhandle
             }
 
             /* Node j is in V \ S */
-            cutind[nzcnt] = _lazyBCc_xpos( i, j, ccinfo->info->problem );
-            cutval[nzcnt] = 1.0;
+            rmatind[nzcnt] = _GenericConcorde_xpos(i, j, ccinfo->info->problem);
+            rmatval[nzcnt] = 1.0;
             ++nzcnt;
 
         SKIPTHIS:
@@ -326,33 +329,26 @@ _concorde_callback_lazyBCc( double val, int cutcount, int *cut, void *userhandle
     }
 
 
-    if ( CPXcutcallbackadd( ccinfo->env, ccinfo->cbdata, ccinfo->wherefrom,
-                            nzcnt, rhs, sense, cutind, cutval, purgeable ) )
+    if ( CPXcallbackaddusercuts( ccinfo->context, 1, nzcnt, &rhs, &sense,
+                                 &rmatbeg, rmatind, rmatval, &purgeable, &local ) )
     {
-        fprintf( stderr, CFATAL "_concorde_callback_lazyBCc: CPXcutcallbackadd \n");
+        fprintf( stderr, CFATAL "_concorde_callback_GenericConcorde: CPXcutcallbackadd \n");
         exit( EXIT_FAILURE );
     }
 
     free( memchunk );
-    *ccinfo->useraction_p = CPX_CALLBACK_SET;
 
     return 0;
 }
 
 
-int
-_lazyBCc_cutcallback( CPXCENVptr env,
-                      void       *cbdata,
-                      int        wherefrom,
-                      void       *cbhandle,
-                      int        *useraction_p )
+static int CPXPUBLIC
+_relaxationcutcallback_GenericConcorde ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
 {
     int status = 0;
 
-    *useraction_p = CPX_CALLBACK_DEFAULT;
-    cbinfo_t *info = (cbinfo_t *) cbhandle;
-
-    ccinfo_t ccinfo = { env, cbdata, wherefrom, useraction_p, info };
+    cbinfo_t *info = (cbinfo_t *) userhandle;
+    ccinfo_t ccinfo = { context, info };
 
     int ncomp       = 0;
     int nedge       = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
@@ -378,39 +374,39 @@ _lazyBCc_cutcallback( CPXCENVptr env,
          elist      == NULL ||
          comps      == NULL ||
          compscount == NULL  ) {
-        fprintf(stderr, CERROR "_lazyBCc_cutcallback: Out of memory.\n");
+        fprintf(stderr, CERROR "_relaxationcutcallback_GenericConcorde: Out of memory.\n");
         goto TERMINATE;
     }
 
-    status = CPXgetcallbacknodex( env, cbdata, wherefrom, x, 0, info->ncols - 1 );
+    status = CPXcallbackgetrelaxationpoint( context, x, 0, info->ncols - 1, NULL );
 
     if ( status ) {
-        fprintf( stderr, CERROR "_lazyBCc_cutcallback: CPXgetcallbacknodex.\n" );
+        fprintf( stderr, CERROR "_relaxationcutcallback_GenericConcorde: CPXgetcallbacknodex.\n" );
         goto TERMINATE;
     }
 
-
     if ( CCcut_connect_components( info->problem->nnodes, nedge, elist, x, &ncomp, &compscount, &comps ) ) {
-        fprintf( stderr, CERROR "_lazyBCc_cutcallback: CCcut_connect_components.\n" );
+        fprintf( stderr, CERROR "_relaxationcutcallback_GenericConcorde: CCcut_connect_components.\n" );
+        status = 1;
         goto TERMINATE;
     }
 
     if ( loglevel >= LOG_DEBUG ) {
-        fprintf( stderr, CDEBUG "_usercutcallback_lazyBCc: relaxation graph is%s connected\n",
+        fprintf( stderr, CDEBUG "_relaxationcutcallback_GenericConcorde: relaxation graph is%s connected\n",
             ncomp == 1 ? "" : " NOT" );
     }
 
     if ( ncomp == 1 &&
         CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.95,
-                             _concorde_callback_lazyBCc, &ccinfo ) )
+                             _concorde_callback_GenericConcorde, &ccinfo ) )
     {
-        fprintf( stderr, CERROR "_lazyBCc_cutcallback: CCcut_violated_cuts.\n" );
+        fprintf( stderr, CERROR "_relaxationcutcallback_GenericConcorde: CCcut_violated_cuts.\n" );
         status = 1;
         goto TERMINATE;
     }
 
 
-TERMINATE :
+TERMINATE:
 
     if ( x           != NULL )  free( x           );
     if ( elist       != NULL )  free( elist       );
@@ -421,8 +417,31 @@ TERMINATE :
 }
 
 
+static int CPXPUBLIC
+_callbackfunc_GenericConcorde ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
+{
+    int status = 1;
+
+    switch (contextid)
+    {
+        case CPX_CALLBACKCONTEXT_RELAXATION:
+            status = _relaxationcutcallback_GenericConcorde( context, contextid, userhandle );
+            break;
+
+        case CPX_CALLBACKCONTEXT_CANDIDATE:
+            status = _candidatecutcallback_GenericConcorde( context, contextid, userhandle );
+            break;
+
+        default:
+            CPXcallbackabort( context );
+    }
+
+    return status;
+}
+
+
 void
-lazyBCc_model ( instance *problem )
+GenericConcorde_model ( instance *problem )
 {
     int error;
 
@@ -430,12 +449,11 @@ lazyBCc_model ( instance *problem )
     CPXLPptr  lp  = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
     /* BUILD MODEL */
-    _add_constraints_lazyBCc( problem, env, lp );
+    _add_constraints_GenericConcorde( problem, env, lp );
 
     cbinfo_t info = { problem, CPXgetnumcols( env, lp ) };
-    CPXsetlazyconstraintcallbackfunc( env, _lazyconstraintcallback_lazyBCc, &info );
-
-    CPXsetusercutcallbackfunc(env, _lazyBCc_cutcallback, &info);
+    CPXcallbacksetfunc( env, lp, CPX_CALLBACKCONTEXT_RELAXATION | CPX_CALLBACKCONTEXT_CANDIDATE,
+                        _callbackfunc_GenericConcorde, &info );
 
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
@@ -446,7 +464,7 @@ lazyBCc_model ( instance *problem )
     ftime( &start );
 
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "lazyBCc_model: CPXmimopt error\n" );
+        fprintf( stderr, CFATAL "GenericConcorde_model: CPXmimopt error\n" );
         exit( EXIT_FAILURE );
     }
 
@@ -455,7 +473,7 @@ lazyBCc_model ( instance *problem )
     double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
 
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-    _xopt2solution( xopt, problem, &_lazyBCc_xpos );
+    _xopt2solution( xopt, problem, &_GenericConcorde_xpos );
 
     free( xopt );
 

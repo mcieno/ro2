@@ -22,20 +22,19 @@ mkdir -p $bmdir || exit 1
 echo "[*] Saving benchmark to $bmdir/$bmsig.[nodes|times].csv"
 
 models=(
-    #dummy
-    #mtz
-    #flow1
-    #mtzlazy
-    #flow1lazy
-    #loopBC
-    lazyBC
-    lazyBCg
-    lazyBCc
-    lazyBCcg
+    #Dummy
+    #MTZ
+    #Flow1
+    #LazyMTZ
+    #LazyFlow1
+    #Loop
+    Legacy
+    Generic
+    LegacyConcorde
+    GenericConcorde
 )
 
 testbed=(
-    data/dummy.tsp
     data/burma14.tsp
     data/ulysses16.tsp
     data/ulysses22.tsp
