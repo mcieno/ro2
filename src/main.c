@@ -311,46 +311,46 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
 
         case 'M':
-            if ( !strcmp( "Random", arg ) ) {
+            if ( !strcasecmp( "Random", arg ) ) {
                 conf.solving_method = TSP_SOLVER_Random;
 
-            } else if ( !strcmp( "Dummy", arg ) ) {
+            } else if ( !strcasecmp( "Dummy", arg ) ) {
                 conf.solving_method = TSP_SOLVER_Dummy;
 
-            } else if( !strcmp( "MTZ", arg ) ){
+            } else if( !strcasecmp( "MTZ", arg ) ){
                 conf.solving_method = TSP_SOLVER_MTZ;
 
-            } else if ( !strcmp( "Flow1", arg ) ) {
+            } else if ( !strcasecmp( "Flow1", arg ) ) {
                 conf.solving_method = TSP_SOLVER_Flow1;
 
-            } else if ( !strcmp( "LazyMTZ", arg ) ) {
+            } else if ( !strcasecmp( "LazyMTZ", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LazyMTZ;
 
-            } else if ( !strcmp( "LazyFlow1", arg ) ) {
+            } else if ( !strcasecmp( "LazyFlow1", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LazyFlow1;
 
-            } else if ( !strcmp( "Loop", arg ) ) {
+            } else if ( !strcasecmp( "Loop", arg ) ) {
                 conf.solving_method = TSP_SOLVER_Loop;
 
-            } else if ( !strcmp( "LoopF", arg ) ) {
+            } else if ( !strcasecmp( "LoopF", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LoopF;
 
-            } else if ( !strcmp( "LoopM", arg ) ) {
+            } else if ( !strcasecmp( "LoopM", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LoopM;
 
-            } else if ( !strcmp( "LoopX", arg ) ) {
+            } else if ( !strcasecmp( "LoopX", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LoopX;
 
-            } else if ( !strcmp( "Legacy", arg ) ) {
+            } else if ( !strcasecmp( "Legacy", arg ) ) {
                 conf.solving_method = TSP_SOLVER_Legacy;
 
-            } else if ( !strcmp( "Generic", arg ) ) {
+            } else if ( !strcasecmp( "Generic", arg ) ) {
                 conf.solving_method = TSP_SOLVER_Generic;
 
-            } else if ( !strcmp( "LegacyConcorde", arg ) ) {
+            } else if ( !strcasecmp( "LegacyConcorde", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LegacyConcorde;
 
-            } else if ( !strcmp( "GenericConcorde", arg ) ) {
+            } else if ( !strcasecmp( "GenericConcorde", arg ) ) {
                 conf.solving_method = TSP_SOLVER_GenericConcorde;
 
             } else {
