@@ -365,17 +365,30 @@ _usercutcallback_LegacyConcordeRand( CPXCENVptr env,
 
 
     cbinfo_t *info = (cbinfo_t *) cbhandle;
-
     ccinfo_t ccinfo = { env, cbdata, wherefrom, useraction_p, info };
 
-    int ncomp       = 0;
-    int nedge       = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
+    int ncomp;
+    int nedge = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
 
-    int *elist      = malloc( nedge * 2             * sizeof( *elist      ) );
-    int *comps      = malloc( info->problem->nnodes * sizeof( *comps      ) );
-    int *compscount = malloc( info->problem->nnodes * sizeof( *compscount ) );
-    double *x       = malloc( info->ncols           * sizeof( *x          ) );
+    int *elist;
+    int *comps;
+    int *compscount;
+    double *x;
 
+    void *memchunk = malloc(   nedge * 2             * sizeof( *elist      )
+                             + info->problem->nnodes * sizeof( *comps      )
+                             + info->problem->nnodes * sizeof( *compscount )
+                             + info->ncols           * sizeof( *x          ) );
+
+    if ( memchunk == NULL ) {
+        fprintf(stderr, CERROR "_relaxationcutcallback_GenericConcorde: out of memory.\n");
+        goto TERMINATE;
+    }
+
+    elist      =           ( memchunk );
+    comps      =           ( elist + nedge * 2 );
+    compscount =           ( comps + info->problem->nnodes );
+    x          = (double*) ( compscount + info->problem->nnodes );
 
     int loader = 0;
 
@@ -384,16 +397,6 @@ _usercutcallback_LegacyConcordeRand( CPXCENVptr env,
             elist[ loader++ ] = i;
             elist[ loader++ ] = j;
         }
-    }
-
-
-
-    if ( x          == NULL ||
-         elist      == NULL ||
-         comps      == NULL ||
-         compscount == NULL  ) {
-        fprintf(stderr, CERROR "_usercutcallback_LegacyConcordeRand: Out of memory.\n");
-        goto TERMINATE;
     }
 
     status = CPXgetcallbacknodex( env, cbdata, wherefrom, x, 0, info->ncols - 1 );
@@ -430,15 +433,15 @@ _usercutcallback_LegacyConcordeRand( CPXCENVptr env,
 
         int *rmatind;
         double *rmatval;
-        void *memchunk = malloc(   info->problem->nnodes * info->problem->nnodes * sizeof( *rmatind )
+        void *_memchunk = malloc(   info->problem->nnodes * info->problem->nnodes * sizeof( *rmatind )
                                  + info->problem->nnodes * info->problem->nnodes * sizeof( *rmatval ) );
 
-        if ( memchunk == NULL ) {
+        if ( _memchunk == NULL ) {
             fprintf( stderr, CFATAL "_usercutcallback_LegacyConcordeRand: out of memory.\n" );
             exit( EXIT_FAILURE );
         }
 
-        rmatind =           ( memchunk );
+        rmatind =           ( _memchunk );
         rmatval = (double*) ( rmatind + info->problem->nnodes * info->problem->nnodes );
 
         char sense = 'L';
@@ -463,25 +466,24 @@ _usercutcallback_LegacyConcordeRand( CPXCENVptr env,
                 }
             }
 
-            if ( CPXcutcallbackadd( env, cbdata, wherefrom, nzcnt, rhs, sense, rmatind, rmatval, purgeable ) ) {
-                fprintf( stderr, CFATAL "_usercutcallback_LegacyConcordeRand: CPXcutcallbackadd [SEC(%zu/%d)]\n",
-                    k + 1, ncomp );
-                exit( EXIT_FAILURE );
+            if ( ( status = CPXcutcallbackadd( env, cbdata, wherefrom, nzcnt, rhs,
+                                               sense, rmatind, rmatval, purgeable ) ) )
+            {
+                fprintf( stderr, CFATAL
+                    "_usercutcallback_LegacyConcordeRand: CPXcutcallbackadd [SEC(%zu/%d)]\n", k + 1, ncomp );
+                goto TERMINATE;
             }
 
             i = compend;
         }
 
-        free( memchunk );
+        free( _memchunk );
     }
 
 
 TERMINATE :
 
-    if ( x           != NULL )  free( x           );
-    if ( elist       != NULL )  free( elist       );
-    if ( comps       != NULL )  free( comps       );
-    if ( compscount  != NULL )  free( compscount  );
+    if ( memchunk != NULL )  free( memchunk );
 
     return status;
 }

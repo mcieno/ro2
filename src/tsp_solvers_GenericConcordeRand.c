@@ -363,14 +363,28 @@ _relaxationcutcallback_GenericConcordeRand ( CPXCALLBACKCONTEXTptr context, CPXL
     cbinfo_t *info = (cbinfo_t *) userhandle;
     ccinfo_t ccinfo = { context, info };
 
-    int ncomp       = 0;
-    int nedge       = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
+    int ncomp;
+    int nedge = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
 
-    int *elist      = malloc( nedge * 2             * sizeof( *elist      ) );
-    int *comps      = malloc( info->problem->nnodes * sizeof( *comps      ) );
-    int *compscount = malloc( info->problem->nnodes * sizeof( *compscount ) );
-    double *x       = malloc( info->ncols           * sizeof( *x          ) );
+    int *elist;
+    int *comps;
+    int *compscount;
+    double *x;
 
+    void *memchunk = malloc(   nedge * 2             * sizeof( *elist      )
+                             + info->problem->nnodes * sizeof( *comps      )
+                             + info->problem->nnodes * sizeof( *compscount )
+                             + info->ncols           * sizeof( *x          ) );
+
+    if ( memchunk == NULL ) {
+        fprintf(stderr, CERROR "_relaxationcutcallback_GenericConcorde: out of memory.\n");
+        goto TERMINATE;
+    }
+
+    elist      =           ( memchunk );
+    comps      =           ( elist + nedge * 2 );
+    compscount =           ( comps + info->problem->nnodes );
+    x          = (double*) ( compscount + info->problem->nnodes );
 
     int loader = 0;
 
@@ -379,16 +393,6 @@ _relaxationcutcallback_GenericConcordeRand ( CPXCALLBACKCONTEXTptr context, CPXL
             elist[ loader++ ] = i;
             elist[ loader++ ] = j;
         }
-    }
-
-
-
-    if ( x          == NULL ||
-         elist      == NULL ||
-         comps      == NULL ||
-         compscount == NULL  ) {
-        fprintf(stderr, CERROR "_relaxationcutcallback_GenericConcordeRand: Out of memory.\n");
-        goto TERMINATE;
     }
 
     status = CPXcallbackgetrelaxationpoint( context, x, 0, info->ncols - 1, NULL );
@@ -425,15 +429,15 @@ _relaxationcutcallback_GenericConcordeRand ( CPXCALLBACKCONTEXTptr context, CPXL
 
         int *rmatind;
         double *rmatval;
-        void *memchunk = malloc(   info->problem->nnodes * info->problem->nnodes * sizeof( *rmatind )
+        void *_memchunk = malloc(   info->problem->nnodes * info->problem->nnodes * sizeof( *rmatind )
                                  + info->problem->nnodes * info->problem->nnodes * sizeof( *rmatval ) );
 
-        if ( memchunk == NULL ) {
+        if ( _memchunk == NULL ) {
             fprintf( stderr, CFATAL "_relaxationcutcallback_GenericConcordeRand: out of memory.\n" );
-            exit( EXIT_FAILURE );
+            CPXcallbackabort( context );
         }
 
-        rmatind =           ( memchunk );
+        rmatind =           ( _memchunk );
         rmatval = (double*) ( rmatind + info->problem->nnodes * info->problem->nnodes );
 
         char sense = 'L';
@@ -465,22 +469,19 @@ _relaxationcutcallback_GenericConcordeRand ( CPXCALLBACKCONTEXTptr context, CPXL
             {
                 fprintf( stderr, CFATAL
                     "_relaxationcutcallback_GenericConcordeRand: CPXcutcallbackadd [SEC(%zu/%d)]\n", k + 1, ncomp );
-                exit( EXIT_FAILURE );
+                CPXcallbackabort( context );
             }
 
             i = compend;
         }
 
-        free( memchunk );
+        free( _memchunk );
     }
 
 
 TERMINATE:
 
-    if ( x           != NULL )  free( x           );
-    if ( elist       != NULL )  free( elist       );
-    if ( comps       != NULL )  free( comps       );
-    if ( compscount  != NULL )  free( compscount  );
+    if ( memchunk != NULL )  free( memchunk );
 
     return status;
 }
