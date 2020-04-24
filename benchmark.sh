@@ -4,8 +4,7 @@
 echo "[*] Building with make all"
 make all > /dev/null || exit 1
 
-#timelimit=3600      # 60 minutes
-timelimit=360       # 6 minutes
+timelimit=3600      # 60 minutes
 nodelimit=10000000  # 10 million nodes
 
 bmdir="benchmarks"
@@ -28,61 +27,63 @@ models=(
     #LazyMTZ
     #LazyFlow1
     #Loop
-    #Legacy
-    #Generic
+    Legacy
+    Generic
     LegacyConcorde
     GenericConcorde
     LegacyConcordeShallow
     GenericConcordeShallow
+    LegacyConcordeRand
+    GenericConcordeRand
 )
 
 testbed=(
-    ###data/burma14.tsp
-    ###data/ulysses16.tsp
-    ###data/ulysses22.tsp
-    ###data/att48.tsp
-    ###data/eil51.tsp
-    ###data/berlin52.tsp
-    ###data/st70.tsp
-    ###data/eil76.tsp
-    ###data/pr76.tsp
-    ###data/gr96.tsp
-    ###data/rat99.tsp
-    ###data/kroA100.tsp
-    ###data/kroB100.tsp
-    ###data/kroC100.tsp
-    ###data/kroD100.tsp
-    ###data/kroE100.tsp
-    ###data/rd100.tsp
-    ###data/eil101.tsp
-    ###data/lin105.tsp
-    ###data/pr107.tsp
-    ###data/pr124.tsp
-    ###data/bier127.tsp
-    ###data/ch130.tsp
-    ###data/pr136.tsp
-    ###data/gr137.tsp
+    data/burma14.tsp
+    data/ulysses16.tsp
+    data/ulysses22.tsp
+    data/att48.tsp
+    data/eil51.tsp
+    data/berlin52.tsp
+    data/st70.tsp
+    data/eil76.tsp
+    data/pr76.tsp
+    data/gr96.tsp
+    data/rat99.tsp
+    data/kroA100.tsp
+    data/kroB100.tsp
+    data/kroC100.tsp
+    data/kroD100.tsp
+    data/kroE100.tsp
+    data/rd100.tsp
+    data/eil101.tsp
+    data/lin105.tsp
+    data/pr107.tsp
+    data/pr124.tsp
+    data/bier127.tsp
+    data/ch130.tsp
+    data/pr136.tsp
+    data/gr137.tsp
     data/pr144.tsp
     data/ch150.tsp
     data/kroA150.tsp
     data/kroB150.tsp
     data/pr152.tsp
-    ###data/u159.tsp
-    ###data/rat195.tsp
-    ###data/d198.tsp
-    ###data/kroA200.tsp
-    ###data/kroB200.tsp
-    ###data/gr202.tsp
-    ###data/ts225.tsp
-    ###data/tsp225.tsp
-    ###data/pr226.tsp
-    ###data/gr229.tsp
-    ###data/gil262.tsp
-    ###data/pr264.tsp
-    ###data/a280.tsp
-    ###data/pr299.tsp
-    ###data/lin318.tsp
-    ###data/linhp318.tsp
+    data/u159.tsp
+    data/rat195.tsp
+    data/d198.tsp
+    data/kroA200.tsp
+    data/kroB200.tsp
+    data/gr202.tsp
+    data/ts225.tsp
+    data/tsp225.tsp
+    data/pr226.tsp
+    data/gr229.tsp
+    data/gil262.tsp
+    data/pr264.tsp
+    data/a280.tsp
+    data/pr299.tsp
+    data/lin318.tsp
+    data/linhp318.tsp
     ###data/rd400.tsp
     ###data/fl417.tsp
     ###data/gr431.tsp
