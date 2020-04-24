@@ -6,18 +6,17 @@ make all > /dev/null || exit 1
 timelimit=3600      # 60 minutes
 nodelimit=10000000  # 10 million nodes
 
-bmdir="benchmarks"
-bmsig="bm_$(date +%F_%T)"
+bmsig="benchmarks/bm_$(date +%F_%T)"
 
-bmfile_nodes="$bmdir/$bmsig.nodes.csv"
-bmfile_times="$bmdir/$bmsig.times.csv"
+bmfile_nodes="$bmsig.nodes.csv"
+bmfile_times="$bmsig.times.csv"
 
-bmfile_nodes_png="$bmdir/$bmsig.nodes.png"
-bmfile_times_png="$bmdir/$bmsig.times.png"
+bmfile_nodes_png="$bmsig.nodes.png"
+bmfile_times_png="$bmsig.times.png"
 
 mkdir -p $bmdir || exit 1
 
-echo "[*] Saving benchmark to $bmdir/$bmsig.[nodes|times].csv"
+echo "[*] Saving benchmark to $bmsig.[nodes|times].csv"
 
 models=(
     #Dummy
@@ -73,11 +72,11 @@ testbed=(
     data/kroA200.tsp
     data/kroB200.tsp
     data/gr202.tsp
-    data/ts225.tsp
-    data/tsp225.tsp
-    data/pr226.tsp
-    data/gr229.tsp
-    data/gil262.tsp
+    #data/ts225.tsp
+    #data/tsp225.tsp
+    #data/pr226.tsp
+    #data/gr229.tsp
+    #data/gil262.tsp
     data/pr264.tsp
     data/a280.tsp
     data/pr299.tsp
@@ -133,12 +132,16 @@ testbed=(
     ###data/pla85900.tsp
 )
 
-seeds=(
-    2222
-    3333
-    4444
-    #5555
-)
+# Check if seeds are provided as command line args
+if [ "$#" -eq 0 ]; then
+    seeds=(
+        21357
+        78986
+        86874
+    )
+else
+    seeds=( $@ )
+fi
 
 echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' > $bmfile_times
 echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' > $bmfile_nodes

@@ -4,8 +4,8 @@
 echo "[*] Building with make all"
 make -f Makefile.blade all > /dev/null || exit 1
 
-timelimit=3600      # 60 minutes
-nodelimit=10000000  # 10 million nodes
+timelimit=1200      # 20 minutes
+nodelimit=1000000   # 1 million nodes
 
 bmdir="benchmarks"
 bmsig="bm_$(date +%F_%T)"
@@ -74,11 +74,11 @@ testbed=(
     data/kroA200.tsp
     data/kroB200.tsp
     data/gr202.tsp
-    data/ts225.tsp
-    data/tsp225.tsp
-    data/pr226.tsp
-    data/gr229.tsp
-    data/gil262.tsp
+    #data/ts225.tsp
+    #data/tsp225.tsp
+    #data/pr226.tsp
+    #data/gr229.tsp
+    #data/gil262.tsp
     data/pr264.tsp
     data/a280.tsp
     data/pr299.tsp
@@ -134,14 +134,20 @@ testbed=(
     ###data/pla85900.tsp
 )
 
-seeds=(
-    21357
-    78986
-    86874
-    10856
-    83214
-    13476
-)
+# Check if seeds are provided as command line args
+if [ "$#" -eq 0 ]; then
+    seeds=(
+        21357
+        78986
+        86874
+        10856
+        83214
+        13476
+    )
+else
+    seeds=( $@ )
+fi
+
 
 echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' > $bmfile_times
 echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' > $bmfile_nodes
@@ -157,7 +163,7 @@ for file in "${testbed[@]}"; do
         echo -n "$file:$seed" >> $bmfile_nodes
 
         for model in "${models[@]}"; do
-            testresult=( $(timeout $timelimit ./bin/tsp $file --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit -j16 --noplot --quiet) )
+            testresult=( $(timeout $timelimit ./bin/tsp $file --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit -j8 --noplot --quiet) )
 
             if [ $? -ne 0 ]; then
                 testresult=( $timelimit $nodelimit )
