@@ -222,6 +222,12 @@ main ( int argc, char *argv[] )
             lazyBCcg_model( &problem );
             break;
 
+        case TSP_SOLVER_HARDFIX:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Running harfix heuristic.\n" );
+            }
+            hardfix_model(&problem, conf.timelimit);
+            break;
 
         default:
             if (loglevel >= LOG_INFO) {
@@ -352,6 +358,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcmp( "lazyBCcg", arg ) ) {
                 conf.solving_method = TSP_SOLVER_LAZYBCCG;
+
+            } else if ( !strcmp( "hardfix", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HARDFIX;
 
             } else {
                 argp_error(
