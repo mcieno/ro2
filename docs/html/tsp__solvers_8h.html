@@ -120,6 +120,8 @@ Macros</h2></td></tr>
 <tr class="separator:ae0b60fb9eabad76adbe0bb102845abc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3671260b7b06b26dbecbb445d0f3e5b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ae3671260b7b06b26dbecbb445d0f3e5b">TSP_SOLVER_GenericConcordeRand</a>&#160;&#160;&#160;18U</td></tr>
 <tr class="separator:ae3671260b7b06b26dbecbb445d0f3e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8c4d3d65bb457a7fd77db86e435d3ec"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ac8c4d3d65bb457a7fd77db86e435d3ec">TSP_SOLVER_HeurHardfix</a>&#160;&#160;&#160;19U</td></tr>
+<tr class="separator:ac8c4d3d65bb457a7fd77db86e435d3ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -189,6 +191,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ac3787ce5c9d5b5e9d2e33dabea03ed00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ac3787ce5c9d5b5e9d2e33dabea03ed00">GenericConcordeRand_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
 <tr class="memdesc:ac3787ce5c9d5b5e9d2e33dabea03ed00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like GenericConcorde but only cuts nodes with decreasing probability.  <a href="#ac3787ce5c9d5b5e9d2e33dabea03ed00">More...</a><br /></td></tr>
 <tr class="separator:ac3787ce5c9d5b5e9d2e33dabea03ed00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67ba0d3a57808c82f44d250c531965ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a67ba0d3a57808c82f44d250c531965ac">HeurHardfix_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a67ba0d3a57808c82f44d250c531965ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with Hardfix heuristic.  <a href="#a67ba0d3a57808c82f44d250c531965ac">More...</a><br /></td></tr>
+<tr class="separator:a67ba0d3a57808c82f44d250c531965ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Methods for solving a TSP problem. </p>
@@ -281,6 +286,21 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Like GenericConcorde but only cuts nodes close to the root. </p>
+
+</div>
+</div>
+<a id="ac8c4d3d65bb457a7fd77db86e435d3ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8c4d3d65bb457a7fd77db86e435d3ec">&#9670;&nbsp;</a></span>TSP_SOLVER_HeurHardfix</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_HeurHardfix&#160;&#160;&#160;19U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Hardfix Heuristic. </p>
 
 </div>
 </div>
@@ -725,6 +745,33 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Like GenericConcorde but only cuts nodes close to the root. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a67ba0d3a57808c82f44d250c531965ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67ba0d3a57808c82f44d250c531965ac">&#9670;&nbsp;</a></span>HeurHardfix_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HeurHardfix_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solve with Hardfix heuristic. </p>
+<p>This model uses the hard-fixing technique to find an heuristic solution.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>

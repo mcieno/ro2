@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Fri Apr 24 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Sun Apr 26 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -68,6 +68,9 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .br
 .ti -1c
 .RI "#define \fBTSP_SOLVER_GenericConcordeRand\fP   18U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_HeurHardfix\fP   19U"
 .br
 .in -1c
 .SS "Typedefs"
@@ -160,6 +163,10 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .RI "void \fBGenericConcordeRand_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Like GenericConcorde but only cuts nodes with decreasing probability\&. "
+.ti -1c
+.RI "void \fBHeurHardfix_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with Hardfix heuristic\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -187,6 +194,8 @@ Like Generic, but also cuts the relaxation using Concorde routines\&.
 Like GenericConcorde but only cuts nodes with decreasing probability\&. 
 .SS "#define TSP_SOLVER_GenericConcordeShallow   16U"
 Like GenericConcorde but only cuts nodes close to the root\&. 
+.SS "#define TSP_SOLVER_HeurHardfix   19U"
+Hardfix Heuristic\&. 
 .SS "#define TSP_SOLVER_LazyFlow1   6U"
 Single Commodity Flow model with lazy constraints\&. 
 .SS "#define TSP_SOLVER_LazyMTZ   5U"
@@ -315,6 +324,17 @@ Like GenericConcorde but only cuts nodes with decreasing probability\&.
 
 .PP
 Like GenericConcorde but only cuts nodes close to the root\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void HeurHardfix_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with Hardfix heuristic\&. This model uses the hard-fixing technique to find an heuristic solution\&.
 .PP
 \fBParameters:\fP
 .RS 4

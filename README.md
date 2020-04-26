@@ -46,7 +46,8 @@ Solve a Traveling Salesman Problem instance.
                              LoopX, Legacy, Generic LegacyConcorde,
                              GenericConcorde, LegacyConcordeShallow,
                              GenericConcordeShallow, LegacyConcordeRand,
-                             GenericConcordeRand. Default: Generic.
+                             GenericConcordeRand, HeurHardfix. Default:
+                             Generic.
   -n, --nodelimit=NODES      MIP node limit.
       --name=TSPNAME         Name to assign to this problem.
       --noplot               Do not sketch the solution.
@@ -86,7 +87,8 @@ Available models are:
 - `LegacyConcordeShallow,`
 - `GenericConcordeShallow,`
 - `LegacyConcordeRand,`
-- `GenericConcordeRand.`
+- `GenericConcordeRand,`
+- `HeurHardfix.`
 
 Default model is `Generic`, i.e., branch and cut model with generic "candidate cut" callback.
 
