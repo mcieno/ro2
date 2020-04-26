@@ -36,7 +36,7 @@ ccinfo_t;
 
 
 /*!
- * \brief Get the position of variable x(i,j) in B&C model with concorde user-cuts.
+ * \brief Get the position of variable x(i,j) in CPLEX internal state.
  *
  *
  * \param i

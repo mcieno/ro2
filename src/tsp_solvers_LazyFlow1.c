@@ -20,7 +20,7 @@
 
 
 /*!
- * \brief Get the position of variable x(i,j) in Dummy model.
+ * \brief Get the position of variable x(i,j) in CPLEX internal state.
  *
  *
  * \param i

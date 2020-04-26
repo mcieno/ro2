@@ -21,7 +21,7 @@
 
 
 /*!
- * \brief Get the position of variable x(i,j) in B&B model.
+ * \brief Get the position of variable x(i,j) in CPLEX internal state.
  *
  *
  * \param i

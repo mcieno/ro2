@@ -34,9 +34,8 @@ typedef struct
 ccinfo_t;
 
 
-
 /*!
- * \brief Get the position of variable x(i,j) in B&B model.
+ * \brief Get the position of variable x(i,j) in CPLEX internal state.
  *
  *
  * \param i
@@ -214,6 +213,7 @@ _add_subtour_constraints_HeurHardfix ( const instance       *problem,
     free( memchunk );
 }
 
+
 static int CPXPUBLIC
 _candidatecutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
 {
@@ -266,6 +266,7 @@ TERMINATE :
 
     return status;
 }
+
 
 int
 _concorde_callback_HeurHardfix ( double val, int cutcount, int *cut, void *userhandle )
@@ -339,22 +340,50 @@ _concorde_callback_HeurHardfix ( double val, int cutcount, int *cut, void *userh
     return 0;
 }
 
+
 static int CPXPUBLIC
 _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
 {
-    int status = 0;
+    static unsigned int seed;
+
+    CPXLONG nodedepth;
+    int status = CPXcallbackgetinfolong( context, CPXCALLBACKINFO_NODEDEPTH, &nodedepth );
+
+    if ( status ) {
+        fprintf(stderr, CERROR "_relaxationcutcallback_HeurHardfix: CPXcallbackgetinfolong.\n");
+        return status;
+    }
+
+    /* Cut node at depth i with probability 2^-i. Root is cut with probability 1. */
+    int rnd = rand_r(&seed);
+    if ( rnd > ( INT_MAX >> nodedepth ) ) return status;
+
 
     cbinfo_t *info = (cbinfo_t *) userhandle;
     ccinfo_t ccinfo = { context, info };
 
-    int ncomp       = 0;
-    int nedge       = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
+    int ncomp;
+    int nedge = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
 
-    int *elist      = malloc( nedge * 2             * sizeof( *elist      ) );
-    int *comps      = malloc( info->problem->nnodes * sizeof( *comps      ) );
-    int *compscount = malloc( info->problem->nnodes * sizeof( *compscount ) );
-    double *x       = malloc( info->ncols           * sizeof( *x          ) );
+    int *elist;
+    int *comps;
+    int *compscount;
+    double *x;
 
+    void *memchunk = malloc(   nedge * 2             * sizeof( *elist      )
+                             + info->problem->nnodes * sizeof( *comps      )
+                             + info->problem->nnodes * sizeof( *compscount )
+                             + info->ncols           * sizeof( *x          ) );
+
+    if ( memchunk == NULL ) {
+        fprintf(stderr, CERROR "_relaxationcutcallback_GenericConcorde: out of memory.\n");
+        goto TERMINATE;
+    }
+
+    elist      =           ( memchunk );
+    comps      =           ( elist + nedge * 2 );
+    compscount =           ( comps + info->problem->nnodes );
+    x          = (double*) ( compscount + info->problem->nnodes );
 
     int loader = 0;
 
@@ -363,16 +392,6 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
             elist[ loader++ ] = i;
             elist[ loader++ ] = j;
         }
-    }
-
-
-
-    if ( x          == NULL ||
-         elist      == NULL ||
-         comps      == NULL ||
-         compscount == NULL  ) {
-        fprintf(stderr, CERROR "_relaxationcutcallback_HeurHardfix: Out of memory.\n");
-        goto TERMINATE;
     }
 
     status = CPXcallbackgetrelaxationpoint( context, x, 0, info->ncols - 1, NULL );
@@ -393,22 +412,75 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
             ncomp == 1 ? "" : " NOT" );
     }
 
-    if ( ncomp == 1 &&
-        CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.95,
-                             _concorde_callback_HeurHardfix, &ccinfo ) )
-    {
-        fprintf( stderr, CERROR "_relaxationcutcallback_HeurHardfix: CCcut_violated_cuts.\n" );
-        status = 1;
-        goto TERMINATE;
+    if ( ncomp == 1 ) {
+        /* The solution is connected, search for violated cuts */
+
+        if ( CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.99,
+                                  _concorde_callback_HeurHardfix, &ccinfo ) )
+        {
+            fprintf( stderr, CERROR "_relaxationcutcallback_HeurHardfix: CCcut_violated_cuts.\n" );
+            status = 1;
+            goto TERMINATE;
+        }
+
+    } else {
+        /* The solution has subtours and we can add the corresponding SEC's */
+
+        int *rmatind;
+        double *rmatval;
+        void *_memchunk = malloc(   info->problem->nnodes * info->problem->nnodes * sizeof( *rmatind )
+                                 + info->problem->nnodes * info->problem->nnodes * sizeof( *rmatval ) );
+
+        if ( _memchunk == NULL ) {
+            fprintf( stderr, CFATAL "_relaxationcutcallback_HeurHardfix: out of memory.\n" );
+            CPXcallbackabort( context );
+        }
+
+        rmatind =           ( _memchunk );
+        rmatval = (double*) ( rmatind + info->problem->nnodes * info->problem->nnodes );
+
+        char sense = 'L';
+        int purgeable = CPX_USECUT_PURGE;
+        int rmatbeg = 0;
+        int local = 0;
+
+        int i = 0;
+        int compend = i;
+        double rhs;
+        int nzcnt;
+
+        for ( size_t k = 0; k < ncomp; ++k ) {
+            rhs = compscount[k] - 1.0;
+            compend += compscount[k];
+
+            nzcnt = 0;
+
+            for ( ; i < compend; ++i ) {
+                for ( int j = i + 1; j < compend; ++j ) {
+                    rmatind[nzcnt] = _HeurHardfix_xpos( comps[i], comps[j], info->problem );
+                    rmatval[nzcnt] = 1.0;
+                    ++nzcnt;
+                }
+            }
+
+            if ( CPXcallbackaddusercuts( context, 1, nzcnt, &rhs, &sense,
+                                         &rmatbeg, rmatind, rmatval, &purgeable, &local ) )
+            {
+                fprintf( stderr, CFATAL
+                    "_relaxationcutcallback_HeurHardfix: CPXcutcallbackadd [SEC(%zu/%d)]\n", k + 1, ncomp );
+                CPXcallbackabort( context );
+            }
+
+            i = compend;
+        }
+
+        free( _memchunk );
     }
 
 
 TERMINATE:
 
-    if ( x           != NULL )  free( x           );
-    if ( elist       != NULL )  free( elist       );
-    if ( comps       != NULL )  free( comps       );
-    if ( compscount  != NULL )  free( compscount  );
+    if ( memchunk != NULL )  free( memchunk );
 
     return status;
 }
