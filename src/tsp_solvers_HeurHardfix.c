@@ -512,65 +512,72 @@ _callbackfunc_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, vo
 void
 HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt, double timelimit )
 {
-    //First start with a dummy solution
-    for(int i=0; i<problem->nnodes-1;i++){
+    /* Start with dumb solution */
+    for ( int i = 0; i < problem->nnodes - 1; ++i) {
         problem->solution[i][0] = i;
-        problem->solution[i][1] = i+1;
+        problem->solution[i][1] = i + 1;
     }
-    problem->solution[problem->nnodes-1][0] = problem->nnodes-1;
-    problem->solution[problem->nnodes-1][1] = 0;
 
+    problem->solution[problem->nnodes - 1][0] = problem->nnodes - 1;
+    problem->solution[problem->nnodes - 1][1] = 0;
+
+    /* Start improving solution */
     int fix_ind[problem->nnodes];
     char fix_lu[problem->nnodes];
     double fix_bd[problem->nnodes];
 
-    if(timelimit==0.0){
-        timelimit =600.0;
+    /* If timelimit is not set, default heuristic to 10 minutes */
+    if ( conf.timelimit <= 0. ) {
+        timelimit = 600.;
     }
-    double single_run_timelimit = 2.0; //2 seconds
-    int heuristic_iter = round(timelimit/single_run_timelimit);
+
+    double single_run_timelimit = 2.;
     CPXsetdblparam( env, CPXPARAM_TimeLimit, single_run_timelimit );
 
-    for(int k =0; k<heuristic_iter; k++) //intanto facciamolo cento volte
+    double bestcost = __DBL_MAX__;
+    for ( int k = 0; k < ceil( timelimit / single_run_timelimit ); ++k )
     {
+        /* Hard fix ~90% of the edges */
+        int counter_fixed = 0;
 
-        //fissa circa 90% dei lati
-        int counter_fixed =0;
-        for(int i =0; i<problem->nnodes;i++){
-            int rnd_values = rand() % 10 + 1;
-            if(rnd_values<=9){
+        for ( int i = 0; i < problem->nnodes; ++i )
+        {
+            if ( rand() >= INT_MAX / 10 ) {
                 fix_ind[counter_fixed] = _HeurHardfix_xpos( problem->solution[i][0], problem->solution[i][1], problem );
                 fix_lu[counter_fixed] = 'L';
                 fix_bd[counter_fixed] = 1.0;
                 ++counter_fixed;
             }
         }
-        if(CPXchgbds(env, lp, counter_fixed, fix_ind, fix_lu, fix_bd)){
-             fprintf( stderr, CFATAL "HeurHardfix_solve: CPXchgbds");
-                exit( EXIT_FAILURE );
+
+        if ( CPXchgbds( env, lp, counter_fixed, fix_ind, fix_lu, fix_bd ) ) {
+            fprintf( stderr, CFATAL "HeurHardfix_solve: CPXchgbds");
+            exit( EXIT_FAILURE );
         }
 
-        //Solve
         if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "lazyBCcg_model: CPXmimopt error\n" );
-        exit( EXIT_FAILURE );
+            fprintf( stderr, CFATAL "HeurHardfix_solve: CPXmimopt error\n" );
+            exit( EXIT_FAILURE );
         }
 
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
         _xopt2solution( xopt, problem, &_HeurHardfix_xpos );
 
-        //Sfissare lati
-        for(int i=0; i<counter_fixed; i++){
-            fix_bd[i]=0.0;
+        for ( int i = 0; i < counter_fixed; ++i ) {
+            fix_bd[i] = 0.;
         }
+
         if ( CPXchgbds( env, lp, counter_fixed, fix_ind, fix_lu, fix_bd ) ) {
-             fprintf( stderr, CFATAL "HeurHardfix_solve: CPXchgbds");
-                exit( EXIT_FAILURE );
+            fprintf( stderr, CFATAL "HeurHardfix_solve: CPXchgbds");
+            exit( EXIT_FAILURE );
         }
 
+        if ( ( bestcost - problem->solcost ) / problem->solcost  < 1e-3 ) {
+            /* Not really getting better anymore */
+            break;
+        }
+        bestcost = problem->solcost;
     }
-
-
 }
 
 
