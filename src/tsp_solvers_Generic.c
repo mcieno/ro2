@@ -244,7 +244,7 @@ _callbackfunc_Generic ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *
 
     _xopt2subtours( info->problem, x, next, comps, &ncomps, _Generic_xpos );
 
-    log_info( "Found %zu components.", ncomps );
+    log_debug( "Found %zu components.", ncomps );
 
     if ( ncomps > 1 ) {
         _add_subtour_constraints_Generic( info->problem, context, next, comps, ncomps );

@@ -247,7 +247,7 @@ _candidatecutcallback_GenericConcorde ( CPXCALLBACKCONTEXTptr context, CPXLONG c
 
     _xopt2subtours( info->problem, x, next, comps, &ncomps, _GenericConcorde_xpos );
 
-    log_info( "Found %zu components.", ncomps );
+    log_debug( "Found %zu components.", ncomps );
 
     if ( ncomps > 1 ) {
         _add_subtour_constraints_GenericConcorde( info->problem, context, next, comps, ncomps );
