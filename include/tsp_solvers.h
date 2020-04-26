@@ -25,6 +25,8 @@
 #define TSP_SOLVER_LAZYBCG   12U  /*!< Branch and Cut model with generic callback.  */
 #define TSP_SOLVER_LAZYBCC   13U  /*!< Branch and Cut model with Concorde callback.  */
 #define TSP_SOLVER_LAZYBCCG  14U  /*!< Branch and Cut model with Concorde with generic callback.  */
+#define TSP_SOLVER_HARDFIX  15U  /*!< Hardfix heuristic.  */
+
 
 typedef unsigned model_t;
 
@@ -265,6 +267,18 @@ lazyBCc_model ( instance *problem );
  */
 void
 lazyBCcg_model ( instance *problem );
+
+/*!
+ * \brief Solve with Hardfix heuristic.
+ *
+ *
+ * This model uses hardfix to find an heuristic solution
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+hardfix_model ( instance *problem );
 
 
 #endif
