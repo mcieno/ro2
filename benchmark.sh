@@ -6,6 +6,7 @@ make all > /dev/null || exit 1
 timelimit=3600      # 60 minutes
 nodelimit=10000000  # 10 million nodes
 
+bmdir="benchmarks"
 bmsig="benchmarks/bm_$(date +%F_%T)"
 
 bmfile_nodes="$bmsig.nodes.csv"

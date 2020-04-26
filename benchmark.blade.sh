@@ -8,17 +8,17 @@ timelimit=1200      # 20 minutes
 nodelimit=1000000   # 1 million nodes
 
 bmdir="benchmarks"
-bmsig="bm_$(date +%F_%T)"
+bmsig="benchmarks/bm_$(date +%F_%T)"
 
-bmfile_nodes="$bmdir/$bmsig.nodes.csv"
-bmfile_times="$bmdir/$bmsig.times.csv"
+bmfile_nodes="$bmsig.nodes.csv"
+bmfile_times="$bmsig.times.csv"
 
-bmfile_nodes_png="$bmdir/$bmsig.nodes.png"
-bmfile_times_png="$bmdir/$bmsig.times.png"
+bmfile_nodes_png="$bmsig.nodes.png"
+bmfile_times_png="$bmsig.times.png"
 
 mkdir -p $bmdir || exit 1
 
-echo "[*] Saving benchmark to $bmdir/$bmsig.[nodes|times].csv"
+echo "[*] Saving benchmark to $bmsig.[nodes|times].csv"
 
 models=(
     #Dummy
