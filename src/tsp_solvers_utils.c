@@ -91,10 +91,10 @@ _xopt2subtours ( const instance *problem,
         }
     }
 
-    if ( loglevel >= LOG_TRACE ) {
-        fprintf( stderr, CTRACE "_xopt2subtours: adj created:\n" );
+    if ( loglevel <= LOG_TRACE ) {
+        log_trace( "Adjacency list created:" );
         for (size_t i = 0; i < problem->nnodes; ++i) {
-            fprintf( stderr, CTRACE "%zu : (%zu, %zu)\n", i, adj[i][0], adj[i][1] );
+            log_trace( "%zu : (%zu, %zu)", i, adj[i][0], adj[i][1] );
         }
     }
 
@@ -105,17 +105,13 @@ _xopt2subtours ( const instance *problem,
 
         ++*ncomps;
 
-        if ( loglevel >= LOG_TRACE ) {
-            fprintf( stderr, CTRACE "_xopt2subtours: new comp (%zu) starts at %zu\n", *ncomps, start );
-        }
+        log_trace( "New comp (%zu) starts at %zu.", *ncomps, start );
 
         size_t from = start;
         size_t to = adj[start][0];
 
         do {
-            if (loglevel >= LOG_TRACE) {
-                fprintf(stderr, CTRACE "_xopt2subtours: comp %zu: %zu --> %zu\n", *ncomps, from, to);
-            }
+            log_trace( "Found step in component %zu: %zu --> %zu", *ncomps, from, to );
             next[from] = to;
             comps[from] = *ncomps;
             // One edge of `adj[to]` is equal to `from`. We care about the other.

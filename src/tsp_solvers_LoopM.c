@@ -36,8 +36,7 @@ size_t
 _LoopM_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
-        errno = EFAULT;
-        perror( CFATAL "_LoopM_xpos: i == j" );
+        log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
@@ -87,12 +86,12 @@ _add_constraints_LoopM ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LoopM: CPXnewcols [%s]\n", cname );
+                log_fatal( "CPXnewcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
             if ( CPXgetnumcols( env, lp ) - 1 != _LoopM_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LoopM: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+                log_fatal( "x(%zu, %zu)]",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -107,7 +106,7 @@ _add_constraints_LoopM ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_LoopM: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -117,7 +116,7 @@ _add_constraints_LoopM ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         {
             if ( i == h ) continue;
             if ( CPXchgcoef( env, lp, lastrow, _LoopM_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LoopM: CPXchgcoef [%s: x(%zu, %zu)]\n",
+                log_fatal( "x(%zu, %zu)]",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -151,7 +150,7 @@ _add_LoopM_subtour_constraints ( const instance *problem,
                              +                 CPX_STR_PARAM_MAX * sizeof( *cname   ) );
 
     if (memchunk == NULL) {
-        fprintf( stderr, CFATAL "_add_subtour_constraints: out of memory\n" );
+        log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
 
@@ -196,7 +195,7 @@ _add_LoopM_subtour_constraints ( const instance *problem,
 
         if ( CPXaddrows( env, lp, 0, 1, nzcnt, &rhs, &sense,
                          rmatbeg, rmatind, rmatval, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_subtour_constraints: CPXaddrows [SEC(%zu/%zu)]\n", k + 1, ncomps);
+            log_fatal( "CPXaddrows [SEC(%zu/%zu)]", k + 1, ncomps);
             exit( EXIT_FAILURE );
         }
     }
@@ -213,15 +212,21 @@ LoopM_model ( instance *problem )
     CPXENVptr env = CPXopenCPLEX( &error );
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
+    /* BUILD MODEL */
+    log_info( "Adding constraints to the model." );
+    _add_constraints_LoopM(problem, env, lp);
+
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
-
-    /* BUILD MODEL */
-    _add_constraints_LoopM(problem, env, lp);
 
     double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
     size_t *next =  calloc( problem->nnodes, sizeof( *next ) );
     size_t *comps = calloc( problem->nnodes, sizeof( *comps ) );
+
+    if ( xopt == NULL || next == NULL || comps == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
 
     int visitednodes = 0;
     struct timeb start, end;
@@ -232,6 +237,8 @@ LoopM_model ( instance *problem )
     double maxsols = 1;
     size_t previter = 0;
     size_t ncomps, iter;
+
+    log_info( "Starting solver galloping loop." );
 
     while (previter != 1 && epgap > .01)
     {
@@ -245,7 +252,7 @@ LoopM_model ( instance *problem )
         {
             if ( CPXmipopt( env, lp ) )
             {
-                fprintf( stderr, CFATAL "LoopM_model: g-mode: CPXmimopt error\n" );
+                log_debug( "g-mode: CPXmipopt error." );
                 exit( EXIT_FAILURE );
             }
 
@@ -255,12 +262,10 @@ LoopM_model ( instance *problem )
             CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
             _xopt2subtours( problem, xopt, next, comps, &ncomps, _LoopM_xpos );
 
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "LoopM_model: g-mode: iteration %zu\n",                    iter );
-                fprintf( stderr, CINFO "LoopM_model: g-mode:     - components: %zu\n",          ncomps );
-                fprintf( stderr, CINFO "LoopM_model: g-mode:     - elapsed:    %lfs\n",
-                              ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
-            }
+            log_debug( "g-mode: Iteration %zu",                           iter );
+            log_debug( "g-mode:     - Components: %zu",                 ncomps );
+            log_debug( "g-mode:     - Elapsed:    %lfs",
+                ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
             _add_LoopM_subtour_constraints( problem, env, lp, next, comps, ncomps );
         }
@@ -277,11 +282,13 @@ LoopM_model ( instance *problem )
     CPXsetdblparam( env, CPXPARAM_MIP_Tolerances_MIPGap, 1e-4    );
     ncomps = 0;
 
+    log_info( "Starting solver exact loop." );
+
     for ( size_t iter = 0; ncomps != 1; ++iter )
     {
         if (CPXmipopt(env, lp))
         {
-            fprintf( stderr, CFATAL "LoopM_model: e-mode: CPXmimopt error\n" );
+            log_debug( "e-mode: CPXmipopt error." );
             exit( EXIT_FAILURE );
         }
 
@@ -291,18 +298,17 @@ LoopM_model ( instance *problem )
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
         _xopt2subtours( problem, xopt, next, comps, &ncomps, _LoopM_xpos );
 
-        if ( loglevel >= LOG_INFO ) {
-            fprintf( stderr, CINFO "LoopM_model: e-mode: iteration %zu\n",                    iter );
-            fprintf( stderr, CINFO "LoopM_model: e-mode:     - components: %zu\n",          ncomps );
-            fprintf( stderr, CINFO "LoopM_model: e-mode:     - elapsed:    %lfs\n",
-                          ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
-        }
+        log_info( "e-mode: Iteration %zu",                            iter );
+        log_info( "e-mode:     - Components: %zu",                  ncomps );
+        log_info( "e-mode:     - Elapsed:    %lfs",
+            ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
         _add_LoopM_subtour_constraints( problem, env, lp, next, comps, ncomps );
     }
 
     ftime( &end );
 
+    log_info( "Retrieving final solution." );
     _xopt2solution( xopt, problem, &_LoopM_xpos );
 
     free( xopt );

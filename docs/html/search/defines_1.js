@@ -1,10 +1,22 @@
 var searchData=
 [
-  ['log_5fdebug',['LOG_DEBUG',['../logging_8h.html#a6ff63e8955665c4a58b1598f2b07c51a',1,'logging.h']]],
-  ['log_5ferror',['LOG_ERROR',['../logging_8h.html#aced66975c154ea0e2a8ec3bc818b4e08',1,'logging.h']]],
-  ['log_5ffatal',['LOG_FATAL',['../logging_8h.html#ac2164369b4d2bf72296f8ba6ea576ecf',1,'logging.h']]],
-  ['log_5finfo',['LOG_INFO',['../logging_8h.html#aeb4f36db01bd128c7afeac5889dac311',1,'logging.h']]],
-  ['log_5foff',['LOG_OFF',['../logging_8h.html#aa8bd3e9913d9068e20ef061a58672967',1,'logging.h']]],
-  ['log_5ftrace',['LOG_TRACE',['../logging_8h.html#af7abc145380f1916838e42f9272aa0f6',1,'logging.h']]],
-  ['log_5fwarn',['LOG_WARN',['../logging_8h.html#aea3f57d6dcc5b4ac957e2679e87dde27',1,'logging.h']]]
+  ['tsp_5fsolver_5fdummy',['TSP_SOLVER_Dummy',['../tsp__solvers_8h.html#ab0a8ab64ade24f489aa2df951041cb76',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5fflow1',['TSP_SOLVER_Flow1',['../tsp__solvers_8h.html#a76cac31e6815a1dfcb80cd8b6d94ca16',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5fgeneric',['TSP_SOLVER_Generic',['../tsp__solvers_8h.html#a82e076dedc49c83ed9a28401b024cfa2',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5fgenericconcorde',['TSP_SOLVER_GenericConcorde',['../tsp__solvers_8h.html#ab599dc5fa8dfd3cbdf77e15a0c6a575c',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5fgenericconcorderand',['TSP_SOLVER_GenericConcordeRand',['../tsp__solvers_8h.html#ae3671260b7b06b26dbecbb445d0f3e5b',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5fgenericconcordeshallow',['TSP_SOLVER_GenericConcordeShallow',['../tsp__solvers_8h.html#a488294db43442435277401c4b2ab436f',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5fheurhardfix',['TSP_SOLVER_HeurHardfix',['../tsp__solvers_8h.html#ac8c4d3d65bb457a7fd77db86e435d3ec',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5flazyflow1',['TSP_SOLVER_LazyFlow1',['../tsp__solvers_8h.html#a6bec79317bda0befc12571e3ca356929',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5flazymtz',['TSP_SOLVER_LazyMTZ',['../tsp__solvers_8h.html#ac2c1a5c59ccba03b32f502d285c4014f',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5flegacy',['TSP_SOLVER_Legacy',['../tsp__solvers_8h.html#a698e910db24af2b12a0d3de1bfcd5bb4',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5flegacyconcorde',['TSP_SOLVER_LegacyConcorde',['../tsp__solvers_8h.html#ad5e1f955f1b8dd185b48483e7f822ac5',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5flegacyconcorderand',['TSP_SOLVER_LegacyConcordeRand',['../tsp__solvers_8h.html#ae0b60fb9eabad76adbe0bb102845abc7',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5flegacyconcordeshallow',['TSP_SOLVER_LegacyConcordeShallow',['../tsp__solvers_8h.html#a8d3a8720d95d466495c22db82ac6e303',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5floop',['TSP_SOLVER_Loop',['../tsp__solvers_8h.html#a6322b87268dea5df4225c45962108c5f',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5floopf',['TSP_SOLVER_LoopF',['../tsp__solvers_8h.html#ab8c2857382440dccaeb5aeabe5cef5fb',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5floopm',['TSP_SOLVER_LoopM',['../tsp__solvers_8h.html#a20422d0ff226a7eb388f78fdf38a04ec',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5floopx',['TSP_SOLVER_LoopX',['../tsp__solvers_8h.html#a9e273444b368ef53e7e4535592e1b0d6',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5fmtz',['TSP_SOLVER_MTZ',['../tsp__solvers_8h.html#a6f329e4eaab06a29ba6b9530d46b9f77',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5frandom',['TSP_SOLVER_Random',['../tsp__solvers_8h.html#a29b4a2d80cd5172cc93ef31e6fc36876',1,'tsp_solvers.h']]]
 ];

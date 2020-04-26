@@ -36,8 +36,7 @@ size_t
 _LoopF_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
-        errno = EFAULT;
-        perror( CFATAL "_LoopF_xpos: i == j" );
+        log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
@@ -87,12 +86,12 @@ _add_constraints_LoopF ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LoopF: CPXnewcols [%s]\n", cname );
+                log_fatal( "CPXnewcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
             if ( CPXgetnumcols( env, lp ) - 1 != _LoopF_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LoopF: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+                log_fatal( "x(%zu, %zu)]",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -107,7 +106,7 @@ _add_constraints_LoopF ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_LoopF: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -117,7 +116,7 @@ _add_constraints_LoopF ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         {
             if ( i == h ) continue;
             if ( CPXchgcoef( env, lp, lastrow, _LoopF_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LoopF: CPXchgcoef [%s: x(%zu, %zu)]\n",
+                log_fatal( "x(%zu, %zu)]",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -150,8 +149,8 @@ _add_subtour_constraints_loopBBf ( const instance *problem,
                              + problem->nnodes * problem->nnodes * sizeof( *rmatval )
                              +                 CPX_STR_PARAM_MAX * sizeof( *cname   ) );
 
-    if (memchunk == NULL) {
-        fprintf( stderr, CFATAL "_add_subtour_constraints: out of memory\n" );
+    if ( memchunk == NULL ) {
+        log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
 
@@ -196,7 +195,7 @@ _add_subtour_constraints_loopBBf ( const instance *problem,
 
         if ( CPXaddrows( env, lp, 0, 1, nzcnt, &rhs, &sense,
                          rmatbeg, rmatind, rmatval, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_subtour_constraints: CPXaddrows [SEC(%zu/%zu)]\n", k + 1, ncomps);
+            log_fatal( "CPXaddrows [SEC(%zu/%zu)]", k + 1, ncomps);
             exit( EXIT_FAILURE );
         }
     }
@@ -213,18 +212,22 @@ LoopF_model ( instance *problem )
     CPXENVptr env = CPXopenCPLEX( &error );
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
+    /* BUILD MODEL */
+    log_info( "Adding constraints to the model." );
+    _add_constraints_LoopF(problem, env, lp);
+
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
-
-    //CPXsetintparam(env, CPX_PARAM_SCRIND, CPX_ON );
-
-    /* BUILD MODEL */
-    _add_constraints_LoopF(problem, env, lp);
 
     size_t ncomps = 0;
     double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
     size_t *next =  calloc( problem->nnodes, sizeof( *next ) );
     size_t *comps = calloc( problem->nnodes, sizeof( *comps ) );
+
+    if ( xopt == NULL || next == NULL || comps == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
 
     int visitednodes = 0;
     struct timeb start, end;
@@ -234,6 +237,8 @@ LoopF_model ( instance *problem )
     double ep = 0.01;
     int flag_ep = 1;
 
+    log_info( "Starting solver main loop." );
+
     for ( size_t iter = 0; flag_ep; ++iter )
     {
         if ( ncomps == 1 ) {
@@ -242,7 +247,7 @@ LoopF_model ( instance *problem )
         }
 
         if ( CPXmipopt( env, lp ) ) {
-            fprintf( stderr, CFATAL "LoopF_model: CPXmimopt error\n" );
+            log_fatal( "CPXmipopt error." );
             exit( EXIT_FAILURE );
         }
 
@@ -260,12 +265,10 @@ LoopF_model ( instance *problem )
             flag_ep = 1;
         }
 
-        if ( loglevel >= LOG_INFO ) {
-            fprintf( stderr, CINFO "LoopF_model: iteration %zu\n",                   iter );
-            fprintf( stderr, CINFO "LoopF_model:     - components: %zu\n",          ncomps );
-            fprintf( stderr, CINFO "LoopF_model:     - elapsed:    %lfs\n",
-                ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
-        }
+        log_debug( "Iteration %zu",                                    iter );
+        log_debug( "    - Components: %zu",                          ncomps );
+        log_debug( "    - Elapsed:    %lfs",
+            ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
         CPXsetdblparam( env, CPXPARAM_MIP_Tolerances_MIPGap, ep );
 
@@ -274,6 +277,7 @@ LoopF_model ( instance *problem )
 
     ftime( &end );
 
+    log_info( "Retrieving final solution." );
     _xopt2solution( xopt, problem, &_LoopF_xpos );
 
     free( xopt );

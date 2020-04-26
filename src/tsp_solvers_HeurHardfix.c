@@ -51,8 +51,7 @@ size_t
 _HeurHardfix_xpos ( size_t i, size_t j, const instance *problem )
 {
 if ( i == j ) {
-        errno = EFAULT;
-        perror( CFATAL "_lazyBCcg_xpos: i == j" );
+        log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
@@ -102,12 +101,12 @@ _add_constraints_HeurHardfix ( const instance *problem, CPXENVptr env, CPXLPptr 
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_HeurHardfix: CPXnewcols [%s]\n", cname );
+                log_fatal( "CPXnewcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
             if ( CPXgetnumcols( env, lp ) - 1 != _HeurHardfix_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_HeurHardfix: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+                log_fatal( "CPXgetnumcols [%s: x(%zu, %zu)]",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -122,7 +121,7 @@ _add_constraints_HeurHardfix ( const instance *problem, CPXENVptr env, CPXLPptr 
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_HeurHardfix: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -132,7 +131,7 @@ _add_constraints_HeurHardfix ( const instance *problem, CPXENVptr env, CPXLPptr 
         {
             if ( i == h ) continue;
             if ( CPXchgcoef( env, lp, lastrow, _HeurHardfix_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_HeurHardfix: CPXchgcoef [%s: x(%zu, %zu)]\n",
+                log_fatal( "CPXchgcoef [%s: x(%zu, %zu)]",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -163,7 +162,7 @@ _add_subtour_constraints_HeurHardfix ( const instance       *problem,
                              + problem->nnodes * problem->nnodes * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_add_subtour_constraints_HeurHardfix: out of memory\n" );
+        log_fatal( "Out of memory." );
         CPXcallbackabort( context );
     }
 
@@ -204,7 +203,7 @@ _add_subtour_constraints_HeurHardfix ( const instance       *problem,
         }
 
         if ( CPXcallbackrejectcandidate( context, 1, nzcnt, &rhs, &sense, &rmatbeg, rmatind, rmatval ) ) {
-            fprintf( stderr, CFATAL "_add_subtour_constraints_HeurHardfix: CPXcallbackaddusercuts [SEC(%zu/%zu)]\n",
+            log_fatal( "CPXcallbackaddusercuts [SEC(%zu/%zu)]",
                 k + 1, ncomps );
             CPXcallbackabort( context );
         }
@@ -229,7 +228,7 @@ _candidatecutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG conte
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        fprintf(stderr, CERROR "_candidatecutcallback_HeurHardfix: out of memory.\n");
+        log_fatal( "Out of memory.");
         goto TERMINATE;
     }
 
@@ -244,15 +243,13 @@ _candidatecutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG conte
     status = CPXcallbackgetcandidatepoint(context, x, 0, info->ncols - 1, NULL);
 
     if ( status ) {
-        fprintf( stderr, CERROR "_candidatecutcallback_HeurHardfix: CPXcallbackgetcandidatepoint.\n" );
+        log_fatal( "CPXcallbackgetcandidatepoint" );
         goto TERMINATE;
     }
 
     _xopt2subtours( info->problem, x, next, comps, &ncomps, _HeurHardfix_xpos );
 
-    if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, CINFO "_candidatecutcallback_HeurHardfix: got %zu components.\n", ncomps );
-    }
+    log_info( "Found %zu components", ncomps );
 
     if ( ncomps > 1 ) {
         _add_subtour_constraints_HeurHardfix( info->problem, context, next, comps, ncomps );
@@ -273,9 +270,7 @@ _concorde_callback_HeurHardfix ( double val, int cutcount, int *cut, void *userh
 {
     ccinfo_t *ccinfo = (ccinfo_t *) userhandle;
 
-    if ( loglevel >= LOG_DEBUG ) {
-        fprintf( stderr, CDEBUG "_concorde_callback_HeurHardfix: %d nodes in the cut\n", cutcount );
-    }
+    log_debug( "Cut contains %d nodes.", cutcount );
 
     char sense      = 'G';
     double rhs      = 2;
@@ -290,12 +285,12 @@ _concorde_callback_HeurHardfix ( double val, int cutcount, int *cut, void *userh
                                + ccinfo->info->ncols * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_concorde_callback_HeurHardfix: out of memory\n" );
+        log_fatal( "Out of memory." );
         return 1;
     }
 
-    rmatind = memchunk;
-    rmatval = (double*) (rmatind + ccinfo->info->ncols );
+    rmatind =             ( memchunk );
+    rmatval = ( double* ) ( rmatind + ccinfo->info->ncols );
 
     int nzcnt = 0;
 
@@ -331,7 +326,7 @@ _concorde_callback_HeurHardfix ( double val, int cutcount, int *cut, void *userh
     if ( CPXcallbackaddusercuts( ccinfo->context, 1, nzcnt, &rhs, &sense,
                                  &rmatbeg, rmatind, rmatval, &purgeable, &local ) )
     {
-        fprintf( stderr, CFATAL "_concorde_callback_HeurHardfix: CPXcutcallbackadd \n");
+        log_fatal( "CPXcutcallbackadd");
         exit( EXIT_FAILURE );
     }
 
@@ -350,7 +345,7 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
     int status = CPXcallbackgetinfolong( context, CPXCALLBACKINFO_NODEDEPTH, &nodedepth );
 
     if ( status ) {
-        fprintf(stderr, CERROR "_relaxationcutcallback_HeurHardfix: CPXcallbackgetinfolong.\n");
+        log_fatal( "CPXcallbackgetinfolong");
         return status;
     }
 
@@ -376,7 +371,7 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
                              + info->ncols           * sizeof( *x          ) );
 
     if ( memchunk == NULL ) {
-        fprintf(stderr, CERROR "_relaxationcutcallback_GenericConcorde: out of memory.\n");
+        log_fatal( "Out of memory.");
         goto TERMINATE;
     }
 
@@ -397,28 +392,25 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
     status = CPXcallbackgetrelaxationpoint( context, x, 0, info->ncols - 1, NULL );
 
     if ( status ) {
-        fprintf( stderr, CERROR "_relaxationcutcallback_HeurHardfix: CPXgetcallbacknodex.\n" );
+        log_fatal( "CPXgetcallbacknodex" );
         goto TERMINATE;
     }
 
     if ( CCcut_connect_components( info->problem->nnodes, nedge, elist, x, &ncomp, &compscount, &comps ) ) {
-        fprintf( stderr, CERROR "_relaxationcutcallback_HeurHardfix: CCcut_connect_components.\n" );
+        log_fatal( "CCcut_connect_components" );
         status = 1;
         goto TERMINATE;
     }
 
-    if ( loglevel >= LOG_DEBUG ) {
-        fprintf( stderr, CDEBUG "_relaxationcutcallback_HeurHardfix: relaxation graph is%s connected\n",
-            ncomp == 1 ? "" : " NOT" );
-    }
+    log_debug( "Relaxation graph is%s connected", ncomp == 1 ? "" : " not" );
 
     if ( ncomp == 1 ) {
         /* The solution is connected, search for violated cuts */
 
         if ( CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.99,
-                                  _concorde_callback_HeurHardfix, &ccinfo ) )
+                                  _concorde_callback_HeurHardfix, &ccinfo) )
         {
-            fprintf( stderr, CERROR "_relaxationcutcallback_HeurHardfix: CCcut_violated_cuts.\n" );
+            log_fatal( "CCcut_violated_cuts" );
             status = 1;
             goto TERMINATE;
         }
@@ -432,7 +424,7 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
                                  + info->problem->nnodes * info->problem->nnodes * sizeof( *rmatval ) );
 
         if ( _memchunk == NULL ) {
-            fprintf( stderr, CFATAL "_relaxationcutcallback_HeurHardfix: out of memory.\n" );
+            log_fatal( "Out of memory." );
             CPXcallbackabort( context );
         }
 
@@ -466,8 +458,7 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
             if ( CPXcallbackaddusercuts( context, 1, nzcnt, &rhs, &sense,
                                          &rmatbeg, rmatind, rmatval, &purgeable, &local ) )
             {
-                fprintf( stderr, CFATAL
-                    "_relaxationcutcallback_HeurHardfix: CPXcutcallbackadd [SEC(%zu/%d)]\n", k + 1, ncomp );
+                log_fatal( "CPXcutcallbackadd[SEC(%zu/%d)]", k + 1, ncomp );
                 CPXcallbackabort( context );
             }
 
@@ -551,12 +542,12 @@ HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt
         }
 
         if ( CPXchgbds( env, lp, counter_fixed, fix_ind, fix_lu, fix_bd ) ) {
-            fprintf( stderr, CFATAL "HeurHardfix_solve: CPXchgbds");
+            log_fatal( "CPXchgbds");
             exit( EXIT_FAILURE );
         }
 
         if ( CPXmipopt( env, lp ) ) {
-            fprintf( stderr, CFATAL "HeurHardfix_solve: CPXmimopt error\n" );
+            log_fatal( "CPXmipopt error." );
             exit( EXIT_FAILURE );
         }
 
@@ -568,7 +559,7 @@ HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt
         }
 
         if ( CPXchgbds( env, lp, counter_fixed, fix_ind, fix_lu, fix_bd ) ) {
-            fprintf( stderr, CFATAL "HeurHardfix_solve: CPXchgbds");
+            log_fatal( "CPXchgbds");
             exit( EXIT_FAILURE );
         }
 
@@ -591,9 +582,10 @@ HeurHardfix_model ( instance *problem )
 
 
     /* BUILD MODEL */
+    log_info( "Adding constraints to the model." );
     _add_constraints_HeurHardfix(problem, env, lp);
 
-
+    log_info( "Setting up callbacks." );
     cbinfo_t info = { problem, CPXgetnumcols( env, lp ) };
     CPXcallbacksetfunc( env, lp, CPX_CALLBACKCONTEXT_RELAXATION | CPX_CALLBACKCONTEXT_CANDIDATE,
                         _callbackfunc_HeurHardfix, &info );
@@ -606,13 +598,19 @@ HeurHardfix_model ( instance *problem )
     struct timeb start, end;
     ftime( &start );
 
-    double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+    double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
 
+    if ( xopt == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
+
+    log_debug( "Starting heuristic loop." );
     HeurHardfix_solve( problem, env, lp, xopt, conf.timelimit );
 
     ftime( &end );
 
-
+    log_info( "Retrieving final solution." );
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
     _xopt2solution( xopt, problem, &_HeurHardfix_xpos );
 

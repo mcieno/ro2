@@ -71,17 +71,6 @@ destroy_instance ( instance *problem );
 
 
 /*!
- * \brief Pretty-print problem information to `stderr` according to \p loglevel verbosity.
- *
- *
- * \param problem
- *     Pointer to the instance structure.
- */
-void
-repr_instance ( instance *problem );
-
-
-/*!
  * \brief Calculate the cost of the current solution.
  *
  *

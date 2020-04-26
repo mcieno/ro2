@@ -36,8 +36,7 @@ size_t
 _LazyMTZ_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
-        errno = EFAULT;
-        perror( CFATAL "_MTZ_xpos: i == j" );
+        log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
@@ -105,12 +104,12 @@ _add_constraints_LazyMTZ ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LazyMTZ: CPXnewcols [%s]\n", cname );
+                log_fatal( "CPXnewcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
             if ( CPXgetnumcols( env, lp ) - 1 != _LazyMTZ_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LazyMTZ: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+                log_fatal( "CPXgetnumcols [%s: x(%zu, %zu)]",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -126,7 +125,7 @@ _add_constraints_LazyMTZ ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_LazyMTZ: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -137,7 +136,7 @@ _add_constraints_LazyMTZ ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             if ( i == h ) continue;
 
             if ( CPXchgcoef( env, lp, lastrow, _LazyMTZ_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LazyMTZ: CPXchgcoef [%s: x(%zu, %zu)]\n",
+                log_fatal( "CPXchgcoef [%s: x(%zu, %zu)]",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -149,7 +148,7 @@ _add_constraints_LazyMTZ ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_LazyMTZ: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -160,7 +159,7 @@ _add_constraints_LazyMTZ ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             if ( i == h ) continue;
 
             if ( CPXchgcoef( env, lp, lastrow, _LazyMTZ_xpos( h, i, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LazyMTZ: CPXchgcoef [%s: x(%zu, %zu)]\n",
+                log_fatal( "CPXchgcoef [%s: x(%zu, %zu)]",
                     cname, h + 1, i + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -178,12 +177,12 @@ _add_constraints_LazyMTZ ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         snprintf( cname, CPX_STR_PARAM_MAX, "u(%zu)", i + 1 );
 
         if( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_LazyMTZ: CPXnewcols [%s]\n", cname );
+            log_fatal( "CPXnewcols [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
         if ( CPXgetnumcols( env, lp ) - 1 != _LazyMTZ_upos( i, problem ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_LazyMTZ: CPXgetnumcols [%s]\n", cname );
+            log_fatal( "CPXgetnumcols [%s]", cname );
             exit( EXIT_FAILURE );
         }
     }
@@ -195,7 +194,7 @@ _add_constraints_LazyMTZ ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     double *rmatval = malloc( CPXgetnumcols( env, lp ) * sizeof( *rmatval ) );
 
     if ( rmatind == NULL || rmatval == NULL ) {
-        fprintf( stderr, CFATAL "_add_constraints_LazyMTZ: Not enough memory\n" );
+        log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
 
@@ -221,7 +220,7 @@ _add_constraints_LazyMTZ ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             rmatval[2] = (double) problem->nnodes;
 
             if ( CPXaddlazyconstraints( env, lp, 1, 3, &rhs, &sense, &rmatbeg, rmatind, rmatval, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LazyMTZ: CPXaddlazyconstraints [%s]\n", cname );
+                log_fatal( "CPXaddlazyconstraints [%s]", cname );
                 exit( EXIT_FAILURE );
             }
         }
@@ -242,23 +241,32 @@ LazyMTZ_model ( instance *problem )
     CPXENVptr env = CPXopenCPLEX( &error );
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
+    /* BUILD MODEL */
+    log_info( "Adding constraints to the model." );
+    _add_constraints_LazyMTZ( problem, env, lp );
+
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
-
-    /* BUILD MODEL */
-    _add_constraints_LazyMTZ( problem, env, lp );
 
     struct timeb start, end;
     ftime( &start );
 
+    log_info( "Starting solver." );
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "MTZ_model: CPXmimopt error\n" );
+        log_fatal( "CPXmipopt error." );
         exit( EXIT_FAILURE );
     }
 
     ftime( &end );
 
+    log_info( "Retrieving final solution." );
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+
+    if ( xopt == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
+
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
 
     _xopt2solution( xopt, problem, &_LazyMTZ_xpos );

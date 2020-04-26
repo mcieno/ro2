@@ -22,7 +22,7 @@ CLNDIRS       = -L$(CPLEXLIBDIR) -L$(CONCORDEDIR)
 CLNFLAGS      = -lm -lpthread -ldl -lcplex -lconcorde
 
 CC            = gcc
-COPTPERF      = -O9 -m64 -fPIC -Wall -Werror --pedantic
+COPTPERF      = -O9 -m64 -fPIC -Wall -Werror --pedantic -DNO_LOG
 COPTDEBG      = -g3 -O0 -m64 -Wall -Werror --pedantic -fstack-protector-all
 CFLAGSPERF    = $(COPTPERF)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)
 CFLAGSDEBG    = $(COPTDEBG)  -I$(LOCAL_INCDIR)  -I$(CPLEXINCDIR)

@@ -46,8 +46,7 @@ size_t
 _Generic_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
-        errno = EFAULT;
-        perror( CFATAL "_Generic_xpos: i == j" );
+        log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
@@ -97,12 +96,12 @@ _add_constraints_Generic ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_Generic: CPXnewcols [%s]\n", cname );
+                log_fatal( "CPXnewcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
             if ( CPXgetnumcols( env, lp ) - 1 != _Generic_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_Generic: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+                log_fatal( "CPXgetnumcols [%s: x(%zu, %zu)]",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -117,7 +116,7 @@ _add_constraints_Generic ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_Generic: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -127,7 +126,7 @@ _add_constraints_Generic ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         {
             if ( i == h ) continue;
             if ( CPXchgcoef( env, lp, lastrow, _Generic_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_Generic: CPXchgcoef [%s: x(%zu, %zu)]\n",
+                log_fatal( "CPXchgcoef [%s: x(%zu, %zu)]",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -158,7 +157,7 @@ _add_subtour_constraints_Generic ( const instance       *problem,
                              + problem->nnodes * problem->nnodes * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_add_subtour_constraints_Generic: out of memory\n" );
+        log_fatal( "Out of memory." );
         CPXcallbackabort( context );
     }
 
@@ -199,7 +198,7 @@ _add_subtour_constraints_Generic ( const instance       *problem,
         }
 
         if ( CPXcallbackrejectcandidate( context, 1, nzcnt, &rhs, &sense, &rmatbeg, rmatind, rmatval ) ) {
-            fprintf( stderr, CFATAL "_add_subtour_constraints_Generic: CPXcallbackaddusercuts [SEC(%zu/%zu)]\n",
+            log_fatal( "CPXcallbackaddusercuts [SEC(%zu/%zu)]",
                 k + 1, ncomps );
             CPXcallbackabort( context );
         }
@@ -224,7 +223,7 @@ _callbackfunc_Generic ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        fprintf(stderr, CERROR "_callbackfunc_Generic: out of memory.\n");
+        log_fatal( "Out of memory.");
         goto TERMINATE;
     }
 
@@ -239,15 +238,13 @@ _callbackfunc_Generic ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *
     status = CPXcallbackgetcandidatepoint(context, x, 0, info->ncols - 1, NULL);
 
     if ( status ) {
-        fprintf( stderr, CERROR "_callbackfunc_Generic: CPXcallbackgetcandidatepoint.\n" );
+        log_fatal( "CPXcallbackgetcandidatepoint." );
         goto TERMINATE;
     }
 
     _xopt2subtours( info->problem, x, next, comps, &ncomps, _Generic_xpos );
 
-    if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, CINFO "_callbackfunc_Generic: got %zu components.\n", ncomps );
-    }
+    log_info( "Found %zu components.", ncomps );
 
     if ( ncomps > 1 ) {
         _add_subtour_constraints_Generic( info->problem, context, next, comps, ncomps );
@@ -272,8 +269,10 @@ Generic_model ( instance *problem )
     CPXLPptr  lp  = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
     /* BUILD MODEL */
+    log_info( "Adding constraints to the model." );
     _add_constraints_Generic( problem, env, lp );
 
+    log_info( "Setting up callbacks." );
     cbinfo_t info = { problem, CPXgetnumcols( env, lp ) };
     CPXcallbacksetfunc( env, lp, CPX_CALLBACKCONTEXT_CANDIDATE, _callbackfunc_Generic, &info );
 
@@ -285,14 +284,21 @@ Generic_model ( instance *problem )
     struct timeb start, end;
     ftime( &start );
 
+    log_info( "Starting solver." );
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "Generic_model: CPXmimopt error\n" );
+        log_fatal( "CPXmipopt error." );
         exit( EXIT_FAILURE );
     }
 
     ftime( &end );
 
-    double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+    log_info( "Retrieving final solution." );
+    double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+
+    if ( xopt == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
 
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
     _xopt2solution( xopt, problem, &_Generic_xpos );

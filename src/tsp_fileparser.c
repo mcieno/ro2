@@ -45,7 +45,7 @@ parse_tsp_file ( const char *filename, instance *problem )
     FILE *fd = fopen( filename, "r" );
 
     if ( fd == NULL ) {
-        perror( CFATAL "Parsing error" );
+        perror( "Parsing error" );
         exit( EXIT_FAILURE );
     }
 
@@ -63,10 +63,12 @@ parse_tsp_file ( const char *filename, instance *problem )
         }
 
         if ( !strcmp( tok, "COMMENT" ) ) {
+            log_trace( "Skipping COMMENT" );
             continue;
         }
 
         if ( !strcmp( tok, "NAME" ) ) {
+            log_trace( "Parsing NAME" );
             if ( problem->name != NULL ) continue;
 
             is_node_coord_section = 0;
@@ -89,6 +91,7 @@ parse_tsp_file ( const char *filename, instance *problem )
         }
 
         if ( !strcmp( tok, "TYPE" ) ) {
+            log_trace( "Parsing TYPE" );
             tok = strtok( NULL, " :" );
 
             if ( tok == NULL || strcmp( tok, "TSP" ) ) {
@@ -102,6 +105,7 @@ parse_tsp_file ( const char *filename, instance *problem )
 
 
         if ( !strcmp( tok, "DIMENSION" ) ) {
+            log_trace( "Parsing DIMENSION" );
             is_node_coord_section = 0;
 
             if ( problem->nnodes > 0 ) {
@@ -122,14 +126,11 @@ parse_tsp_file ( const char *filename, instance *problem )
 
             problem->xcoord   = calloc( problem->nnodes, sizeof( *problem->xcoord ) );
             problem->ycoord   = calloc( problem->nnodes, sizeof( *problem->ycoord ) );
-            //problem->solution = calloc( problem->nnodes, sizeof( *problem->solution ) );
 
-            problem->solution =  calloc(problem->nnodes, sizeof(problem->solution));
-            for(int i =0; i<problem->nnodes; i++){
-                problem->solution[i] =  calloc(2, sizeof(*problem->solution[i]));
+            problem->solution = calloc( problem->nnodes, sizeof( *problem->solution ) );
+            for( int i = 0; i < problem->nnodes; ++i ) {
+                problem->solution[i] =  calloc( 2, sizeof( *problem->solution[i] ) );
             }
-
-
 
             if (problem->xcoord == NULL || problem->ycoord == NULL || problem->solution == NULL) {
                 strcpy( errinfo, "It looks like you are not allowed to allocate this much memory" );
@@ -140,21 +141,25 @@ parse_tsp_file ( const char *filename, instance *problem )
         }
 
         if ( !strcmp( tok, "EDGE_WEIGHT_TYPE" ) ) {
+            log_trace( "Skipping EDGE_WEIGHT_TYPE" );
             is_node_coord_section = 0;
             continue;
         }
 
         if ( !strcmp( tok, "EDGE_WEIGHT_FORMAT" ) ) {
+            log_trace( "Skipping EDGE_WEIGHT_FORMAT" );
             is_node_coord_section = 0;
             continue;
         }
 
         if ( !strcmp( tok, "DISPLAY_DATA_TYPE" ) ) {
+            log_trace( "Skipping DISPLAY_DATA_TYPE" );
             is_node_coord_section = 0;
             continue;
         }
 
         if ( !strcmp( tok, "NODE_COORD_SECTION" ) ) {
+            log_trace( "Parsing NODE_COORD_SECTION" );
             is_node_coord_section = 1;
 
             if ( !problem->nnodes ) {
@@ -203,6 +208,8 @@ parse_tsp_file ( const char *filename, instance *problem )
                 goto PARSING_ERROR;
             }
 
+            log_trace( "Node %3zu at ( %.2lf, %.2lf )", i + 1, problem->xcoord[i], problem->ycoord[i] );
+
             continue;
         }
 
@@ -213,25 +220,16 @@ parse_tsp_file ( const char *filename, instance *problem )
     /* Successful parsing */
     fclose( fd );
 
-    if (loglevel >= LOG_DEBUG)
-    {
-        repr_instance( problem );
-    }
-
     return;
 
     /* Error while parsing */
 
 PARSING_ERROR:
     errno = errno ? errno : EINVAL;
-    perror( CFATAL "Parsing error" );
+    perror( "Parsing error" );
 
-    if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, CINFO "%s\n", *errinfo ? errinfo : "No further information." );
-        if ( loglevel >= LOG_DEBUG ) {
-            fprintf( stderr, CDEBUG "The problem occured while parsing: \"%s\"\n", line );
-        }
-    }
+    log_fatal( "%s", *errinfo ? errinfo : "No further information." );
+    log_debug( "The problem occured while parsing: \"%s\"", line );
 
     exit( EXIT_FAILURE );
 }

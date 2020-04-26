@@ -85,10 +85,10 @@ static struct argp_option options[]  =
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
 
     /* Logging configuration */
-    { "verbose",   LOG_INFO,      NULL,      OPTION_NO_USAGE, "Set program logging level."          },
-    { "debug",     LOG_DEBUG,     NULL,      OPTION_ALIAS,    NULL                                  },
-    { "trace",     LOG_TRACE,     NULL,      OPTION_ALIAS,    NULL                                  },
-    { "quiet",     LOG_OFF+0xFFF, NULL,      OPTION_ALIAS,    NULL                                  },
+    { "verbose",   LOG_INFO  + 0xFFF, NULL,    OPTION_NO_USAGE, "Set program logging level."        },
+    { "debug",     LOG_DEBUG + 0xFFF, NULL,    OPTION_ALIAS,    NULL                                },
+    { "trace",     LOG_TRACE + 0xFFF, NULL,    OPTION_ALIAS,    NULL                                },
+    { "quiet",     LOG_FATAL + 0xFFF, NULL,    OPTION_ALIAS,    NULL                                },
 
     { NULL },
 };
@@ -119,164 +119,122 @@ main ( int argc, char *argv[] )
     switch ( conf.solving_method )
     {
         case TSP_SOLVER_Random:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with Random model.\n" );
-            }
+            log_info( "Solving with Random model." );
             Random_model( &problem );
             break;
 
 
         case TSP_SOLVER_Dummy:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with Dummy model.\n" );
-            }
+            log_info( "Solving with Dummy model." );
             Dummy_model( &problem );
             break;
 
 
         case TSP_SOLVER_MTZ:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with MTZ model.\n" );
-            }
+            log_info( "Solving with MTZ model." );
             MTZ_model( &problem );
             break;
 
 
         case TSP_SOLVER_Flow1:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with Flow1 model.\n" );
-            }
+            log_info( "Solving with Flow1 model." );
             Flow1_model( &problem );
             break;
 
 
         case TSP_SOLVER_LazyMTZ:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with LazyMTZ model.\n" );
-            }
+            log_info( "Solving with LazyMTZ model." );
             LazyMTZ_model( &problem );
             break;
 
 
         case TSP_SOLVER_LazyFlow1:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with LazyFlow1 model.\n" );
-            }
+            log_info( "Solving with LazyFlow1 model." );
             LazyFlow1_model( &problem );
             break;
 
 
         case TSP_SOLVER_Loop:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with Loop model.\n" );
-            }
+            log_info( "Solving with Loop model." );
             Loop_model( &problem );
             break;
 
         case TSP_SOLVER_LoopF:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with LoopF model.\n" );
-            }
+            log_info( "Solving with LoopF model." );
             LoopF_model( &problem );
             break;
 
 
         case TSP_SOLVER_LoopM:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with LoopM model.\n" );
-            }
+            log_info( "Solving with LoopM model." );
             LoopM_model( &problem );
             break;
 
 
         case TSP_SOLVER_LoopX:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with LoopX model.\n" );
-            }
+            log_info( "Solving with LoopX model." );
             LoopX_model( &problem );
             break;
 
 
         case TSP_SOLVER_Legacy:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with Legacy model.\n" );
-            }
+            log_info( "Solving with Legacy model." );
             Legacy_model( &problem );
             break;
 
 
         case TSP_SOLVER_Generic:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with Generic model.\n" );
-            }
+            log_info( "Solving with Generic model." );
             Generic_model( &problem );
             break;
 
         case TSP_SOLVER_LegacyConcorde:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with LegacyConcorde model.\n" );
-            }
+            log_info( "Solving with LegacyConcorde model." );
             LegacyConcorde_model( &problem );
             break;
 
         case TSP_SOLVER_GenericConcorde:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with GenericConcorde model.\n" );
-            }
+            log_info( "Solving with GenericConcorde model." );
             GenericConcorde_model( &problem );
             break;
 
 
         case TSP_SOLVER_LegacyConcordeShallow:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with LegacyConcordeShallow model.\n" );
-            }
+            log_info( "Solving with LegacyConcordeShallow model." );
             LegacyConcordeShallow_model( &problem );
             break;
 
 
         case TSP_SOLVER_GenericConcordeShallow:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with GenericConcordeShallow model.\n" );
-            }
+            log_info( "Solving with GenericConcordeShallow model." );
             GenericConcordeShallow_model( &problem );
             break;
 
 
         case TSP_SOLVER_LegacyConcordeRand:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with LegacyConcordeRand model.\n" );
-            }
+            log_info( "Solving with LegacyConcordeRand model." );
             LegacyConcordeRand_model( &problem );
             break;
 
 
         case TSP_SOLVER_GenericConcordeRand:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Solving with GenericConcordeRand model.\n" );
-            }
+            log_info( "Solving with GenericConcordeRand model." );
             GenericConcordeRand_model( &problem );
             break;
 
         case TSP_SOLVER_HeurHardfix:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running harfix heuristic.\n" );
-            }
+            log_info( "Running harfix heuristic." );
             HeurHardfix_model( &problem );
             break;
 
         default:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CFATAL "No model specified. Exit...\n" );
-            }
+            log_error( "No model specified. Exit..." );
             exit( EXIT_FAILURE );
     }
 
-    if ( loglevel >= LOG_DEBUG ) {
-        /* Dump solution to stderr */
-        for ( size_t k = 0; k < problem.nnodes; ++k ) {
-            fprintf( stderr, CDEBUG "(%5zu) %-5zu <--> %5zu\n", k, problem.solution[k][0], problem.solution[k][1] );
-        }
+    /* Dump solution to stderr */
+    for ( size_t k = 0; k < problem.nnodes; ++k ) {
+        log_debug( "(%-5zu) %5zu <--> %-5zu", k, problem.solution[k][0], problem.solution[k][1] );
     }
 
     if ( conf.shouldplot ) {
@@ -284,14 +242,12 @@ main ( int argc, char *argv[] )
         plot_solution( &problem );
     }
 
-    if ( loglevel > LOG_OFF ) {
-        fprintf( stdout, CSUCC "Solution cost: %13.3lf\n", problem.solcost      );
-        fprintf( stdout, CSUCC "Time elapsed:  %13.3lf\n", problem.elapsedtime  );
-        fprintf( stdout, CSUCC "Visited nodes: %13zu\n",   problem.visitednodes );
-    } else {
-        fprintf( stdout, "%lf\n", problem.elapsedtime  );
-        fprintf( stdout, "%zu\n", problem.visitednodes );
-    }
+    log_warn( "Time elapsed: %lf",  problem.elapsedtime  );
+    log_warn( "Visited nodes: %zu", problem.visitednodes );
+    log_warn( "Solution cost: %lf", problem.solcost      );
+
+    fprintf( stdout, "%lf\n", problem.elapsedtime  );
+    fprintf( stdout, "%zu\n", problem.visitednodes );
 
     destroy_instance( &problem );
 }
@@ -307,7 +263,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.cutup == 0. ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -c --cutup: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -c --cutup: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -319,7 +275,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.epgap == 0. ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -e --epgap: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -e --epgap: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -332,7 +288,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 if ( errno || conf.threads == 0 ) {
                     argp_error(
                         state,
-                        CERROR "Bad value for option -j --threads: %s.", strerror( errno ? errno : EDOM )
+                        "Bad value for option -j --threads: %s.", strerror( errno ? errno : EDOM )
                     );
                 }
             }
@@ -345,7 +301,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.memory == 0ULL ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -m --memory: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -m --memory: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -413,7 +369,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else {
                 argp_error(
                     state,
-                    CERROR "Unknown solving method for option -M --model: %s.", arg
+                    "Unknown solving method for option -M --model: %s.", arg
                 );
             }
 
@@ -425,7 +381,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.seed == 0 ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -s --seed: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -s --seed: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -437,7 +393,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.timelimit == 0ULL ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -t --timelimit: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -t --timelimit: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -449,33 +405,36 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.nodelimit == 0 ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -n --nodelimit: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -n --nodelimit: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
             break;
 
 
-        case LOG_INFO:
+        case LOG_INFO + 0xFFF:
             loglevel = LOG_INFO;
+            log_set_level(loglevel);
 
             break;
 
 
-        case LOG_DEBUG:
+        case LOG_DEBUG + 0xFFF:
             loglevel = LOG_DEBUG;
+            log_set_level(loglevel);
 
             break;
 
 
-        case LOG_TRACE:
+        case LOG_TRACE + 0xFFF:
             loglevel = LOG_TRACE;
+            log_set_level(loglevel);
 
             break;
 
 
-        case LOG_OFF + 0xFFF:
-            loglevel = LOG_OFF;
+        case LOG_FATAL + 0xFFF:
+            log_set_quiet(1);
 
             break;
 
@@ -486,7 +445,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_failure(
                     state,
                     1, errno,
-                    CFATAL "Could not read temporary filename: %s.", arg
+                    "Could not read temporary filename: %s.", arg
                 );
             }
 
@@ -509,7 +468,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( strcspn( arg, "!@%%^*~|:" ) != strlen( arg ) ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option --name: Invalid characters found."
+                    "Bad value for option --name: Invalid characters found."
                 );
             }
 
@@ -518,7 +477,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_failure(
                     state,
                     1, errno,
-                    CFATAL "Could not read problem name: %s.", arg
+                    "Could not read problem name: %s.", arg
                 );
             }
 
@@ -533,7 +492,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_failure(
                     state,
                     1, errno,
-                    CFATAL "Could not read filename: %s.", arg
+                    "Could not read filename: %s.", arg
                 );
             }
 
@@ -544,7 +503,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
         case ARGP_KEY_END:
             if ( conf.filename == NULL ) {
-                argp_error( state, CERROR "Missing TSP file name." );
+                argp_error( state, "Missing TSP file name." );
             }
 
             break;

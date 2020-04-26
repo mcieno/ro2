@@ -44,8 +44,7 @@ size_t
 _Legacy_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
-        errno = EFAULT;
-        perror( CFATAL "_Legacy_xpos: i == j" );
+        log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
@@ -95,12 +94,12 @@ _add_constraints_Legacy ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_Legacy: CPXnewcols [%s]\n", cname );
+                log_fatal( "CPXnewcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
             if ( CPXgetnumcols( env, lp ) - 1 != _Legacy_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_Legacy: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+                log_fatal( "CPXgetnumcols [%s: x(%zu, %zu)]",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -115,7 +114,7 @@ _add_constraints_Legacy ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_Legacy: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -125,7 +124,7 @@ _add_constraints_Legacy ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         {
             if ( i == h ) continue;
             if ( CPXchgcoef( env, lp, lastrow, _Legacy_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_Legacy: CPXchgcoef [%s: x(%zu, %zu)]\n",
+                log_fatal( "CPXchgcoef [%s: x(%zu, %zu)]",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -158,7 +157,7 @@ _add_subtour_constraints_Legacy ( const instance *problem,
                              + problem->nnodes * problem->nnodes * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_add_subtour_constraints_Legacy: out of memory\n" );
+        log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
 
@@ -199,8 +198,7 @@ _add_subtour_constraints_Legacy ( const instance *problem,
         }
 
         if ( CPXcutcallbackadd( env, cbdata, wherefrom, nzcnt, rhs, sense, rmatind, rmatval, purgeable ) ) {
-            fprintf( stderr, CFATAL "_add_subtour_constraints_Legacy: CPXcutcallbackadd [SEC(%zu/%zu)]\n",
-                k + 1, ncomps );
+            log_fatal( "CPXcutcallbackadd[SEC(%zu/%zu)]", k + 1, ncomps );
             exit( EXIT_FAILURE );
         }
     }
@@ -225,22 +223,20 @@ _lazyconstraintcallback_Legacy ( CPXCENVptr env, void *cbdata, int wherefrom, vo
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        fprintf(stderr, CERROR "_lazyconstraintcallback_Legacy: Out of memory.\n");
+        log_fatal( "Out of memory.");
         goto TERMINATE;
     }
 
     status = CPXgetcallbacknodex( env, cbdata, wherefrom, x, 0, info->ncols - 1 );
 
     if ( status ) {
-        fprintf( stderr, CERROR "_lazyconstraintcallback_Legacy: CPXgetcallbacknodex.\n" );
+        log_fatal( "CPXgetcallbacknodex" );
         goto TERMINATE;
     }
 
     _xopt2subtours( info->problem, x, next, comps, &ncomps, _Legacy_xpos );
 
-    if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, CINFO "_lazyconstraintcallback_Legacy: got %zu components.\n", ncomps );
-    }
+    log_info( "Found %zu components.", ncomps );
 
     if ( ncomps > 1 ) {
         _add_subtour_constraints_Legacy( info->problem, env, next, comps, ncomps, cbdata, wherefrom );
@@ -266,6 +262,7 @@ Legacy_model ( instance *problem )
     CPXLPptr  lp  = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
     /* BUILD MODEL */
+    log_info( "Adding constraints to the model." );
     _add_constraints_Legacy( problem, env, lp );
 
     cbinfo_t info = { problem, CPXgetnumcols( env, lp ) };
@@ -275,18 +272,24 @@ Legacy_model ( instance *problem )
     tspconf_apply( env );
     CPXsetintparam( env, CPXPARAM_MIP_Strategy_CallbackReducedLP, CPX_OFF );
 
-
     struct timeb start, end;
     ftime( &start );
 
+    log_info( "Starting solver." );
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "Legacy_model: CPXmimopt error\n" );
+        log_fatal( "CPXmipopt error." );
         exit( EXIT_FAILURE );
     }
 
     ftime( &end );
 
+    log_info( "Retrieving final solution." );
     double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+
+    if ( xopt == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
 
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
     _xopt2solution( xopt, problem, &_Legacy_xpos );

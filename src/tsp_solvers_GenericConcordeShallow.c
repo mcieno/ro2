@@ -52,8 +52,7 @@ size_t
 _GenericConcordeShallow_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
-        errno = EFAULT;
-        perror( CFATAL "_GenericConcordeShallow_xpos: i == j" );
+        log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
@@ -103,12 +102,12 @@ _add_constraints_GenericConcordeShallow ( const instance *problem, CPXENVptr env
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_GenericConcordeShallow: CPXnewcols [%s]\n", cname );
+                log_fatal( "CPXnewcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
             if ( CPXgetnumcols( env, lp ) - 1 != _GenericConcordeShallow_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_GenericConcordeShallow: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+                log_fatal( "CPXgetnumcols [%s: x(%zu, %zu)]",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -123,7 +122,7 @@ _add_constraints_GenericConcordeShallow ( const instance *problem, CPXENVptr env
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_GenericConcordeShallow: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -133,7 +132,7 @@ _add_constraints_GenericConcordeShallow ( const instance *problem, CPXENVptr env
         {
             if ( i == h ) continue;
             if ( CPXchgcoef( env, lp, lastrow, _GenericConcordeShallow_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_GenericConcordeShallow: CPXchgcoef [%s: x(%zu, %zu)]\n",
+                log_fatal( "CPXchgcoef [%s: x(%zu, %zu)]",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -164,7 +163,7 @@ _add_subtour_constraints_GenericConcordeShallow ( const instance       *problem,
                              + problem->nnodes * problem->nnodes * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_add_subtour_constraints_GenericConcordeShallow: out of memory\n" );
+        log_fatal( "Out of memory." );
         CPXcallbackabort( context );
     }
 
@@ -205,7 +204,7 @@ _add_subtour_constraints_GenericConcordeShallow ( const instance       *problem,
         }
 
         if ( CPXcallbackrejectcandidate( context, 1, nzcnt, &rhs, &sense, &rmatbeg, rmatind, rmatval ) ) {
-            fprintf( stderr, CFATAL "_add_subtour_constraints_GenericConcordeShallow: CPXcallbackaddusercuts [SEC(%zu/%zu)]\n",
+            log_fatal( "CPXcallbackaddusercuts [SEC(%zu/%zu)]",
                 k + 1, ncomps );
             CPXcallbackabort( context );
         }
@@ -230,7 +229,7 @@ _candidatecutcallback_GenericConcordeShallow ( CPXCALLBACKCONTEXTptr context, CP
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        fprintf(stderr, CERROR "_candidatecutcallback_GenericConcordeShallow: out of memory.\n");
+        log_fatal( "Out of memory.");
         goto TERMINATE;
     }
 
@@ -245,15 +244,13 @@ _candidatecutcallback_GenericConcordeShallow ( CPXCALLBACKCONTEXTptr context, CP
     status = CPXcallbackgetcandidatepoint(context, x, 0, info->ncols - 1, NULL);
 
     if ( status ) {
-        fprintf( stderr, CERROR "_candidatecutcallback_GenericConcordeShallow: CPXcallbackgetcandidatepoint.\n" );
+        log_fatal( "CPXcallbackgetcandidatepoint" );
         goto TERMINATE;
     }
 
     _xopt2subtours( info->problem, x, next, comps, &ncomps, _GenericConcordeShallow_xpos );
 
-    if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, CINFO "_candidatecutcallback_GenericConcordeShallow: got %zu components.\n", ncomps );
-    }
+    log_info( "Found %zu components.", ncomps );
 
     if ( ncomps > 1 ) {
         _add_subtour_constraints_GenericConcordeShallow( info->problem, context, next, comps, ncomps );
@@ -274,9 +271,7 @@ _concorde_callback_GenericConcordeShallow ( double val, int cutcount, int *cut, 
 {
     ccinfo_t *ccinfo = (ccinfo_t *) userhandle;
 
-    if ( loglevel >= LOG_DEBUG ) {
-        fprintf( stderr, CDEBUG "_concorde_callback_GenericConcordeShallow: %d nodes in the cut\n", cutcount );
-    }
+    log_debug( "Cut contains %d nodes.", cutcount );
 
     char sense      = 'G';
     double rhs      = 2;
@@ -287,11 +282,11 @@ _concorde_callback_GenericConcordeShallow ( double val, int cutcount, int *cut, 
     int *rmatind;
     double *rmatval;
 
-    void *memchunk   = malloc( ccinfo->info->ncols * sizeof( *rmatind )
+    void *memchunk   = malloc(   ccinfo->info->ncols * sizeof( *rmatind )
                                + ccinfo->info->ncols * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_concorde_callback_GenericConcordeShallow: out of memory\n" );
+        log_fatal( "Out of memory." );
         return 1;
     }
 
@@ -332,7 +327,7 @@ _concorde_callback_GenericConcordeShallow ( double val, int cutcount, int *cut, 
     if ( CPXcallbackaddusercuts( ccinfo->context, 1, nzcnt, &rhs, &sense,
                                  &rmatbeg, rmatind, rmatval, &purgeable, &local ) )
     {
-        fprintf( stderr, CFATAL "_concorde_callback_GenericConcordeShallow: CPXcutcallbackadd \n");
+        log_fatal( "CPXcutcallbackadd");
         exit( EXIT_FAILURE );
     }
 
@@ -349,7 +344,7 @@ _relaxationcutcallback_GenericConcordeShallow ( CPXCALLBACKCONTEXTptr context, C
     int status = CPXcallbackgetinfolong( context, CPXCALLBACKINFO_NODEDEPTH, &nodedepth );
 
     if ( status ) {
-        fprintf(stderr, CERROR "_relaxationcutcallback_GenericConcordeShallow: CPXcallbackgetinfolong.\n");
+        log_fatal( "CPXcallbackgetinfolong");
         return status;
     }
 
@@ -374,7 +369,7 @@ _relaxationcutcallback_GenericConcordeShallow ( CPXCALLBACKCONTEXTptr context, C
                              + info->ncols           * sizeof( *x          ) );
 
     if ( memchunk == NULL ) {
-        fprintf(stderr, CERROR "_relaxationcutcallback_GenericConcorde: out of memory.\n");
+        log_fatal( "Out of memory.");
         goto TERMINATE;
     }
 
@@ -395,28 +390,25 @@ _relaxationcutcallback_GenericConcordeShallow ( CPXCALLBACKCONTEXTptr context, C
     status = CPXcallbackgetrelaxationpoint( context, x, 0, info->ncols - 1, NULL );
 
     if ( status ) {
-        fprintf( stderr, CERROR "_relaxationcutcallback_GenericConcordeShallow: CPXgetcallbacknodex.\n" );
+        log_fatal( "CPXgetcallbacknodex" );
         goto TERMINATE;
     }
 
     if ( CCcut_connect_components( info->problem->nnodes, nedge, elist, x, &ncomp, &compscount, &comps ) ) {
-        fprintf( stderr, CERROR "_relaxationcutcallback_GenericConcordeShallow: CCcut_connect_components.\n" );
+        log_fatal( "CCcut_connect_components" );
         status = 1;
         goto TERMINATE;
     }
 
-    if ( loglevel >= LOG_DEBUG ) {
-        fprintf( stderr, CDEBUG "_relaxationcutcallback_GenericConcordeShallow: relaxation graph is%s connected\n",
-            ncomp == 1 ? "" : " NOT" );
-    }
+    log_debug( "Relaxation graph is%s connected", ncomp == 1 ? "" : " not" );
 
     if ( ncomp == 1 ) {
         /* The solution is connected, search for violated cuts */
 
         if ( CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.99,
-                                  _concorde_callback_GenericConcordeShallow, &ccinfo ) )
+                                  _concorde_callback_GenericConcordeShallow, &ccinfo) )
         {
-            fprintf( stderr, CERROR "_relaxationcutcallback_GenericConcordeShallow: CCcut_violated_cuts.\n" );
+            log_fatal( "CCcut_violated_cuts" );
             status = 1;
             goto TERMINATE;
         }
@@ -430,7 +422,7 @@ _relaxationcutcallback_GenericConcordeShallow ( CPXCALLBACKCONTEXTptr context, C
                                  + info->problem->nnodes * info->problem->nnodes * sizeof( *rmatval ) );
 
         if ( _memchunk == NULL ) {
-            fprintf( stderr, CFATAL "_relaxationcutcallback_GenericConcordeShallow: out of memory.\n" );
+            log_fatal( "Out of memory." );
             CPXcallbackabort( context );
         }
 
@@ -464,8 +456,7 @@ _relaxationcutcallback_GenericConcordeShallow ( CPXCALLBACKCONTEXTptr context, C
             if ( CPXcallbackaddusercuts( context, 1, nzcnt, &rhs, &sense,
                                          &rmatbeg, rmatind, rmatval, &purgeable, &local ) )
             {
-                fprintf( stderr, CFATAL
-                    "_relaxationcutcallback_GenericConcordeShallow: CPXcutcallbackadd [SEC(%zu/%d)]\n", k + 1, ncomp );
+                log_fatal( "CPXcutcallbackadd[SEC(%zu/%d)]", k + 1, ncomp );
                 CPXcallbackabort( context );
             }
 
@@ -516,8 +507,10 @@ GenericConcordeShallow_model ( instance *problem )
     CPXLPptr  lp  = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
     /* BUILD MODEL */
+    log_info( "Adding constraints to the model." );
     _add_constraints_GenericConcordeShallow( problem, env, lp );
 
+    log_info( "Setting up callbacks." );
     cbinfo_t info = { problem, CPXgetnumcols( env, lp ) };
     CPXcallbacksetfunc( env, lp, CPX_CALLBACKCONTEXT_RELAXATION | CPX_CALLBACKCONTEXT_CANDIDATE,
                         _callbackfunc_GenericConcordeShallow, &info );
@@ -530,14 +523,21 @@ GenericConcordeShallow_model ( instance *problem )
     struct timeb start, end;
     ftime( &start );
 
+    log_info( "Starting solver." );
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "GenericConcordeShallow_model: CPXmimopt error\n" );
+        log_fatal( "CPXmipopt error." );
         exit( EXIT_FAILURE );
     }
 
     ftime( &end );
 
-    double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+    log_info( "Retrieving final solution." );
+    double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+
+    if ( xopt == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
 
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
     _xopt2solution( xopt, problem, &_GenericConcordeShallow_xpos );

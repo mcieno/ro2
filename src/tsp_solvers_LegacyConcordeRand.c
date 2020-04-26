@@ -55,8 +55,7 @@ size_t
 _LegacyConcordeRand_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
-        errno = EFAULT;
-        perror( CFATAL "_LegacyConcordeRand_xpos: i == j" );
+        log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
@@ -106,12 +105,12 @@ _add_constraints_LegacyConcordeRand ( const instance *problem, CPXENVptr env, CP
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LegacyConcordeRand: CPXnewcols [%s]\n", cname );
+                log_fatal( "CPXnewcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
             if ( CPXgetnumcols( env, lp ) - 1 != _LegacyConcordeRand_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LegacyConcordeRand: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+                log_fatal( "x(%zu, %zu)]",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -126,7 +125,7 @@ _add_constraints_LegacyConcordeRand ( const instance *problem, CPXENVptr env, CP
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_LegacyConcordeRand: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -136,7 +135,7 @@ _add_constraints_LegacyConcordeRand ( const instance *problem, CPXENVptr env, CP
         {
             if ( i == h ) continue;
             if ( CPXchgcoef( env, lp, lastrow, _LegacyConcordeRand_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_LegacyConcordeRand: CPXchgcoef [%s: x(%zu, %zu)]\n",
+                log_fatal( "x(%zu, %zu)]",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -169,7 +168,7 @@ _add_subtour_constraints_LegacyConcordeRand ( const instance *problem,
                              + problem->nnodes * problem->nnodes * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_add_subtour_constraints_LegacyConcordeRand: out of memory\n" );
+        log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
 
@@ -210,7 +209,7 @@ _add_subtour_constraints_LegacyConcordeRand ( const instance *problem,
         }
 
         if ( CPXcutcallbackadd( env, cbdata, wherefrom, nzcnt, rhs, sense, rmatind, rmatval, purgeable ) ) {
-            fprintf( stderr, CFATAL "_add_subtour_constraints_LegacyConcordeRand: CPXcutcallbackadd [SEC(%zu/%zu)]\n",
+            log_fatal( "CPXcutcallbackadd[SEC(%zu/%zu)]",
                 k + 1, ncomps );
             exit( EXIT_FAILURE );
         }
@@ -236,22 +235,20 @@ _lazyconstraintcallback_LegacyConcordeRand ( CPXCENVptr env, void *cbdata, int w
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        fprintf(stderr, CERROR "_lazyconstraintcallback_LegacyConcordeRand: Out of memory.\n");
+        log_fatal( "Out of memory.");
         goto TERMINATE;
     }
 
     status = CPXgetcallbacknodex( env, cbdata, wherefrom, x, 0, info->ncols - 1 );
 
     if ( status ) {
-        fprintf( stderr, CERROR "_lazyconstraintcallback_LegacyConcordeRand: CPXgetcallbacknodex.\n" );
+        log_fatal( "CPXgetcallbacknodex" );
         goto TERMINATE;
     }
 
     _xopt2subtours( info->problem, x, next, comps, &ncomps, _LegacyConcordeRand_xpos );
 
-    if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, CINFO "_lazyconstraintcallback_LegacyConcordeRand: got %zu components.\n", ncomps );
-    }
+    log_info( "Found %zi components.", ncomps );
 
     if ( ncomps > 1 ) {
         _add_subtour_constraints_LegacyConcordeRand( info->problem, env, next, comps, ncomps, cbdata, wherefrom );
@@ -273,9 +270,7 @@ _concorde_callback_LegacyConcordeRand( double val, int cutcount, int *cut, void 
 {
     ccinfo_t *ccinfo = (ccinfo_t *) userhandle;
 
-    if ( loglevel >= LOG_DEBUG ) {
-        fprintf( stderr, CDEBUG "_concorde_callback_LegacyConcordeRand: %d nodes in the cut\n", cutcount );
-    }
+    log_debug( "Cut contains %d nodes.", cutcount );
 
     char sense    = 'G';
     int purgeable = CPX_USECUT_PURGE;
@@ -288,7 +283,7 @@ _concorde_callback_LegacyConcordeRand( double val, int cutcount, int *cut, void 
                                + ccinfo->info->ncols * sizeof( *cutval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_concorde_callback_GenericConcorde: out of memory\n" );
+        log_fatal( "Out of memory." );
         return 1;
     }
 
@@ -329,7 +324,7 @@ _concorde_callback_LegacyConcordeRand( double val, int cutcount, int *cut, void 
     if ( CPXcutcallbackadd( ccinfo->env, ccinfo->cbdata, ccinfo->wherefrom,
                             nzcnt, rhs, sense, cutind, cutval, purgeable ) )
     {
-        fprintf( stderr, CFATAL "_concorde_callback_LegacyConcordeRand: CPXcutcallbackadd \n");
+        log_fatal( "CPXcutcallbackadd");
         exit( EXIT_FAILURE );
     }
 
@@ -355,7 +350,7 @@ _usercutcallback_LegacyConcordeRand( CPXCENVptr env,
     int status = CPXgetcallbacknodeinfo( env, cbdata, wherefrom, 0, CPX_CALLBACK_INFO_NODE_DEPTH_LONG, &nodedepth );
 
     if ( status ) {
-        fprintf(stderr, CERROR "_usercutcallback_LegacyConcordeRand: CPXgetcallbacknodeinfo.\n");
+        log_fatal( "CPXgetcallbacknodeinfo");
         return status;
     }
 
@@ -381,7 +376,7 @@ _usercutcallback_LegacyConcordeRand( CPXCENVptr env,
                              + info->ncols           * sizeof( *x          ) );
 
     if ( memchunk == NULL ) {
-        fprintf(stderr, CERROR "_relaxationcutcallback_GenericConcorde: out of memory.\n");
+        log_fatal( "Out of memory.");
         goto TERMINATE;
     }
 
@@ -402,28 +397,25 @@ _usercutcallback_LegacyConcordeRand( CPXCENVptr env,
     status = CPXgetcallbacknodex( env, cbdata, wherefrom, x, 0, info->ncols - 1 );
 
     if ( status ) {
-        fprintf( stderr, CERROR "_usercutcallback_LegacyConcordeRand: CPXgetcallbacknodex.\n" );
+        log_fatal( "CPXgetcallbacknodex" );
         goto TERMINATE;
     }
 
 
     if ( CCcut_connect_components( info->problem->nnodes, nedge, elist, x, &ncomp, &compscount, &comps ) ) {
-        fprintf( stderr, CERROR "_usercutcallback_LegacyConcordeRand: CCcut_connect_components.\n" );
+        log_fatal( "CCcut_connect_components." );
         goto TERMINATE;
     }
 
-    if ( loglevel >= LOG_DEBUG ) {
-        fprintf( stderr, CDEBUG "_usercutcallback_LegacyConcordeRand: relaxation graph is%s connected\n",
-            ncomp == 1 ? "" : " NOT" );
-    }
+    log_debug( "relaxation graph is%s connected", ncomp == 1 ? "" : " NOT" );
 
     if ( ncomp == 1 ) {
         /* The solution is connected, search for violated cuts */
 
         if ( CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.99,
-                                  _concorde_callback_LegacyConcordeRand, &ccinfo ) )
+                                  _concorde_callback_LegacyConcordeRand, &ccinfo) )
         {
-            fprintf( stderr, CERROR "_usercutcallback_LegacyConcordeRand: CCcut_violated_cuts.\n" );
+            log_fatal( "CCcut_violated_cuts." );
             status = 1;
             goto TERMINATE;
         }
@@ -437,7 +429,7 @@ _usercutcallback_LegacyConcordeRand( CPXCENVptr env,
                                  + info->problem->nnodes * info->problem->nnodes * sizeof( *rmatval ) );
 
         if ( _memchunk == NULL ) {
-            fprintf( stderr, CFATAL "_usercutcallback_LegacyConcordeRand: out of memory.\n" );
+            log_fatal( "out of memory." );
             exit( EXIT_FAILURE );
         }
 
@@ -469,8 +461,7 @@ _usercutcallback_LegacyConcordeRand( CPXCENVptr env,
             if ( ( status = CPXcutcallbackadd( env, cbdata, wherefrom, nzcnt, rhs,
                                                sense, rmatind, rmatval, purgeable ) ) )
             {
-                fprintf( stderr, CFATAL
-                    "_usercutcallback_LegacyConcordeRand: CPXcutcallbackadd [SEC(%zu/%d)]\n", k + 1, ncomp );
+                log_fatal( "CPXcutcallbackadd[SEC(%zu/%d)]", k + 1, ncomp );
                 goto TERMINATE;
             }
 
@@ -498,8 +489,10 @@ LegacyConcordeRand_model ( instance *problem )
     CPXLPptr  lp  = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
     /* BUILD MODEL */
+    log_info( "Adding constraints to the model." );
     _add_constraints_LegacyConcordeRand( problem, env, lp );
 
+    log_info( "Setting up callbacks." );
     cbinfo_t info = { problem, CPXgetnumcols( env, lp ) };
     CPXsetlazyconstraintcallbackfunc( env, _lazyconstraintcallback_LegacyConcordeRand, &info );
     CPXsetusercutcallbackfunc(env, _usercutcallback_LegacyConcordeRand, &info);
@@ -508,18 +501,24 @@ LegacyConcordeRand_model ( instance *problem )
     tspconf_apply( env );
     CPXsetintparam( env, CPXPARAM_MIP_Strategy_CallbackReducedLP, CPX_OFF );
 
-
     struct timeb start, end;
     ftime( &start );
 
+    log_info( "Starting solver." );
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "LegacyConcordeRand_model: CPXmimopt error\n" );
+        log_fatal( "CPXmipopt error." );
         exit( EXIT_FAILURE );
     }
 
     ftime( &end );
 
-    double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+    log_info( "Retrieving final solution." );
+    double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+
+    if ( xopt == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
 
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
     _xopt2solution( xopt, problem, &_LegacyConcordeRand_xpos );
