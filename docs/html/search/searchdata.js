@@ -1,11 +1,11 @@
 var indexSectionsWithContent =
 {
-  0: "_cdfilmprst",
+  0: "_cdfghilmprst",
   1: "cit",
-  2: "lmt",
-  3: "_cdfilmprst",
+  2: "mt",
+  3: "_cdfghilmprst",
   4: "t",
-  5: "clmt"
+  5: "mt"
 };
 
 var indexSectionNames =

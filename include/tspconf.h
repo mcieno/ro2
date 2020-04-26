@@ -61,7 +61,7 @@
  *     CPLEX optimality gap. Default: automatic.
  *
  * \param seed
- *      CPLEX random seed. Default: automatic.
+ *      CPLEX Random seed. Default: automatic.
  */
 typedef struct
 {

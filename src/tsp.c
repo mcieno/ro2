@@ -39,7 +39,7 @@ init_instance ( instance *problem )
     if (problem == NULL) {
         /* Attempt to init an non-existing instance */
         errno = EFAULT;
-        perror( CFATAL "init_instance" );
+        perror( "init_instance" );
         exit( EXIT_FAILURE );
     }
 
@@ -61,7 +61,7 @@ destroy_instance ( instance *problem )
     if ( problem == NULL ) {
         /* Attempt to free an non-existing instance */
         errno = EFAULT;
-        perror( CFATAL "free_instance" );
+        perror( "free_instance" );
     }
 
     if ( problem->name != NULL ) {
@@ -85,32 +85,12 @@ destroy_instance ( instance *problem )
 }
 
 
-void
-repr_instance ( instance *problem )
-{
-    fprintf( stdout, CINFO "Problem %s:\n", problem->name ? problem->name : "Unknown" );
-    fprintf( stderr, CINFO "    Number of nodes     : %zu\n", problem->nnodes );
-
-    if ( loglevel >= LOG_DEBUG ) {
-        fprintf( stderr, CDEBUG "    List of nodes       : [\n" );
-        for ( size_t j = 0; j < problem->nnodes; ++j ) {
-            fprintf( stderr, CDEBUG "        %04lu : %13.3f, %13.3f \n", j, problem->xcoord[j], problem->ycoord[j] );
-            if ( loglevel >= LOG_TRACE ) {
-                fprintf( stderr, CTRACE "        x in *(%p)\n", (void *) &problem->xcoord[j] );
-                fprintf( stderr, CTRACE "        y in *(%p)\n", (void *) &problem->ycoord[j] );
-            }
-        }
-        fprintf( stderr, CDEBUG "    ]\n" );
-    }
-}
-
-
 double
 compute_solution_cost ( instance *problem )
 {
     if ( problem->solution == NULL ) {
         errno = EFAULT;
-        perror( CFATAL "Cannot calculate cost of solution: solution is NULL\n" );
+        perror( "Cannot calculate cost of solution: solution is NULL\n" );
         exit( EXIT_FAILURE );
     }
 

@@ -20,7 +20,7 @@
 
 
 /*!
- * \brief Get the position of variable x(i,j) in dummy model.
+ * \brief Get the position of variable x(i,j) in CPLEX internal state.
  *
  *
  * \param i
@@ -33,15 +33,14 @@
  *     Pointer to the instance structure.
  */
 size_t
-_flow1_xpos ( size_t i, size_t j, const instance *problem )
+_Flow1_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
-        errno = EFAULT;
-        perror( CFATAL "_flow1_xpos: i == j" );
+        log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
-    if ( i > j ) return _flow1_xpos( j, i, problem );
+    if ( i > j ) return _Flow1_xpos( j, i, problem );
 
     return i * problem->nnodes + j - ( ( i + 1 ) * ( i + 2 ) / 2UL );
 }
@@ -61,11 +60,10 @@ _flow1_xpos ( size_t i, size_t j, const instance *problem )
  *     Pointer to the instance structure.
  */
 size_t
-_flow1_ypos ( size_t i, size_t j, const instance *problem )
+_Flow1_ypos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
-        errno = EFAULT;
-        perror( CFATAL "_flow1_ypos: i == j" );
+        log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
@@ -108,7 +106,7 @@ _flow1_ypos ( size_t i, size_t j, const instance *problem )
  *     CPLEX problem.
  */
 void
-_add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
+_add_constraints_Flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
 {
     char ctype;
     double lb, ub, obj, rhs;
@@ -135,12 +133,12 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXnewcols [%s]\n", cname );
+                log_fatal( "CPXnewcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXgetnumcols( env, lp ) - 1 != _flow1_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+            if ( CPXgetnumcols( env, lp ) - 1 != _Flow1_xpos( i, j, problem ) ) {
+                log_fatal( "CPXgetnumcols [%s: x(%zu, %zu)]",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -156,7 +154,7 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_flow1: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -165,8 +163,8 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
         for ( size_t i = 0; i < problem->nnodes; ++i )
         {
             if ( i == h ) continue;
-            if ( CPXchgcoef( env, lp, lastrow, _flow1_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXnewrows [%s: x(%zu, %zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _Flow1_xpos( i, h, problem ), 1.0 ) ) {
+                log_fatal( "CPXnewrows [%s: x(%zu, %zu)]",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -189,12 +187,12 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
             snprintf( cname, CPX_STR_PARAM_MAX, "y(%zu,%zu)", i + 1, j + 1 );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXnewcols [%s]\n", cname );
+                log_fatal( "CPXnewcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXgetnumcols( env, lp ) - 1 != _flow1_ypos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXgetnumcols [%s]\n", cname );
+            if ( CPXgetnumcols( env, lp ) - 1 != _Flow1_ypos( i, j, problem ) ) {
+                log_fatal( "CPXgetnumcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
         }
@@ -211,22 +209,22 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
         {
             if ( i == j ) continue;
 
-            snprintf( cname, CPX_STR_PARAM_MAX, "flow1_1(%zu,%zu)", i + 1, j + 1 );
+            snprintf( cname, CPX_STR_PARAM_MAX, "Flow1_1(%zu,%zu)", i + 1, j + 1 );
             if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXnewrows [%s]\n", cname );
+                log_fatal( "CPXnewrows [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
             lastrow = CPXgetnumrows( env, lp ) - 1;
 
-            if ( CPXchgcoef( env, lp, lastrow, _flow1_xpos( i, j, problem ), - (double) ( problem->nnodes - 1 ) ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXchgcoef [%s: x(%zu,%zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _Flow1_xpos( i, j, problem ), - (double) ( problem->nnodes - 1 ) ) ) {
+                log_fatal( "CPXchgcoef [%s: x(%zu,%zu)]",
                     cname, i + 1, j + 1);
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXchgcoef( env, lp, lastrow, _flow1_ypos( i, j, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXchgcoef [%s: y(%zu,%zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _Flow1_ypos( i, j, problem ), 1.0 ) ) {
+                log_fatal( "CPXchgcoef [%s: y(%zu,%zu)]",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -240,16 +238,16 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
     lastrow = CPXgetnumrows( env, lp );
 
-    snprintf( cname, CPX_STR_PARAM_MAX, "flow1_2" );
+    snprintf( cname, CPX_STR_PARAM_MAX, "Flow1_2" );
     if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-        fprintf( stderr, CFATAL "_add_constraints_flow1: CPXnewrows [%s]\n", cname );
+        log_fatal( "CPXnewrows [%s]", cname );
         exit( EXIT_FAILURE );
     }
 
     for ( size_t j = 1; j < problem->nnodes; ++j )
     {
-        if ( CPXchgcoef( env, lp, lastrow, _flow1_ypos( 0, j, problem ), 1.0 ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_flow1: CPXchgcoef [%s: y(1,%zu)]\n", cname, j + 1 );
+        if ( CPXchgcoef( env, lp, lastrow, _Flow1_ypos( 0, j, problem ), 1.0 ) ) {
+            log_fatal( "CPXchgcoef [%s: y(1,%zu)]", cname, j + 1 );
             exit( EXIT_FAILURE );
         }
     }
@@ -261,9 +259,9 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
     for ( size_t h = 1; h < problem->nnodes; ++h )
     {
-        snprintf( cname, CPX_STR_PARAM_MAX, "flow1_3(%zu)", h + 1 );
+        snprintf( cname, CPX_STR_PARAM_MAX, "Flow1_3(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_flow1: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -273,13 +271,13 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
         {
             if ( i == h ) continue;
 
-            if ( CPXchgcoef( env, lp, lastrow, _flow1_ypos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXchgcoef [%s: y(%zu,%zu)]\n", cname, i + 1, h + 1);
+            if ( CPXchgcoef( env, lp, lastrow, _Flow1_ypos( i, h, problem ), 1.0 ) ) {
+                log_fatal( "CPXchgcoef [%s: y(%zu,%zu)]", cname, i + 1, h + 1);
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXchgcoef( env, lp, lastrow, _flow1_ypos( h, i, problem ), -1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_flow1: CPXchgcoef [%s: y(%zu,%zu)]\n", cname, h + 1, i + 1 );
+            if ( CPXchgcoef( env, lp, lastrow, _Flow1_ypos( h, i, problem ), -1.0 ) ) {
+                log_fatal( "CPXchgcoef [%s: y(%zu,%zu)]", cname, h + 1, i + 1 );
                 exit( EXIT_FAILURE );
             }
         }
@@ -290,33 +288,42 @@ _add_constraints_flow1( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
 
 void
-flow1_model ( instance *problem )
+Flow1_model ( instance *problem )
 {
     int error;
 
     CPXENVptr env = CPXopenCPLEX( &error );
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
+    /* BUILD MODEL */
+    log_info( "Adding constraints to the model." );
+    _add_constraints_Flow1( problem, env, lp );
+
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
-
-    /* BUILD MODEL */
-    _add_constraints_flow1( problem, env, lp );
 
     struct timeb start, end;
     ftime( &start );
 
+    log_info( "Starting solver." );
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "flow1_model: CPXmimopt error\n" );
+        log_fatal( "CPXmipopt error." );
         exit( EXIT_FAILURE );
     }
 
     ftime( &end );
 
+    log_info( "Retrieving final solution." );
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
+
+    if ( xopt == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
+
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
 
-    _xopt2solution( xopt, problem, &_flow1_xpos );
+    _xopt2solution( xopt, problem, &_Flow1_xpos );
 
     free( xopt );
 

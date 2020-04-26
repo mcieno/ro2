@@ -76,7 +76,7 @@ $(function() {
 
 <p>Type and function definitions for a TSP instance.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="logging_8h_source.html">logging.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;logging.h&quot;</code><br />
 </div>
 <p><a href="tsp_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -94,9 +94,6 @@ Functions</h2></td></tr>
 <tr class="memitem:abc983799ba1837b747050699cf322d22"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp_8h.html#abc983799ba1837b747050699cf322d22">destroy_instance</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
 <tr class="memdesc:abc983799ba1837b747050699cf322d22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Free all the memory and destroy the instance.  <a href="#abc983799ba1837b747050699cf322d22">More...</a><br /></td></tr>
 <tr class="separator:abc983799ba1837b747050699cf322d22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02a28b328856edb5be50a840d0bd2d7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp_8h.html#a02a28b328856edb5be50a840d0bd2d7b">repr_instance</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
-<tr class="memdesc:a02a28b328856edb5be50a840d0bd2d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pretty-print problem information to <code>stderr</code> according to <code>loglevel</code> verbosity.  <a href="#a02a28b328856edb5be50a840d0bd2d7b">More...</a><br /></td></tr>
-<tr class="separator:a02a28b328856edb5be50a840d0bd2d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b0d3e8753344d46769a7309f5970ac3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp_8h.html#a1b0d3e8753344d46769a7309f5970ac3">compute_solution_cost</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
 <tr class="memdesc:a1b0d3e8753344d46769a7309f5970ac3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the cost of the current solution.  <a href="#a1b0d3e8753344d46769a7309f5970ac3">More...</a><br /></td></tr>
 <tr class="separator:a1b0d3e8753344d46769a7309f5970ac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -229,32 +226,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Initialize the instance data structure with the default configuration. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a02a28b328856edb5be50a840d0bd2d7b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02a28b328856edb5be50a840d0bd2d7b">&#9670;&nbsp;</a></span>repr_instance()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void repr_instance </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
-          <td class="paramname"><em>problem</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Pretty-print problem information to <code>stderr</code> according to <code>loglevel</code> verbosity. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>

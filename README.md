@@ -41,10 +41,13 @@ Solve a Traveling Salesman Problem instance.
   -e, --epgap=EPGAP          Relative MIP gap tolerance.
   -j, --threads[=N]          Global thread count. Default ALL.
   -m, --memory=SIZE          Maximum working memory (size in MB).
-  -M, --model=MODEL          Solving technique. Available: random, dummy, mtz,
-                             flow1, mtzlazy, flow1lazy, loopBC, loopBCf,
-                             loopBCm, loopBCx, lazyBC, lazyBCg lazyBCc,
-                             lazyBCcg. Default: lazyBCg.
+  -M, --model=MODEL          Solving technique. Available: Random, Dummy, MTZ,
+                             Flow1, LazyMTZ, LazyFlow1, Loop, LoopF, LoopM,
+                             LoopX, Legacy, Generic LegacyConcorde,
+                             GenericConcorde, LegacyConcordeShallow,
+                             GenericConcordeShallow, LegacyConcordeRand,
+                             GenericConcordeRand, HeurHardfix. Default:
+                             Generic.
   -n, --nodelimit=NODES      MIP node limit.
       --name=TSPNAME         Name to assign to this problem.
       --noplot               Do not sketch the solution.
@@ -65,12 +68,34 @@ Report bugs to {marco.cieno, francesco.cazzaro}@studenti.unipd.it.
 
 Sample files are provided in folder `data` and come courtesy of the [TSPLIB](http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/).
 
-Available models are `random`, `dummy`, `mtz`, `flow1`, `mtzlazy`, `flow1lazy`, `loopBC`, `loopBCf`, `loopBCm`, `loopBCx`, `lazyBC`, `lazyBCg`, `lazyBCc`, and `lazyBCcg`.
+Available models are:
+
+- `Random`,
+- `Dummy`,
+- `MTZ`,
+- `Flow1`,
+- `LazyMTZ`,
+- `LazyFlow1`,
+- `Loop`,
+- `LoopF`,
+- `LoopM`,
+- `LoopX`,
+- `Legacy`,
+- `Generic`,
+- `LegacyConcorde`,
+- `GenericConcorde`,
+- `LegacyConcordeShallow,`
+- `GenericConcordeShallow,`
+- `LegacyConcordeRand,`
+- `GenericConcordeRand,`
+- `HeurHardfix.`
+
+Default model is `Generic`, i.e., branch and cut model with generic "candidate cut" callback.
 
 Here's an example, just for fun:
 
 ```sh
-tsp data/att48.tsp --model=dummy
+tsp data/att48.tsp --model=Dummy
 ```
 
 ![Instance plot](assets/att48.instance.png)
@@ -79,7 +104,7 @@ tsp data/att48.tsp --model=dummy
 Obviously, that's not a valid solution, here's one:
 
 ```sh
-tsp data/att48.tsp --model=flow1lazy
+tsp data/att48.tsp --model=LazyFlow1
 ```
 
 ![Solution plot](assets/att48.solved.png)

@@ -1,4 +1,4 @@
-.TH "include/tsp.h" 3 "Thu Apr 23 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp.h" 3 "Sun Apr 26 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -29,10 +29,6 @@ include/tsp.h \- Type and function definitions for a TSP instance\&.
 .RI "void \fBdestroy_instance\fP (\fBinstance\fP *problem)"
 .br
 .RI "Free all the memory and destroy the instance\&. "
-.ti -1c
-.RI "void \fBrepr_instance\fP (\fBinstance\fP *problem)"
-.br
-.RI "Pretty-print problem information to \fCstderr\fP according to \fCloglevel\fP verbosity\&. "
 .ti -1c
 .RI "double \fBcompute_solution_cost\fP (\fBinstance\fP *problem)"
 .br
@@ -104,17 +100,6 @@ Referencing to problem after calling this function might result in undefined beh
 
 .PP
 Initialize the instance data structure with the default configuration\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void repr_instance (\fBinstance\fP * problem)"
-
-.PP
-Pretty-print problem information to \fCstderr\fP according to \fCloglevel\fP verbosity\&. 
 .PP
 \fBParameters:\fP
 .RS 4

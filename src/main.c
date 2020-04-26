@@ -72,19 +72,23 @@ static struct argp_option options[]  =
     { "noplot",    0xAA2,     NULL,      0,               "Do not sketch the solution."             },
     { "cutup",     'c',       "VALUE",   OPTION_NO_USAGE, "Upper cutoff. Default: don't cut."       },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
-                                                          "random, dummy, mtz, flow1, mtzlazy, "
-                                                          "flow1lazy, loopBC, loopBCf, loopBCm, "
-                                                          "loopBCx, lazyBC, lazyBCg lazyBCc, "
-                                                          "lazyBCcg. "
-                                                          "Default: lazyBCg."                       },
+                                                          "Random, Dummy, MTZ, Flow1, LazyMTZ, "
+                                                          "LazyFlow1, Loop, LoopF, LoopM, "
+                                                          "LoopX, Legacy, Generic LegacyConcorde, "
+                                                          "GenericConcorde, "
+                                                          "LegacyConcordeShallow, "
+                                                          "GenericConcordeShallow, "
+                                                          "LegacyConcordeRand, "
+                                                          "GenericConcordeRand, HeurHardfix. "
+                                                          "Default: Generic."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
 
     /* Logging configuration */
-    { "verbose",   LOG_INFO,      NULL,      OPTION_NO_USAGE, "Set program logging level."          },
-    { "debug",     LOG_DEBUG,     NULL,      OPTION_ALIAS,    NULL                                  },
-    { "trace",     LOG_TRACE,     NULL,      OPTION_ALIAS,    NULL                                  },
-    { "quiet",     LOG_OFF+0xFFF, NULL,      OPTION_ALIAS,    NULL                                  },
+    { "verbose",   LOG_INFO  + 0xFFF, NULL,    OPTION_NO_USAGE, "Set program logging level."        },
+    { "debug",     LOG_DEBUG + 0xFFF, NULL,    OPTION_ALIAS,    NULL                                },
+    { "trace",     LOG_TRACE + 0xFFF, NULL,    OPTION_ALIAS,    NULL                                },
+    { "quiet",     LOG_FATAL + 0xFFF, NULL,    OPTION_ALIAS,    NULL                                },
 
     { NULL },
 };
@@ -99,7 +103,7 @@ main ( int argc, char *argv[] )
     init_instance( &problem );
 
     /* Initialize default configuration */
-    tspconf_init( NULL, &problem, 1, TSP_SOLVER_LAZYBCG, 0, 0, 0, 0., 0., 0 );
+    tspconf_init( NULL, &problem, 1, TSP_SOLVER_Generic, 0, 0, 0, 0., 0., 0 );
 
     argp_parse( &argp, argc, argv, 0, 0, NULL );
     problem.name = conf.name;
@@ -114,127 +118,123 @@ main ( int argc, char *argv[] )
     /* Run the solver */
     switch ( conf.solving_method )
     {
-        case TSP_SOLVER_DUMMY:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running dummy model\n" );
-            }
-            dummy_model( &problem );
+        case TSP_SOLVER_Random:
+            log_info( "Solving with Random model." );
+            Random_model( &problem );
             break;
 
 
-        case TSP_SOLVER_RANDOM:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running random model\n" );
-            }
-            random_model( &problem );
+        case TSP_SOLVER_Dummy:
+            log_info( "Solving with Dummy model." );
+            Dummy_model( &problem );
             break;
 
 
         case TSP_SOLVER_MTZ:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running MTZ model\n" );
-            }
-            mtz_model( &problem );
+            log_info( "Solving with MTZ model." );
+            MTZ_model( &problem );
             break;
 
 
-        case TSP_SOLVER_FLOW1:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running FLOW1 model\n" );
-            }
-            flow1_model( &problem );
+        case TSP_SOLVER_Flow1:
+            log_info( "Solving with Flow1 model." );
+            Flow1_model( &problem );
             break;
 
 
-        case TSP_SOLVER_MTZLAZY:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
-            }
-            mtzlazy_model( &problem );
+        case TSP_SOLVER_LazyMTZ:
+            log_info( "Solving with LazyMTZ model." );
+            LazyMTZ_model( &problem );
             break;
 
 
-        case TSP_SOLVER_FLOW1LAZY:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
-            }
-            flow1lazy_model( &problem );
+        case TSP_SOLVER_LazyFlow1:
+            log_info( "Solving with LazyFlow1 model." );
+            LazyFlow1_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LOOPBC:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Loop Branch and Cut model\n" );
-            }
-            loopBC_model( &problem );
+        case TSP_SOLVER_Loop:
+            log_info( "Solving with Loop model." );
+            Loop_model( &problem );
             break;
 
-        case TSP_SOLVER_LOOPBCF:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Loop Branch and Cut (variant 'F') model\n" );
-            }
-            loopBCf_model( &problem );
+        case TSP_SOLVER_LoopF:
+            log_info( "Solving with LoopF model." );
+            LoopF_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LOOPBCM:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Loop Branch and Cut (variant 'M') model\n" );
-            }
-            loopBCm_model( &problem );
+        case TSP_SOLVER_LoopM:
+            log_info( "Solving with LoopM model." );
+            LoopM_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LOOPBCX:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Loop Branch and Cut (variant 'X') model\n" );
-            }
-            loopBCx_model( &problem );
+        case TSP_SOLVER_LoopX:
+            log_info( "Solving with LoopX model." );
+            LoopX_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LAZYBC:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint callback\n" );
-            }
-            lazyBC_model( &problem );
+        case TSP_SOLVER_Legacy:
+            log_info( "Solving with Legacy model." );
+            Legacy_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LAZYBCG:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint generic callback\n" );
-            }
-            lazyBCg_model( &problem );
+        case TSP_SOLVER_Generic:
+            log_info( "Solving with Generic model." );
+            Generic_model( &problem );
             break;
 
-        case TSP_SOLVER_LAZYBCC:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint and Concorde user cut callback.\n" );
-            }
-            lazyBCc_model( &problem );
+        case TSP_SOLVER_LegacyConcorde:
+            log_info( "Solving with LegacyConcorde model." );
+            LegacyConcorde_model( &problem );
             break;
 
-        case TSP_SOLVER_LAZYBCCG:
-            if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint and Concorde user cut generic callback.\n" );
-            }
-            lazyBCcg_model( &problem );
+        case TSP_SOLVER_GenericConcorde:
+            log_info( "Solving with GenericConcorde model." );
+            GenericConcorde_model( &problem );
             break;
 
+
+        case TSP_SOLVER_LegacyConcordeShallow:
+            log_info( "Solving with LegacyConcordeShallow model." );
+            LegacyConcordeShallow_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_GenericConcordeShallow:
+            log_info( "Solving with GenericConcordeShallow model." );
+            GenericConcordeShallow_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_LegacyConcordeRand:
+            log_info( "Solving with LegacyConcordeRand model." );
+            LegacyConcordeRand_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_GenericConcordeRand:
+            log_info( "Solving with GenericConcordeRand model." );
+            GenericConcordeRand_model( &problem );
+            break;
+
+        case TSP_SOLVER_HeurHardfix:
+            log_info( "Running harfix heuristic." );
+            HeurHardfix_model( &problem );
+            break;
 
         default:
-            if (loglevel >= LOG_INFO) {
-                fprintf( stderr, CFATAL "No model specified. Exit...\n" );
-            }
+            log_error( "No model specified. Exit..." );
             exit( EXIT_FAILURE );
     }
 
-    if ( loglevel >= LOG_DEBUG ) {
-        /* Dump solution to stderr */
-        for ( size_t k = 0; k < problem.nnodes; ++k ) {
-            fprintf( stderr, CDEBUG "(%5zu) %-5zu <--> %5zu\n", k, problem.solution[k][0], problem.solution[k][1] );
-        }
+    /* Dump solution to stderr */
+    for ( size_t k = 0; k < problem.nnodes; ++k ) {
+        log_debug( "(%-5zu) %5zu <--> %-5zu", k, problem.solution[k][0], problem.solution[k][1] );
     }
 
     if ( conf.shouldplot ) {
@@ -242,14 +242,12 @@ main ( int argc, char *argv[] )
         plot_solution( &problem );
     }
 
-    if ( loglevel > LOG_OFF ) {
-        fprintf( stdout, CSUCC "Solution cost: %13.3lf\n", problem.solcost      );
-        fprintf( stdout, CSUCC "Time elapsed:  %13.3lf\n", problem.elapsedtime  );
-        fprintf( stdout, CSUCC "Visited nodes: %13zu\n",   problem.visitednodes );
-    } else {
-        fprintf( stdout, "%lf\n", problem.elapsedtime  );
-        fprintf( stdout, "%zu\n", problem.visitednodes );
-    }
+    log_warn( "Time elapsed: %lf",  problem.elapsedtime  );
+    log_warn( "Visited nodes: %zu", problem.visitednodes );
+    log_warn( "Solution cost: %lf", problem.solcost      );
+
+    fprintf( stdout, "%lf\n", problem.elapsedtime  );
+    fprintf( stdout, "%zu\n", problem.visitednodes );
 
     destroy_instance( &problem );
 }
@@ -265,7 +263,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.cutup == 0. ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -c --cutup: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -c --cutup: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -277,7 +275,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.epgap == 0. ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -e --epgap: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -e --epgap: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -290,7 +288,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 if ( errno || conf.threads == 0 ) {
                     argp_error(
                         state,
-                        CERROR "Bad value for option -j --threads: %s.", strerror( errno ? errno : EDOM )
+                        "Bad value for option -j --threads: %s.", strerror( errno ? errno : EDOM )
                     );
                 }
             }
@@ -303,7 +301,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.memory == 0ULL ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -m --memory: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -m --memory: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -311,52 +309,67 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
 
         case 'M':
-            if ( !strcmp( "random", arg ) ) {
-                conf.solving_method = TSP_SOLVER_RANDOM;
+            if ( !strcasecmp( "Random", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Random;
 
-            } else if ( !strcmp( "dummy", arg ) ) {
-                conf.solving_method = TSP_SOLVER_DUMMY;
+            } else if ( !strcasecmp( "Dummy", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Dummy;
 
-            } else if( !strcmp( "mtz", arg ) ){
+            } else if( !strcasecmp( "MTZ", arg ) ){
                 conf.solving_method = TSP_SOLVER_MTZ;
 
-            } else if ( !strcmp( "flow1", arg ) ) {
-                conf.solving_method = TSP_SOLVER_FLOW1;
+            } else if ( !strcasecmp( "Flow1", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Flow1;
 
-            } else if ( !strcmp( "mtzlazy", arg ) ) {
-                conf.solving_method = TSP_SOLVER_MTZLAZY;
+            } else if ( !strcasecmp( "LazyMTZ", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LazyMTZ;
 
-            } else if ( !strcmp( "flow1lazy", arg ) ) {
-                conf.solving_method = TSP_SOLVER_FLOW1LAZY;
+            } else if ( !strcasecmp( "LazyFlow1", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LazyFlow1;
 
-            } else if ( !strcmp( "loopBC", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBC;
+            } else if ( !strcasecmp( "Loop", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Loop;
 
-            } else if ( !strcmp( "loopBCf", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBCF;
+            } else if ( !strcasecmp( "LoopF", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LoopF;
 
-            } else if ( !strcmp( "loopBCm", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBCM;
+            } else if ( !strcasecmp( "LoopM", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LoopM;
 
-            } else if ( !strcmp( "loopBCx", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBCX;
+            } else if ( !strcasecmp( "LoopX", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LoopX;
 
-            } else if ( !strcmp( "lazyBC", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LAZYBC;
+            } else if ( !strcasecmp( "Legacy", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Legacy;
 
-            } else if ( !strcmp( "lazyBCg", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LAZYBCG;
+            } else if ( !strcasecmp( "Generic", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Generic;
 
-            } else if ( !strcmp( "lazyBCc", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LAZYBCC;
+            } else if ( !strcasecmp( "LegacyConcorde", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LegacyConcorde;
 
-            } else if ( !strcmp( "lazyBCcg", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LAZYBCCG;
+            } else if ( !strcasecmp( "GenericConcorde", arg ) ) {
+                conf.solving_method = TSP_SOLVER_GenericConcorde;
+
+            } else if ( !strcasecmp( "LegacyConcordeShallow", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LegacyConcordeShallow;
+
+            } else if ( !strcasecmp( "GenericConcordeShallow", arg ) ) {
+                conf.solving_method = TSP_SOLVER_GenericConcordeShallow;
+
+            } else if ( !strcasecmp( "LegacyConcordeRand", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LegacyConcordeRand;
+
+            } else if ( !strcasecmp( "GenericConcordeRand", arg ) ) {
+                conf.solving_method = TSP_SOLVER_GenericConcordeRand;
+
+            } else if ( !strcmp( "HeurHardfix", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurHardfix;
 
             } else {
                 argp_error(
                     state,
-                    CERROR "Unknown solving method for option -M --model: %s.", arg
+                    "Unknown solving method for option -M --model: %s.", arg
                 );
             }
 
@@ -368,7 +381,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.seed == 0 ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -s --seed: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -s --seed: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -380,7 +393,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.timelimit == 0ULL ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -t --timelimit: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -t --timelimit: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
@@ -392,33 +405,36 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( errno || conf.nodelimit == 0 ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option -n --nodelimit: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -n --nodelimit: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
             break;
 
 
-        case LOG_INFO:
+        case LOG_INFO + 0xFFF:
             loglevel = LOG_INFO;
+            log_set_level(loglevel);
 
             break;
 
 
-        case LOG_DEBUG:
+        case LOG_DEBUG + 0xFFF:
             loglevel = LOG_DEBUG;
+            log_set_level(loglevel);
 
             break;
 
 
-        case LOG_TRACE:
+        case LOG_TRACE + 0xFFF:
             loglevel = LOG_TRACE;
+            log_set_level(loglevel);
 
             break;
 
 
-        case LOG_OFF + 0xFFF:
-            loglevel = LOG_OFF;
+        case LOG_FATAL + 0xFFF:
+            log_set_quiet(1);
 
             break;
 
@@ -429,7 +445,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_failure(
                     state,
                     1, errno,
-                    CFATAL "Could not read temporary filename: %s.", arg
+                    "Could not read temporary filename: %s.", arg
                 );
             }
 
@@ -452,7 +468,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             if ( strcspn( arg, "!@%%^*~|:" ) != strlen( arg ) ) {
                 argp_error(
                     state,
-                    CERROR "Bad value for option --name: Invalid characters found."
+                    "Bad value for option --name: Invalid characters found."
                 );
             }
 
@@ -461,7 +477,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_failure(
                     state,
                     1, errno,
-                    CFATAL "Could not read problem name: %s.", arg
+                    "Could not read problem name: %s.", arg
                 );
             }
 
@@ -476,7 +492,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
                 argp_failure(
                     state,
                     1, errno,
-                    CFATAL "Could not read filename: %s.", arg
+                    "Could not read filename: %s.", arg
                 );
             }
 
@@ -487,7 +503,7 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
         case ARGP_KEY_END:
             if ( conf.filename == NULL ) {
-                argp_error( state, CERROR "Missing TSP file name." );
+                argp_error( state, "Missing TSP file name." );
             }
 
             break;

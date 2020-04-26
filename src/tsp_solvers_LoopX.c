@@ -1,5 +1,5 @@
 /*
- * \brief   Variant of the Basic Branch and Cut model.
+ * \brief   Variant X of Loop model.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
@@ -20,7 +20,7 @@
 
 
 /*!
- * \brief Get the position of variable x(i,j) in B&B-x model.
+ * \brief Get the position of variable x(i,j) in CPLEX internal state.
  *
  *
  * \param i
@@ -33,15 +33,14 @@
  *     Pointer to the instance structure.
  */
 size_t
-_loopBCx_xpos ( size_t i, size_t j, const instance *problem )
+_LoopX_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
-        errno = EFAULT;
-        perror( CFATAL "_loopBCx_xpos: i == j" );
+        log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
-    if ( i > j ) return _loopBCx_xpos( j, i, problem );
+    if ( i > j ) return _LoopX_xpos( j, i, problem );
 
     return i * problem->nnodes + j - ( ( i + 1 ) * ( i + 2 ) / 2UL );
 }
@@ -61,7 +60,7 @@ _loopBCx_xpos ( size_t i, size_t j, const instance *problem )
  *     CPLEX problem.
  */
 void
-_add_constraints_loopBCx ( const instance *problem, CPXENVptr env, CPXLPptr lp )
+_add_constraints_LoopX ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 {
     char ctype;
     double lb, ub, obj, rhs;
@@ -87,12 +86,12 @@ _add_constraints_loopBCx ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_loopBCx: CPXnewcols [%s]\n", cname );
+                log_fatal( "CPXnewcols [%s]", cname );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXgetnumcols( env, lp ) - 1 != _loopBCx_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_loopBCx: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+            if ( CPXgetnumcols( env, lp ) - 1 != _LoopX_xpos( i, j, problem ) ) {
+                log_fatal( "x(%zu, %zu)]",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -107,7 +106,7 @@ _add_constraints_loopBCx ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_loopBCx: CPXnewrows [%s]\n", cname );
+            log_fatal( "CPXnewrows [%s]", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -116,8 +115,8 @@ _add_constraints_loopBCx ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         for ( size_t i = 0; i < problem->nnodes; ++i )
         {
             if ( i == h ) continue;
-            if ( CPXchgcoef( env, lp, lastrow, _loopBCx_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_loopBCx: CPXchgcoef [%s: x(%zu, %zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _LoopX_xpos( i, h, problem ), 1.0 ) ) {
+                log_fatal( "x(%zu, %zu)]",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -130,12 +129,12 @@ _add_constraints_loopBCx ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
 
 void
-_add_subtour_constraints_loopBCx ( const instance *problem,
-                           CPXENVptr      env,
-                           CPXLPptr       lp,
-                           size_t         *next,
-                           size_t         *comps,
-                           size_t         ncomps )
+_add_subtour_constraints_LoopX ( const instance *problem,
+                                 CPXENVptr      env,
+                                 CPXLPptr       lp,
+                                 size_t         *next,
+                                 size_t         *comps,
+                                 size_t         ncomps )
 {
     if ( ncomps == 1 ) {
         return;
@@ -151,7 +150,7 @@ _add_subtour_constraints_loopBCx ( const instance *problem,
                              +                 CPX_STR_PARAM_MAX * sizeof( *cname   ) );
 
     if (memchunk == NULL) {
-        fprintf( stderr, CFATAL "_add_subtour_constraints: out of memory\n" );
+        log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
 
@@ -188,7 +187,7 @@ _add_subtour_constraints_loopBCx ( const instance *problem,
         int nzcnt = 0;
         for (size_t i = 0; i < compsize; ++i) {
             for (size_t j = i + 1; j < compsize; ++j) {
-                rmatind[nzcnt] = _loopBCx_xpos( cnodes[i], cnodes[j], problem );
+                rmatind[nzcnt] = _LoopX_xpos( cnodes[i], cnodes[j], problem );
                 rmatval[nzcnt] = 1.0;
                 ++nzcnt;
             }
@@ -196,7 +195,7 @@ _add_subtour_constraints_loopBCx ( const instance *problem,
 
         if ( CPXaddrows( env, lp, 0, 1, nzcnt, &rhs, &sense,
                          rmatbeg, rmatind, rmatval, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_subtour_constraints: CPXaddrows [SEC(%zu/%zu)]\n", k + 1, ncomps);
+            log_fatal( "CPXaddrows [SEC(%zu/%zu)]", k + 1, ncomps);
             exit( EXIT_FAILURE );
         }
     }
@@ -206,22 +205,28 @@ _add_subtour_constraints_loopBCx ( const instance *problem,
 
 
 void
-loopBCx_model ( instance *problem )
+LoopX_model ( instance *problem )
 {
     int error;
 
     CPXENVptr env = CPXopenCPLEX( &error );
     CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
+    /* BUILD MODEL */
+    log_info( "Adding constraints to the model." );
+    _add_constraints_LoopX( problem, env, lp );
+
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
-
-    /* BUILD MODEL */
-    _add_constraints_loopBCx( problem, env, lp );
 
     double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
     size_t *next =  calloc( problem->nnodes, sizeof( *next ) );
     size_t *comps = calloc( problem->nnodes, sizeof( *comps ) );
+
+    if ( xopt == NULL || next == NULL || comps == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
 
     int visitednodes = 0;
     struct timeb start, end;
@@ -232,13 +237,15 @@ loopBCx_model ( instance *problem )
     int maxsols = 10;
     double epgap   = 1e-4;
 
+    log_info( "Starting solver galloping loop." );
+
     for ( iter = 0, ncomps = 0; ncomps != 1; ++iter )
     {
         CPXsetdblparam( env, CPXPARAM_MIP_Tolerances_MIPGap, epgap   );
         CPXsetintparam( env, CPXPARAM_MIP_Limits_Solutions,  maxsols );
 
         if ( CPXmipopt(env, lp) ) {
-            fprintf( stderr, CFATAL "loopBCx_model: g-mode: CPXmimopt error\n" );
+            log_debug( "g-mode: CPXmipopt error." );
             exit( EXIT_FAILURE );
         }
 
@@ -246,16 +253,14 @@ loopBCx_model ( instance *problem )
 
         visitednodes += CPXgetnodecnt( env, lp ) + 1;
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-        _xopt2subtours( problem, xopt, next, comps, &ncomps, _loopBCx_xpos );
+        _xopt2subtours( problem, xopt, next, comps, &ncomps, _LoopX_xpos );
 
-        if ( loglevel >= LOG_INFO ) {
-            fprintf( stderr, CINFO "loopBCx_model: g-mode: iteration %zu\n",                    iter );
-            fprintf( stderr, CINFO "loopBCx_model: g-mode:     - components: %zu\n",          ncomps );
-            fprintf( stderr, CINFO "loopBCx_model: g-mode:     - elapsed:    %lfs\n",
-                            ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
-        }
+        log_debug( "g-mode: Iteration %zu",                           iter );
+        log_debug( "g-mode:     - Components: %zu",                 ncomps );
+        log_debug( "g-mode:     - Elapsed:    %lfs",
+            ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
-        _add_subtour_constraints_loopBCx( problem, env, lp, next, comps, ncomps );
+        _add_subtour_constraints_LoopX( problem, env, lp, next, comps, ncomps );
 
         epgap   = 1e-4 * ncomps;
         maxsols = ncomps;
@@ -266,11 +271,13 @@ loopBCx_model ( instance *problem )
     CPXsetdblparam( env, CPXPARAM_MIP_Tolerances_MIPGap, 1e-4    );
     ncomps = 0;
 
+    log_info( "Starting solver exact loop." );
+
     for ( size_t iter = 0; ncomps != 1; ++iter)
     {
         if (CPXmipopt(env, lp))
         {
-            fprintf( stderr, CFATAL "loopBCx_model: e-mode: CPXmimopt error\n" );
+            log_debug( "e-mode: CPXmipopt error." );
             exit( EXIT_FAILURE );
         }
 
@@ -278,21 +285,20 @@ loopBCx_model ( instance *problem )
 
         visitednodes += CPXgetnodecnt( env, lp ) + 1;
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-        _xopt2subtours( problem, xopt, next, comps, &ncomps, _loopBCx_xpos );
+        _xopt2subtours( problem, xopt, next, comps, &ncomps, _LoopX_xpos );
 
-        if ( loglevel >= LOG_INFO ) {
-            fprintf( stderr, CINFO "loopBCx_model: e-mode: iteration %zu\n",                    iter );
-            fprintf( stderr, CINFO "loopBCx_model: e-mode:     - components: %zu\n",          ncomps );
-            fprintf( stderr, CINFO "loopBCx_model: e-mode:     - elapsed:    %lfs\n",
-                          ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
-        }
+        log_debug( "e-mode: Iteration %zu",                            iter );
+        log_debug( "e-mode:     - Components: %zu",                  ncomps );
+        log_debug( "e-mode:     - Elapsed:    %lfs",
+            ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
-        _add_subtour_constraints_loopBCx( problem, env, lp, next, comps, ncomps );
+        _add_subtour_constraints_LoopX( problem, env, lp, next, comps, ncomps );
     }
 
     ftime( &end );
 
-    _xopt2solution( xopt, problem, &_loopBCx_xpos );
+    log_info( "Retrieving final solution." );
+    _xopt2solution( xopt, problem, &_LoopX_xpos );
 
     free( xopt );
 

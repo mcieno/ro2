@@ -1,26 +1,4 @@
 var searchData=
 [
-  ['tsp_2eh',['tsp.h',['../tsp_8h.html',1,'']]],
-  ['tsp_5ffileparser_2ec',['tsp_fileparser.c',['../tsp__fileparser_8c.html',1,'']]],
-  ['tsp_5fsolver_5fdummy',['TSP_SOLVER_DUMMY',['../tsp__solvers_8h.html#ab572255ce94516b60be6b84015e8f47d',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5fflow1',['TSP_SOLVER_FLOW1',['../tsp__solvers_8h.html#ac522bc1056eb77ef187b4ced2bfea08c',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5fflow1lazy',['TSP_SOLVER_FLOW1LAZY',['../tsp__solvers_8h.html#abd65bb5f4f670f92c6e5ff680fb87da3',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5flazybc',['TSP_SOLVER_LAZYBC',['../tsp__solvers_8h.html#ae4b09c2c27e3ea4ea5dc5f26aa458c33',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5flazybcc',['TSP_SOLVER_LAZYBCC',['../tsp__solvers_8h.html#a7fe85518beff07fc6d1e7c8a23a1ba34',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5flazybccg',['TSP_SOLVER_LAZYBCCG',['../tsp__solvers_8h.html#ac8989b2699e850151e88db764b6fc171',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5flazybcg',['TSP_SOLVER_LAZYBCG',['../tsp__solvers_8h.html#a390c4565bee07bb22b9f4413160e656d',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5floopbc',['TSP_SOLVER_LOOPBC',['../tsp__solvers_8h.html#a7e7c6777a703997c1cce57f116d03be4',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5floopbcf',['TSP_SOLVER_LOOPBCF',['../tsp__solvers_8h.html#a024de0586de3c662b79d3b846e12f279',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5floopbcm',['TSP_SOLVER_LOOPBCM',['../tsp__solvers_8h.html#ae303ba247f180e66a4b5212f0130be1c',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5floopbcx',['TSP_SOLVER_LOOPBCX',['../tsp__solvers_8h.html#a0812a296e3e4d9cd8a0f5b272b6661df',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5fmtz',['TSP_SOLVER_MTZ',['../tsp__solvers_8h.html#a6f329e4eaab06a29ba6b9530d46b9f77',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5fmtzlazy',['TSP_SOLVER_MTZLAZY',['../tsp__solvers_8h.html#ab2a93cc760381d2ab19e1f4806e6a541',1,'tsp_solvers.h']]],
-  ['tsp_5fsolver_5frandom',['TSP_SOLVER_RANDOM',['../tsp__solvers_8h.html#a9d871ea184ab498c5b6b5abf303d2704',1,'tsp_solvers.h']]],
-  ['tsp_5fsolvers_2eh',['tsp_solvers.h',['../tsp__solvers_8h.html',1,'']]],
-  ['tspconf_2eh',['tspconf.h',['../tspconf_8h.html',1,'']]],
-  ['tspconf_5fapply',['tspconf_apply',['../tspconf_8h.html#aae66c0ce7775c010f4694f8b7338c3b7',1,'tspconf.c']]],
-  ['tspconf_5finit',['tspconf_init',['../tspconf_8h.html#a6fe28dc5389e39698e6d95a922ecdc64',1,'tspconf.c']]],
-  ['tspconf_5ft',['tspconf_t',['../structtspconf__t.html',1,'']]],
-  ['tspplot_2eh',['tspplot.h',['../tspplot_8h.html',1,'']]],
-  ['tspplot_5ftmpfile',['tspplot_tmpfile',['../tspplot_8h.html#a1facbb721cde7d0816f47c799e99b80e',1,'tspplot.c']]]
+  ['random_5fmodel',['Random_model',['../tsp__solvers_8h.html#acfc52ebf4ed24cc001f877b9f2ce171a',1,'tsp_solvers_Random.c']]]
 ];

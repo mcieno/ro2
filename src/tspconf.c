@@ -18,7 +18,7 @@ tspconf_init ()
     conf.filename       = NULL;
     conf.name           = NULL;
     conf.shouldplot     = 1;
-    conf.solving_method = TSP_SOLVER_LAZYBCG;
+    conf.solving_method = TSP_SOLVER_Generic;
     conf.threads        = 0;
     conf.memory         = 0;
     conf.timelimit      = 0.;
@@ -27,52 +27,59 @@ tspconf_init ()
     conf.epgap          = 0.;
     conf.scrind         = CPX_OFF;
     conf.seed           = 0;
+
+    log_set_level( loglevel );
 }
 
 
 void
 tspconf_apply ( CPXENVptr env )
 {
-    if (loglevel >= LOG_INFO) {
-        fprintf( stderr, CINFO "Applying configuration:\n"                                             );
+    log_info( "Applying configuration:"                                              );
 
-        conf.timelimit <= 0 ?
-        fprintf( stderr, CINFO "    Time limit                 : No limit\n"                           ):
-        fprintf( stderr, CINFO "    Time limit                 : %zu hours %zu minutes %zu seconds\n",
-                                                                     ((size_t) conf.timelimit) / 3600,
-                                                                ((size_t) conf.timelimit) % 3600 / 60,
-                                                                        ((size_t) conf.timelimit) % 60 );
+    if ( conf.timelimit <= 0 )
+    log_info( "    Time limit                 : No limit"                            );
+    else
+    log_info( "    Time limit                 : %zu hours %zu minutes %zu seconds",
+                                                   ((size_t) conf.timelimit) / 3600,
+                                              ((size_t) conf.timelimit) % 3600 / 60,
+                                                      ((size_t) conf.timelimit) % 60 );
 
-        conf.nodelimit == 0 ?
-        fprintf( stderr, CINFO "    MIP node limit             : No limit\n"                           ):
-        fprintf( stderr, CINFO "    MIP node limit             : %zu\n",                conf.nodelimit );
+    if ( conf.nodelimit == 0 )
+    log_info( "    MIP node limit             : No limit"                            );
+    else
+    log_info( "    MIP node limit             : %zu",                 conf.nodelimit );
 
-        conf.memory == 0 ?
-        fprintf( stderr, CINFO "    Maximum working memory     : Automatic\n"                          ):
-        fprintf( stderr, CINFO "    Maximum working memory     : %zu MB\n",                conf.memory );
+    if ( conf.memory == 0 )
+    log_info( "    Maximum working memory     : Automatic"                           );
+    else
+    log_info( "    Maximum working memory     : %zu MB",                 conf.memory );
 
-        conf.threads == 0 ?
-        fprintf( stderr, CINFO "    Use multithread            : yes (ALL)\n"                          ):
-        fprintf( stderr, CINFO "    Use multithread            : %s (%zu)\n",
-                                                         conf.threads > 1 ? "yes" : "no", conf.threads );
+    if ( conf.threads == 0 )
+    log_info( "    Use multithread            : yes (ALL:%d)", get_nprocs()          );
+    else
+    log_info( "    Use multithread            : %s (%zu)",
+                                       conf.threads > 1 ? "yes" : "no", conf.threads );
 
-        conf.cutup == 0 ?
-        fprintf( stderr, CINFO "    Upper cutoff               : Don't cut\n"                          ):
-        fprintf( stderr, CINFO "    Upper cutoff               : %lf\n",                    conf.cutup );
+    if ( conf.cutup == 0 )
+    log_info( "    Upper cutoff               : Don't cut"                           );
+    else
+    log_info( "    Upper cutoff               : %lf",                     conf.cutup );
 
-        conf.epgap <= 0 ?
-        fprintf( stderr, CINFO "    Relative MIP gap tolerance : Automatic\n"                          ):
-        fprintf( stderr, CINFO "    Relative MIP gap tolerance : %lf\n",                    conf.epgap );
+    if ( conf.epgap <= 0 )
+    log_info( "    Relative MIP gap tolerance : Automatic"                           );
+    else
+    log_info( "    Relative MIP gap tolerance : %lf",                     conf.epgap );
 
-        conf.scrind == CPX_OFF ?
-        fprintf( stderr, CINFO "    Display messages on screen : No\n"                                  ):
-        fprintf( stderr, CINFO "    Display messages on screen : Yes\n"                                 );
+    if ( conf.scrind == CPX_OFF )
+    log_info( "    Display messages on screen : No"                                  );
+    else
+    log_info( "    Display messages on screen : Yes"                                 );
 
-        conf.seed == 0 ?
-        fprintf( stderr, CINFO "    Random seed                : Automatic\n"                          ):
-        fprintf( stderr, CINFO "    Random seed                : %i\n",                      conf.seed );
-
-    }
+    if ( conf.seed == 0 )
+    log_info( "    Random seed                : Automatic"                           );
+    else
+    log_info( "    Random seed                : %i",                       conf.seed );
 
     if ( conf.timelimit > 0. ) CPXsetdblparam( env, CPXPARAM_TimeLimit,                  conf.timelimit );
     if ( conf.nodelimit > 0  ) CPXsetintparam( env, CPXPARAM_MIP_Limits_Nodes,           conf.nodelimit );

@@ -1,110 +1,148 @@
 #!/usr/bin/env sh
-# TIME CSV ON STDOUT, NODES CSV ON STDERR5
 
 echo "[*] Building with make all"
 make all > /dev/null || exit 1
 
-#timelimit=3600      # 60 minutes
-timelimit=360       # 6 minutes
+timelimit=3600      # 60 minutes
 nodelimit=10000000  # 10 million nodes
 
 bmdir="benchmarks"
-bmsig="bm_$(date +%F_%T)"
+bmsig="benchmarks/bm_$(date +%F_%T)"
 
-bmfile_nodes="$bmdir/$bmsig.nodes.csv"
-bmfile_times="$bmdir/$bmsig.times.csv"
+bmfile_nodes="$bmsig.nodes.csv"
+bmfile_times="$bmsig.times.csv"
 
-bmfile_nodes_png="$bmdir/$bmsig.nodes.png"
-bmfile_times_png="$bmdir/$bmsig.times.png"
+bmfile_nodes_png="$bmsig.nodes.png"
+bmfile_times_png="$bmsig.times.png"
 
 mkdir -p $bmdir || exit 1
 
-echo "[*] Saving benchmark to $bmdir/$bmsig.[nodes|times].csv"
+echo "[*] Saving benchmark to $bmsig.[nodes|times].csv"
 
 models=(
-    #dummy
-    #mtz
-    #flow1
-    #mtzlazy
-    #flow1lazy
-    #loopBC
-    lazyBC
-    lazyBCg
-    lazyBCc
-    lazyBCcg
+    #Dummy
+    #MTZ
+    #Flow1
+    #LazyMTZ
+    #LazyFlow1
+    #Loop
+    Legacy
+    Generic
+    LegacyConcorde
+    GenericConcorde
+    LegacyConcordeShallow
+    GenericConcordeShallow
+    LegacyConcordeRand
+    GenericConcordeRand
 )
 
 testbed=(
-    data/rat195.tsp
-    data/d493.tsp
+    data/burma14.tsp
+    data/ulysses16.tsp
+    data/ulysses22.tsp
+    data/att48.tsp
+    data/eil51.tsp
+    data/berlin52.tsp
+    data/st70.tsp
+    data/eil76.tsp
+    data/pr76.tsp
+    data/gr96.tsp
+    data/rat99.tsp
+    data/kroA100.tsp
+    data/kroB100.tsp
+    data/kroC100.tsp
+    data/kroD100.tsp
+    data/kroE100.tsp
+    data/rd100.tsp
+    data/eil101.tsp
+    data/lin105.tsp
+    data/pr107.tsp
+    data/pr124.tsp
+    data/bier127.tsp
+    data/ch130.tsp
+    data/pr136.tsp
+    data/gr137.tsp
+    data/pr144.tsp
+    data/ch150.tsp
+    data/kroA150.tsp
+    data/kroB150.tsp
     data/pr152.tsp
     data/u159.tsp
-    data/d657.tsp
-    data/lin105.tsp
-    data/gil262.tsp
-    data/gr96.tsp
-    data/ch150.tsp
-    data/pr124.tsp
-    data/lin318.tsp
-    data/u724.tsp
-    data/a280.tsp
-    data/gr202.tsp
-    data/pr226.tsp
-    data/kroB200.tsp
-    data/linhp318.tsp
-    data/gr137.tsp
-    data/rd100.tsp
-    data/pr144.tsp
-    data/pcb442.tsp
-    data/pr264.tsp
-    data/burma14.tsp
-    data/kroA100.tsp
-    data/att532.tsp
-    data/dummy.tsp
-    data/ulysses16.tsp
-    data/eil101.tsp
-    data/p654.tsp
-    data/tsp225.tsp
-    data/berlin52.tsp
-    data/rat575.tsp
-    data/ulysses22.tsp
-    data/kroB150.tsp
-    data/u574.tsp
-    data/ts225.tsp
+    data/rat195.tsp
     data/d198.tsp
-    data/eil76.tsp
-    data/pr439.tsp
-    data/kroC100.tsp
-    data/att48.tsp
-    data/pr76.tsp
-    data/rat99.tsp
-    data/kroB100.tsp
-    data/eil51.tsp
-    data/ch130.tsp
-    data/pr299.tsp
-    data/st70.tsp
-    data/pr107.tsp
-    data/gr229.tsp
-    data/kroD100.tsp
-    data/bier127.tsp
-    data/rd400.tsp
     data/kroA200.tsp
-    data/gr666.tsp
-    data/pr136.tsp
-    data/rat783.tsp
-    data/gr431.tsp
-    data/kroA150.tsp
-    data/ali535.tsp
-    data/kroE100.tsp
-    data/fl417.tsp
+    data/kroB200.tsp
+    data/gr202.tsp
+    #data/ts225.tsp
+    #data/tsp225.tsp
+    #data/pr226.tsp
+    #data/gr229.tsp
+    #data/gil262.tsp
+    data/pr264.tsp
+    data/a280.tsp
+    data/pr299.tsp
+    data/lin318.tsp
+    data/linhp318.tsp
+    ###data/rd400.tsp
+    ###data/fl417.tsp
+    ###data/gr431.tsp
+    ###data/pr439.tsp
+    ###data/pcb442.tsp
+    ###data/d493.tsp
+    ###data/att532.tsp
+    ###data/ali535.tsp
+    ###data/u574.tsp
+    ###data/rat575.tsp
+    ###data/p654.tsp
+    ###data/d657.tsp
+    ###data/gr666.tsp
+    ###data/u724.tsp
+    ###data/rat783.tsp
+    ###data/dsj1000.tsp
+    ###data/pr1002.tsp
+    ###data/u1060.tsp
+    ###data/vm1084.tsp
+    ###data/pcb1173.tsp
+    ###data/d1291.tsp
+    ###data/rl1304.tsp
+    ###data/rl1323.tsp
+    ###data/nrw1379.tsp
+    ###data/fl1400.tsp
+    ###data/u1432.tsp
+    ###data/fl1577.tsp
+    ###data/d1655.tsp
+    ###data/vm1748.tsp
+    ###data/u1817.tsp
+    ###data/rl1889.tsp
+    ###data/d2103.tsp
+    ###data/u2152.tsp
+    ###data/u2319.tsp
+    ###data/pr2392.tsp
+    ###data/pcb3038.tsp
+    ###data/fl3795.tsp
+    ###data/fnl4461.tsp
+    ###data/rl5915.tsp
+    ###data/rl5934.tsp
+    ###data/pla7397.tsp
+    ###data/rl11849.tsp
+    ###data/usa13509.tsp
+    ###data/brd14051.tsp
+    ###data/d15112.tsp
+    ###data/d18512.tsp
+    ###data/pla33810.tsp
+    ###data/pla85900.tsp
 )
 
-seeds=(
-    2222
-    3333
-    4444
-    #5555
-)
+# Check if seeds are provided as command line args
+if [ "$#" -eq 0 ]; then
+    seeds=(
+        21357
+        78986
+        86874
+    )
+else
+    seeds=( $@ )
+fi
 
 echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' > $bmfile_times
 echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' > $bmfile_nodes
@@ -159,6 +197,6 @@ python2 ./perfprof.py        \
     -M 5                     \
     $bmfile_nodes            \
     $bmfile_nodes_png        \
-    -P "Nodes, shift 1000"   > /dev/null
+    -P "Nodes, shift 100"    > /dev/null
 
 echo -e "\n\n[+] All done"
