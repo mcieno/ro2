@@ -54,6 +54,6 @@ debug:
 clean:
 	-@echo -e "$(FANCYLOG) Cleaning all"
 	rm -f $(BUILD_DIR)/*
-	rmdir $(BUILD_DIR)
+	rmdir $(BUILD_DIR) || exit 0
 
 .PHONY: debug perf clean config

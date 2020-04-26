@@ -1,5 +1,5 @@
 /*
- * \brief   Hard-Fix heuristic method
+ * \brief   Like Generic, but also cuts the relaxation using Concorde routines.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
@@ -19,6 +19,7 @@
 #include "tspconf.h"
 #include "concorde.h"
 
+
 typedef struct
 {
     instance *problem;
@@ -34,9 +35,8 @@ typedef struct
 ccinfo_t;
 
 
-
 /*!
- * \brief Get the position of variable x(i,j) in B&B model.
+ * \brief Get the position of variable x(i,j) in B&C model with concorde user-cuts.
  *
  *
  * \param i
@@ -49,22 +49,22 @@ ccinfo_t;
  *     Pointer to the instance structure.
  */
 size_t
-_hardfix_xpos ( size_t i, size_t j, const instance *problem )
+_GenericConcorde_xpos ( size_t i, size_t j, const instance *problem )
 {
-if ( i == j ) {
+    if ( i == j ) {
         errno = EFAULT;
-        perror( CFATAL "_lazyBCcg_xpos: i == j" );
+        perror( CFATAL "_GenericConcorde_xpos: i == j" );
         exit( EXIT_FAILURE );
     }
 
-    if ( i > j ) return _hardfix_xpos( j, i, problem );
+    if ( i > j ) return _GenericConcorde_xpos( j, i, problem );
 
     return i * problem->nnodes + j - ( ( i + 1 ) * ( i + 2 ) / 2UL );
 }
 
 
 /*!
- * \brief Add Degree constraints to the problem.
+ * \brief Add degree constraints to the problem.
  *
  *
  * \param problem
@@ -77,7 +77,7 @@ if ( i == j ) {
  *     CPLEX problem.
  */
 void
-_add_constraints_hardfix ( const instance *problem, CPXENVptr env, CPXLPptr lp )
+_add_constraints_GenericConcorde ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 {
     char ctype;
     double lb, ub, obj, rhs;
@@ -103,12 +103,12 @@ _add_constraints_hardfix ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_hardfix: CPXnewcols [%s]\n", cname );
+                fprintf( stderr, CFATAL "_add_constraints_GenericConcorde: CPXnewcols [%s]\n", cname );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXgetnumcols( env, lp ) - 1 != _hardfix_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_hardfix: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+            if ( CPXgetnumcols( env, lp ) - 1 != _GenericConcorde_xpos( i, j, problem ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_GenericConcorde: CPXgetnumcols [%s: x(%zu, %zu)]\n",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -123,7 +123,7 @@ _add_constraints_hardfix ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_hardfix: CPXnewrows [%s]\n", cname );
+            fprintf( stderr, CFATAL "_add_constraints_GenericConcorde: CPXnewrows [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -132,8 +132,8 @@ _add_constraints_hardfix ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         for ( size_t i = 0; i < problem->nnodes; ++i )
         {
             if ( i == h ) continue;
-            if ( CPXchgcoef( env, lp, lastrow, _hardfix_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_hardfix: CPXchgcoef [%s: x(%zu, %zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _GenericConcorde_xpos( i, h, problem ), 1.0 ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_GenericConcorde: CPXchgcoef [%s: x(%zu, %zu)]\n",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -146,11 +146,11 @@ _add_constraints_hardfix ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
 
 void
-_add_subtour_constraints_hardfix ( const instance       *problem,
-                                   CPXCALLBACKCONTEXTptr context,
-                                   size_t                *next,
-                                   size_t                *comps,
-                                   size_t                ncomps )
+_add_subtour_constraints_GenericConcorde ( const instance       *problem,
+                                           CPXCALLBACKCONTEXTptr context,
+                                           size_t                *next,
+                                           size_t                *comps,
+                                           size_t                ncomps )
 {
     if ( ncomps == 1 ) {
         return;
@@ -164,7 +164,7 @@ _add_subtour_constraints_hardfix ( const instance       *problem,
                              + problem->nnodes * problem->nnodes * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_add_subtour_constraints_hardfix: out of memory\n" );
+        fprintf( stderr, CFATAL "_add_subtour_constraints_GenericConcorde: out of memory\n" );
         CPXcallbackabort( context );
     }
 
@@ -198,14 +198,14 @@ _add_subtour_constraints_hardfix ( const instance       *problem,
         int nzcnt = 0;
         for (size_t i = 0; i < compsize; ++i) {
             for (size_t j = i + 1; j < compsize; ++j) {
-                rmatind[nzcnt] = _hardfix_xpos( cnodes[i], cnodes[j], problem );
+                rmatind[nzcnt] = _GenericConcorde_xpos( cnodes[i], cnodes[j], problem );
                 rmatval[nzcnt] = 1.0;
                 ++nzcnt;
             }
         }
 
         if ( CPXcallbackrejectcandidate( context, 1, nzcnt, &rhs, &sense, &rmatbeg, rmatind, rmatval ) ) {
-            fprintf( stderr, CFATAL "_add_subtour_constraints_hardfix: CPXcallbackaddusercuts [SEC(%zu/%zu)]\n",
+            fprintf( stderr, CFATAL "_add_subtour_constraints_GenericConcorde: CPXcallbackaddusercuts [SEC(%zu/%zu)]\n",
                 k + 1, ncomps );
             CPXcallbackabort( context );
         }
@@ -214,8 +214,9 @@ _add_subtour_constraints_hardfix ( const instance       *problem,
     free( memchunk );
 }
 
+
 static int CPXPUBLIC
-_callbackfunc_hardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
+_candidatecutcallback_GenericConcorde ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
 {
     int status = 0;
 
@@ -229,7 +230,7 @@ _callbackfunc_hardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        fprintf(stderr, CERROR "_callbackfunc_hardfix: out of memory.\n");
+        fprintf(stderr, CERROR "_candidatecutcallback_GenericConcorde: out of memory.\n");
         goto TERMINATE;
     }
 
@@ -244,18 +245,18 @@ _callbackfunc_hardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *
     status = CPXcallbackgetcandidatepoint(context, x, 0, info->ncols - 1, NULL);
 
     if ( status ) {
-        fprintf( stderr, CERROR "_callbackfunc_hardfix: CPXcallbackgetcandidatepoint.\n" );
+        fprintf( stderr, CERROR "_candidatecutcallback_GenericConcorde: CPXcallbackgetcandidatepoint.\n" );
         goto TERMINATE;
     }
 
-    _xopt2subtours( info->problem, x, next, comps, &ncomps, _hardfix_xpos );
+    _xopt2subtours( info->problem, x, next, comps, &ncomps, _GenericConcorde_xpos );
 
     if ( loglevel >= LOG_INFO ) {
-        fprintf( stderr, CINFO "_callbackfunc_hardfix: got %zu components.\n", ncomps );
+        fprintf( stderr, CINFO "_candidatecutcallback_GenericConcorde: got %zu components.\n", ncomps );
     }
 
     if ( ncomps > 1 ) {
-        _add_subtour_constraints_hardfix( info->problem, context, next, comps, ncomps );
+        _add_subtour_constraints_GenericConcorde( info->problem, context, next, comps, ncomps );
     }
 
 TERMINATE :
@@ -267,13 +268,14 @@ TERMINATE :
     return status;
 }
 
+
 int
-_concorde_callback_hardfix ( double val, int cutcount, int *cut, void *userhandle )
+_concorde_callback_GenericConcorde ( double val, int cutcount, int *cut, void *userhandle )
 {
     ccinfo_t *ccinfo = (ccinfo_t *) userhandle;
 
     if ( loglevel >= LOG_DEBUG ) {
-        fprintf( stderr, CDEBUG "_concorde_callback_hardfix: %d nodes in the cut\n", cutcount );
+        fprintf( stderr, CDEBUG "_concorde_callback_GenericConcorde: %d nodes in the cut\n", cutcount );
     }
 
     char sense      = 'G';
@@ -289,7 +291,7 @@ _concorde_callback_hardfix ( double val, int cutcount, int *cut, void *userhandl
                                + ccinfo->info->ncols * sizeof( *rmatval ) );
 
     if ( memchunk == NULL ) {
-        fprintf( stderr, CFATAL "_concorde_callback_hardfix: out of memory\n" );
+        fprintf( stderr, CFATAL "_concorde_callback_GenericConcorde: out of memory\n" );
         return 1;
     }
 
@@ -317,7 +319,7 @@ _concorde_callback_hardfix ( double val, int cutcount, int *cut, void *userhandl
             }
 
             /* Node j is in V \ S */
-            rmatind[nzcnt] = _hardfix_xpos(i, j, ccinfo->info->problem);
+            rmatind[nzcnt] = _GenericConcorde_xpos(i, j, ccinfo->info->problem);
             rmatval[nzcnt] = 1.0;
             ++nzcnt;
 
@@ -330,7 +332,7 @@ _concorde_callback_hardfix ( double val, int cutcount, int *cut, void *userhandl
     if ( CPXcallbackaddusercuts( ccinfo->context, 1, nzcnt, &rhs, &sense,
                                  &rmatbeg, rmatind, rmatval, &purgeable, &local ) )
     {
-        fprintf( stderr, CFATAL "_concorde_callback_hardfix: CPXcutcallbackadd \n");
+        fprintf( stderr, CFATAL "_concorde_callback_GenericConcorde: CPXcutcallbackadd \n");
         exit( EXIT_FAILURE );
     }
 
@@ -339,22 +341,37 @@ _concorde_callback_hardfix ( double val, int cutcount, int *cut, void *userhandl
     return 0;
 }
 
+
 static int CPXPUBLIC
-_usercutcallback_hardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
+_relaxationcutcallback_GenericConcorde ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
 {
     int status = 0;
 
-    cbinfo_t *info = (cbinfo_t *) userhandle;
+    cbinfo_t *info  = (cbinfo_t *) userhandle;
     ccinfo_t ccinfo = { context, info };
 
-    int ncomp       = 0;
-    int nedge       = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
+    int ncomp;
+    int nedge = ( info->problem->nnodes * ( info->problem->nnodes - 1 ) ) / 2;
 
-    int *elist      = malloc( nedge * 2             * sizeof( *elist      ) );
-    int *comps      = malloc( info->problem->nnodes * sizeof( *comps      ) );
-    int *compscount = malloc( info->problem->nnodes * sizeof( *compscount ) );
-    double *x       = malloc( info->ncols           * sizeof( *x          ) );
+    int *elist;
+    int *comps;
+    int *compscount;
+    double *x;
 
+    void *memchunk = malloc(   nedge * 2             * sizeof( *elist      )
+                             + info->problem->nnodes * sizeof( *comps      )
+                             + info->problem->nnodes * sizeof( *compscount )
+                             + info->ncols           * sizeof( *x          ) );
+
+    if ( memchunk == NULL ) {
+        fprintf(stderr, CERROR "_relaxationcutcallback_GenericConcorde: out of memory.\n");
+        goto TERMINATE;
+    }
+
+    elist      =           ( memchunk );
+    comps      =           ( elist + nedge * 2 );
+    compscount =           ( comps + info->problem->nnodes );
+    x          = (double*) ( compscount + info->problem->nnodes );
 
     int loader = 0;
 
@@ -365,68 +382,111 @@ _usercutcallback_hardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, voi
         }
     }
 
-
-
-    if ( x          == NULL ||
-         elist      == NULL ||
-         comps      == NULL ||
-         compscount == NULL  ) {
-        fprintf(stderr, CERROR "_usercutcallback_hardfix: Out of memory.\n");
-        goto TERMINATE;
-    }
-
     status = CPXcallbackgetrelaxationpoint( context, x, 0, info->ncols - 1, NULL );
 
     if ( status ) {
-        fprintf( stderr, CERROR "_usercutcallback_hardfix: CPXgetcallbacknodex.\n" );
+        fprintf( stderr, CERROR "_relaxationcutcallback_GenericConcorde: CPXgetcallbacknodex.\n" );
         goto TERMINATE;
     }
 
     if ( CCcut_connect_components( info->problem->nnodes, nedge, elist, x, &ncomp, &compscount, &comps ) ) {
-        fprintf( stderr, CERROR "_usercutcallback_hardfix: CCcut_connect_components.\n" );
+        fprintf( stderr, CERROR "_relaxationcutcallback_GenericConcorde: CCcut_connect_components.\n" );
         status = 1;
         goto TERMINATE;
     }
 
     if ( loglevel >= LOG_DEBUG ) {
-        fprintf( stderr, CDEBUG "_usercutcallback_hardfix: relaxation graph is%s connected\n",
+        fprintf( stderr, CDEBUG "_relaxationcutcallback_GenericConcorde: relaxation graph is%s connected\n",
             ncomp == 1 ? "" : " NOT" );
     }
 
-    if ( ncomp == 1 &&
-        CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.95,
-                             _concorde_callback_hardfix, &ccinfo ) )
-    {
-        fprintf( stderr, CERROR "_usercutcallback_hardfix: CCcut_violated_cuts.\n" );
-        status = 1;
-        goto TERMINATE;
+    if ( ncomp == 1 ) {
+        /* The solution is connected, search for violated cuts */
+
+        if ( CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.99,
+                                  _concorde_callback_GenericConcorde, &ccinfo ) )
+        {
+            fprintf( stderr, CERROR "_relaxationcutcallback_GenericConcorde: CCcut_violated_cuts.\n" );
+            status = 1;
+            goto TERMINATE;
+        }
+
+    } else {
+        /* The solution has subtours and we can add the corresponding SEC's */
+
+        int *rmatind;
+        double *rmatval;
+        void *_memchunk = malloc(   info->problem->nnodes * info->problem->nnodes * sizeof( *rmatind )
+                                 + info->problem->nnodes * info->problem->nnodes * sizeof( *rmatval ) );
+
+        if ( _memchunk == NULL ) {
+            fprintf( stderr, CFATAL "_relaxationcutcallback_GenericConcorde: out of memory.\n" );
+            CPXcallbackabort( context );
+        }
+
+        rmatind =           ( _memchunk );
+        rmatval = (double*) ( rmatind + info->problem->nnodes * info->problem->nnodes );
+
+        char sense = 'L';
+        int purgeable = CPX_USECUT_PURGE;
+        int rmatbeg = 0;
+        int local = 0;
+
+        int i = 0;
+        int compend = i;
+        double rhs;
+        int nzcnt;
+
+        for ( size_t k = 0; k < ncomp; ++k ) {
+            rhs = compscount[k] - 1.0;
+            compend += compscount[k];
+
+            nzcnt = 0;
+
+            for ( ; i < compend; ++i ) {
+                for ( int j = i + 1; j < compend; ++j ) {
+                    rmatind[nzcnt] = _GenericConcorde_xpos( comps[i], comps[j], info->problem );
+                    rmatval[nzcnt] = 1.0;
+                    ++nzcnt;
+                }
+            }
+
+            if ( CPXcallbackaddusercuts( context, 1, nzcnt, &rhs, &sense,
+                                         &rmatbeg, rmatind, rmatval, &purgeable, &local ) )
+            {
+                fprintf( stderr, CFATAL
+                    "_relaxationcutcallback_GenericConcorde: CPXcutcallbackadd [SEC(%zu/%d)]\n", k + 1, ncomp );
+                CPXcallbackabort( context );
+            }
+
+            i = compend;
+        }
+
+        free( _memchunk );
     }
 
 
 TERMINATE:
 
-    if ( x           != NULL )  free( x           );
-    if ( elist       != NULL )  free( elist       );
-    if ( comps       != NULL )  free( comps       );
-    if ( compscount  != NULL )  free( compscount  );
+    if ( memchunk != NULL )  free( memchunk );
 
     return status;
 }
 
 
 static int CPXPUBLIC
-_callbackfunc_hardfix_switch ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
+_callbackfunc_GenericConcorde ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
 {
     int status = 1;
 
-    switch (contextid)
+    switch ( contextid )
     {
         case CPX_CALLBACKCONTEXT_RELAXATION:
-            status = _usercutcallback_hardfix( context, contextid, userhandle );
+            status = _relaxationcutcallback_GenericConcorde( context, contextid, userhandle );
             break;
 
         case CPX_CALLBACKCONTEXT_CANDIDATE:
-            status = _callbackfunc_hardfix( context, contextid, userhandle );
+            status = _candidatecutcallback_GenericConcorde( context, contextid, userhandle );
             break;
 
         default:
@@ -438,86 +498,19 @@ _callbackfunc_hardfix_switch ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid,
 
 
 void
-hardfix_solve(instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt, double timelimit )
-{
-    //First start with a dummy solution
-    for(int i=0; i<problem->nnodes-1;i++){
-        problem->solution[i][0] = i;
-        problem->solution[i][1] = i+1;
-    }
-    problem->solution[problem->nnodes-1][0] = problem->nnodes-1;
-    problem->solution[problem->nnodes-1][1] = 0;
-
-    int fix_ind[problem->nnodes];
-    char fix_lu[problem->nnodes];
-    double fix_bd[problem->nnodes];
-
-    if(timelimit==0.0){
-        timelimit =600.0;
-    }
-    double single_run_timelimit = 2.0; //2 seconds
-    int heuristic_iter = round(timelimit/single_run_timelimit);
-    CPXsetdblparam( env, CPXPARAM_TimeLimit, single_run_timelimit );
-
-    for(int k =0; k<heuristic_iter; k++) //intanto facciamolo cento volte
-    {
-
-        //fissa circa 90% dei lati
-        int counter_fixed =0;
-        for(int i =0; i<problem->nnodes;i++){
-            int rnd_values = rand() % 10 + 1;
-            if(rnd_values<=9){
-                fix_ind[counter_fixed] = _hardfix_xpos(problem->solution[i][0], problem->solution[i][1], problem);
-                fix_lu[counter_fixed] = 'L';
-                fix_bd[counter_fixed] = 1.0;
-                counter_fixed++;
-            }
-        }
-        if(CPXchgbds(env, lp, counter_fixed, fix_ind, fix_lu, fix_bd)){
-             fprintf( stderr, CFATAL "hardfix_solve: CPXchgbds");
-                exit( EXIT_FAILURE );
-        }
-
-        //Solve
-        if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "lazyBCcg_model: CPXmimopt error\n" );
-        exit( EXIT_FAILURE );
-        }
-
-        CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-        _xopt2solution( xopt, problem, &_hardfix_xpos );
-
-        //Sfissare lati
-        for(int i=0; i<counter_fixed; i++){
-            fix_bd[i]=0.0;
-        }
-        if(CPXchgbds(env, lp, counter_fixed, fix_ind, fix_lu, fix_bd)){
-             fprintf( stderr, CFATAL "hardfix_solve: CPXchgbds");
-                exit( EXIT_FAILURE );
-        }
-
-    }
-
-
-}
-
-
-void
-hardfix_model ( instance *problem, double timelimit )
+GenericConcorde_model ( instance *problem )
 {
     int error;
 
     CPXENVptr env = CPXopenCPLEX( &error );
-    CPXLPptr lp = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
-
+    CPXLPptr  lp  = CPXcreateprob( env, &error, problem->name ? problem->name : "TSP" );
 
     /* BUILD MODEL */
-    _add_constraints_hardfix(problem, env, lp);
-    
+    _add_constraints_GenericConcorde( problem, env, lp );
 
     cbinfo_t info = { problem, CPXgetnumcols( env, lp ) };
     CPXcallbacksetfunc( env, lp, CPX_CALLBACKCONTEXT_RELAXATION | CPX_CALLBACKCONTEXT_CANDIDATE,
-                        _callbackfunc_hardfix_switch, &info );
+                        _callbackfunc_GenericConcorde, &info );
 
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
@@ -527,15 +520,17 @@ hardfix_model ( instance *problem, double timelimit )
     struct timeb start, end;
     ftime( &start );
 
-    double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
-
-    hardfix_solve(problem, env, lp, xopt, timelimit);
+    if ( CPXmipopt( env, lp ) ) {
+        fprintf( stderr, CFATAL "GenericConcorde_model: CPXmimopt error\n" );
+        exit( EXIT_FAILURE );
+    }
 
     ftime( &end );
 
+    double *xopt  = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
 
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-    _xopt2solution( xopt, problem, &_hardfix_xpos );
+    _xopt2solution( xopt, problem, &_GenericConcorde_xpos );
 
     free( xopt );
 

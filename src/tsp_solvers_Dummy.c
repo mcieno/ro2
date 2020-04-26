@@ -20,7 +20,7 @@
 
 
 /*!
- * \brief Get the position of variable x(i,j) in dummy model.
+ * \brief Get the position of variable x(i,j) in Dummy model.
  *
  *
  * \param i
@@ -33,15 +33,15 @@
  *     Pointer to the instance structure.
  */
 size_t
-_dummy_xpos ( size_t i, size_t j, const instance *problem )
+_Dummy_xpos ( size_t i, size_t j, const instance *problem )
 {
     if ( i == j ) {
         errno = EFAULT;
-        perror( CFATAL "_dummy_xpos: i == j" );
+        perror( CFATAL "_Dummy_xpos: i == j" );
         exit( EXIT_FAILURE );
     }
 
-    if ( i > j ) return _dummy_xpos( j, i, problem );
+    if ( i > j ) return _Dummy_xpos( j, i, problem );
 
     return i * problem->nnodes + j - ( ( i + 1 ) * ( i + 2 ) / 2UL );
 }
@@ -61,7 +61,7 @@ _dummy_xpos ( size_t i, size_t j, const instance *problem )
  *     CPLEX problem.
  */
 void
-_add_constraints_dummy ( const instance *problem, CPXENVptr env, CPXLPptr lp )
+_add_constraints_Dummy ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 {
     char ctype;
     double lb, ub, obj, rhs;
@@ -87,12 +87,12 @@ _add_constraints_dummy ( const instance *problem, CPXENVptr env, CPXLPptr lp )
             );
 
             if ( CPXnewcols( env, lp, 1, &obj, &lb, &ub, &ctype, &cname ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_dummy: CPXnewcols [%s]\n", cname );
+                fprintf( stderr, CFATAL "_add_constraints_Dummy: CPXnewcols [%s]\n", cname );
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXgetnumcols( env, lp ) - 1 != _dummy_xpos( i, j, problem ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_dummy: CPXgetnumcols [%s: x(%zu, %zu)]\n",
+            if ( CPXgetnumcols( env, lp ) - 1 != _Dummy_xpos( i, j, problem ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_Dummy: CPXgetnumcols [%s: x(%zu, %zu)]\n",
                     cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -107,7 +107,7 @@ _add_constraints_dummy ( const instance *problem, CPXENVptr env, CPXLPptr lp )
     {
         snprintf( cname, CPX_STR_PARAM_MAX, "degree(%zu)", h + 1 );
         if ( CPXnewrows( env, lp, 1, &rhs, &sense, NULL, &cname ) ) {
-            fprintf( stderr, CFATAL "_add_constraints_dummy: CPXnewrows [%s]\n", cname );
+            fprintf( stderr, CFATAL "_add_constraints_Dummy: CPXnewrows [%s]\n", cname );
             exit( EXIT_FAILURE );
         }
 
@@ -116,8 +116,8 @@ _add_constraints_dummy ( const instance *problem, CPXENVptr env, CPXLPptr lp )
         for ( size_t i = 0; i < problem->nnodes; ++i )
         {
             if ( i == h ) continue;
-            if ( CPXchgcoef( env, lp, lastrow, _dummy_xpos( i, h, problem ), 1.0 ) ) {
-                fprintf( stderr, CFATAL "_add_constraints_dummy: CPXnewrows [%s: x(%zu, %zu)]\n",
+            if ( CPXchgcoef( env, lp, lastrow, _Dummy_xpos( i, h, problem ), 1.0 ) ) {
+                fprintf( stderr, CFATAL "_add_constraints_Dummy: CPXnewrows [%s: x(%zu, %zu)]\n",
                     cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -129,7 +129,7 @@ _add_constraints_dummy ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 
 
 void
-dummy_model ( instance *problem )
+Dummy_model ( instance *problem )
 {
     int error;
 
@@ -140,13 +140,13 @@ dummy_model ( instance *problem )
     tspconf_apply( env );
 
     /* BUILD MODEL */
-    _add_constraints_dummy(problem, env, lp);
+    _add_constraints_Dummy(problem, env, lp);
 
     struct timeb start, end;
     ftime( &start );
 
     if ( CPXmipopt( env, lp ) ) {
-        fprintf( stderr, CFATAL "dummy_model: CPXmimopt error\n" );
+        fprintf( stderr, CFATAL "Dummy_model: CPXmimopt error\n" );
         exit( EXIT_FAILURE );
     }
 
@@ -155,7 +155,7 @@ dummy_model ( instance *problem )
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
 
-    _xopt2solution( xopt, problem, &_dummy_xpos );
+    _xopt2solution( xopt, problem, &_Dummy_xpos );
 
     free( xopt );
 

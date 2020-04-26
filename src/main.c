@@ -72,11 +72,15 @@ static struct argp_option options[]  =
     { "noplot",    0xAA2,     NULL,      0,               "Do not sketch the solution."             },
     { "cutup",     'c',       "VALUE",   OPTION_NO_USAGE, "Upper cutoff. Default: don't cut."       },
     { "model",     'M',       "MODEL",   0,               "Solving technique. Available: "
-                                                          "random, dummy, mtz, flow1, mtzlazy, "
-                                                          "flow1lazy, loopBC, loopBCf, loopBCm, "
-                                                          "loopBCx, lazyBC, lazyBCg lazyBCc, "
-                                                          "lazyBCcg. "
-                                                          "Default: lazyBCg."                       },
+                                                          "Random, Dummy, MTZ, Flow1, LazyMTZ, "
+                                                          "LazyFlow1, Loop, LoopF, LoopM, "
+                                                          "LoopX, Legacy, Generic LegacyConcorde, "
+                                                          "GenericConcorde, "
+                                                          "LegacyConcordeShallow, "
+                                                          "GenericConcordeShallow, "
+                                                          "LegacyConcordeRand, "
+                                                          "GenericConcordeRand, HeurHardfix. "
+                                                          "Default: Generic."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
 
@@ -99,7 +103,7 @@ main ( int argc, char *argv[] )
     init_instance( &problem );
 
     /* Initialize default configuration */
-    tspconf_init( NULL, &problem, 1, TSP_SOLVER_LAZYBCG, 0, 0, 0, 0., 0., 0 );
+    tspconf_init( NULL, &problem, 1, TSP_SOLVER_Generic, 0, 0, 0, 0., 0., 0 );
 
     argp_parse( &argp, argc, argv, 0, 0, NULL );
     problem.name = conf.name;
@@ -114,123 +118,155 @@ main ( int argc, char *argv[] )
     /* Run the solver */
     switch ( conf.solving_method )
     {
-        case TSP_SOLVER_DUMMY:
+        case TSP_SOLVER_Random:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running dummy model\n" );
+                fprintf( stderr, CINFO "Solving with Random model.\n" );
             }
-            dummy_model( &problem );
+            Random_model( &problem );
             break;
 
 
-        case TSP_SOLVER_RANDOM:
+        case TSP_SOLVER_Dummy:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running random model\n" );
+                fprintf( stderr, CINFO "Solving with Dummy model.\n" );
             }
-            random_model( &problem );
+            Dummy_model( &problem );
             break;
 
 
         case TSP_SOLVER_MTZ:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running MTZ model\n" );
+                fprintf( stderr, CINFO "Solving with MTZ model.\n" );
             }
-            mtz_model( &problem );
+            MTZ_model( &problem );
             break;
 
 
-        case TSP_SOLVER_FLOW1:
+        case TSP_SOLVER_Flow1:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running FLOW1 model\n" );
+                fprintf( stderr, CINFO "Solving with Flow1 model.\n" );
             }
-            flow1_model( &problem );
+            Flow1_model( &problem );
             break;
 
 
-        case TSP_SOLVER_MTZLAZY:
+        case TSP_SOLVER_LazyMTZ:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
+                fprintf( stderr, CINFO "Solving with LazyMTZ model.\n" );
             }
-            mtzlazy_model( &problem );
+            LazyMTZ_model( &problem );
             break;
 
 
-        case TSP_SOLVER_FLOW1LAZY:
+        case TSP_SOLVER_LazyFlow1:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running FLOW1-lazy model\n" );
+                fprintf( stderr, CINFO "Solving with LazyFlow1 model.\n" );
             }
-            flow1lazy_model( &problem );
+            LazyFlow1_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LOOPBC:
+        case TSP_SOLVER_Loop:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Loop Branch and Cut model\n" );
+                fprintf( stderr, CINFO "Solving with Loop model.\n" );
             }
-            loopBC_model( &problem );
+            Loop_model( &problem );
             break;
 
-        case TSP_SOLVER_LOOPBCF:
+        case TSP_SOLVER_LoopF:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Loop Branch and Cut (variant 'F') model\n" );
+                fprintf( stderr, CINFO "Solving with LoopF model.\n" );
             }
-            loopBCf_model( &problem );
+            LoopF_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LOOPBCM:
+        case TSP_SOLVER_LoopM:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Loop Branch and Cut (variant 'M') model\n" );
+                fprintf( stderr, CINFO "Solving with LoopM model.\n" );
             }
-            loopBCm_model( &problem );
+            LoopM_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LOOPBCX:
+        case TSP_SOLVER_LoopX:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Loop Branch and Cut (variant 'X') model\n" );
+                fprintf( stderr, CINFO "Solving with LoopX model.\n" );
             }
-            loopBCx_model( &problem );
+            LoopX_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LAZYBC:
+        case TSP_SOLVER_Legacy:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint callback\n" );
+                fprintf( stderr, CINFO "Solving with Legacy model.\n" );
             }
-            lazyBC_model( &problem );
+            Legacy_model( &problem );
             break;
 
 
-        case TSP_SOLVER_LAZYBCG:
+        case TSP_SOLVER_Generic:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint generic callback\n" );
+                fprintf( stderr, CINFO "Solving with Generic model.\n" );
             }
-            lazyBCg_model( &problem );
+            Generic_model( &problem );
             break;
 
-        case TSP_SOLVER_LAZYBCC:
+        case TSP_SOLVER_LegacyConcorde:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint and Concorde user cut callback.\n" );
+                fprintf( stderr, CINFO "Solving with LegacyConcorde model.\n" );
             }
-            lazyBCc_model( &problem );
+            LegacyConcorde_model( &problem );
             break;
 
-        case TSP_SOLVER_LAZYBCCG:
+        case TSP_SOLVER_GenericConcorde:
             if ( loglevel >= LOG_INFO ) {
-                fprintf( stderr, CINFO "Running Branch and Cut model with lazy constraint and Concorde user cut generic callback.\n" );
+                fprintf( stderr, CINFO "Solving with GenericConcorde model.\n" );
             }
-            lazyBCcg_model( &problem );
+            GenericConcorde_model( &problem );
             break;
 
-        case TSP_SOLVER_HARDFIX:
+
+        case TSP_SOLVER_LegacyConcordeShallow:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Solving with LegacyConcordeShallow model.\n" );
+            }
+            LegacyConcordeShallow_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_GenericConcordeShallow:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Solving with GenericConcordeShallow model.\n" );
+            }
+            GenericConcordeShallow_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_LegacyConcordeRand:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Solving with LegacyConcordeRand model.\n" );
+            }
+            LegacyConcordeRand_model( &problem );
+            break;
+
+
+        case TSP_SOLVER_GenericConcordeRand:
+            if ( loglevel >= LOG_INFO ) {
+                fprintf( stderr, CINFO "Solving with GenericConcordeRand model.\n" );
+            }
+            GenericConcordeRand_model( &problem );
+            break;
+
+        case TSP_SOLVER_HeurHardfix:
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running harfix heuristic.\n" );
             }
-            hardfix_model(&problem, conf.timelimit);
+            HeurHardfix_model( &problem );
             break;
 
         default:
-            if (loglevel >= LOG_INFO) {
+            if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CFATAL "No model specified. Exit...\n" );
             }
             exit( EXIT_FAILURE );
@@ -317,50 +353,62 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
 
         case 'M':
-            if ( !strcmp( "random", arg ) ) {
-                conf.solving_method = TSP_SOLVER_RANDOM;
+            if ( !strcasecmp( "Random", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Random;
 
-            } else if ( !strcmp( "dummy", arg ) ) {
-                conf.solving_method = TSP_SOLVER_DUMMY;
+            } else if ( !strcasecmp( "Dummy", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Dummy;
 
-            } else if( !strcmp( "mtz", arg ) ){
+            } else if( !strcasecmp( "MTZ", arg ) ){
                 conf.solving_method = TSP_SOLVER_MTZ;
 
-            } else if ( !strcmp( "flow1", arg ) ) {
-                conf.solving_method = TSP_SOLVER_FLOW1;
+            } else if ( !strcasecmp( "Flow1", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Flow1;
 
-            } else if ( !strcmp( "mtzlazy", arg ) ) {
-                conf.solving_method = TSP_SOLVER_MTZLAZY;
+            } else if ( !strcasecmp( "LazyMTZ", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LazyMTZ;
 
-            } else if ( !strcmp( "flow1lazy", arg ) ) {
-                conf.solving_method = TSP_SOLVER_FLOW1LAZY;
+            } else if ( !strcasecmp( "LazyFlow1", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LazyFlow1;
 
-            } else if ( !strcmp( "loopBC", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBC;
+            } else if ( !strcasecmp( "Loop", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Loop;
 
-            } else if ( !strcmp( "loopBCf", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBCF;
+            } else if ( !strcasecmp( "LoopF", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LoopF;
 
-            } else if ( !strcmp( "loopBCm", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBCM;
+            } else if ( !strcasecmp( "LoopM", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LoopM;
 
-            } else if ( !strcmp( "loopBCx", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LOOPBCX;
+            } else if ( !strcasecmp( "LoopX", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LoopX;
 
-            } else if ( !strcmp( "lazyBC", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LAZYBC;
+            } else if ( !strcasecmp( "Legacy", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Legacy;
 
-            } else if ( !strcmp( "lazyBCg", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LAZYBCG;
+            } else if ( !strcasecmp( "Generic", arg ) ) {
+                conf.solving_method = TSP_SOLVER_Generic;
 
-            } else if ( !strcmp( "lazyBCc", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LAZYBCC;
+            } else if ( !strcasecmp( "LegacyConcorde", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LegacyConcorde;
 
-            } else if ( !strcmp( "lazyBCcg", arg ) ) {
-                conf.solving_method = TSP_SOLVER_LAZYBCCG;
+            } else if ( !strcasecmp( "GenericConcorde", arg ) ) {
+                conf.solving_method = TSP_SOLVER_GenericConcorde;
 
-            } else if ( !strcmp( "hardfix", arg ) ) {
-                conf.solving_method = TSP_SOLVER_HARDFIX;
+            } else if ( !strcasecmp( "LegacyConcordeShallow", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LegacyConcordeShallow;
+
+            } else if ( !strcasecmp( "GenericConcordeShallow", arg ) ) {
+                conf.solving_method = TSP_SOLVER_GenericConcordeShallow;
+
+            } else if ( !strcasecmp( "LegacyConcordeRand", arg ) ) {
+                conf.solving_method = TSP_SOLVER_LegacyConcordeRand;
+
+            } else if ( !strcasecmp( "GenericConcordeRand", arg ) ) {
+                conf.solving_method = TSP_SOLVER_GenericConcordeRand;
+
+            } else if ( !strcmp( "HeurHardfix", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurHardfix;
 
             } else {
                 argp_error(

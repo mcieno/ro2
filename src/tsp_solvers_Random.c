@@ -19,7 +19,7 @@
 
 
 void
-random_model ( instance *problem )
+Random_model ( instance *problem )
 {
     struct timeb start, end;
     ftime( &start );

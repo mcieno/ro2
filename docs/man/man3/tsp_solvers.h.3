@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Thu Apr 23 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Fri Apr 24 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -16,46 +16,58 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 
 .in +1c
 .ti -1c
-.RI "#define \fBTSP_SOLVER_RANDOM\fP   1U"
+.RI "#define \fBTSP_SOLVER_Random\fP   1U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_DUMMY\fP   2U"
+.RI "#define \fBTSP_SOLVER_Dummy\fP   2U"
 .br
 .ti -1c
 .RI "#define \fBTSP_SOLVER_MTZ\fP   3U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_FLOW1\fP   4U"
+.RI "#define \fBTSP_SOLVER_Flow1\fP   4U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_MTZLAZY\fP   5U"
+.RI "#define \fBTSP_SOLVER_LazyMTZ\fP   5U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_FLOW1LAZY\fP   6U"
+.RI "#define \fBTSP_SOLVER_LazyFlow1\fP   6U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LOOPBC\fP   7U"
+.RI "#define \fBTSP_SOLVER_Loop\fP   7U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LOOPBCF\fP   8U"
+.RI "#define \fBTSP_SOLVER_LoopF\fP   8U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LOOPBCM\fP   9U"
+.RI "#define \fBTSP_SOLVER_LoopM\fP   9U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LOOPBCX\fP   10U"
+.RI "#define \fBTSP_SOLVER_LoopX\fP   10U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LAZYBC\fP   11U"
+.RI "#define \fBTSP_SOLVER_Legacy\fP   11U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LAZYBCG\fP   12U"
+.RI "#define \fBTSP_SOLVER_Generic\fP   12U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LAZYBCC\fP   13U"
+.RI "#define \fBTSP_SOLVER_LegacyConcorde\fP   13U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_LAZYBCCG\fP   14U"
+.RI "#define \fBTSP_SOLVER_GenericConcorde\fP   14U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_LegacyConcordeShallow\fP   15U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_GenericConcordeShallow\fP   16U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_LegacyConcordeRand\fP   17U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_GenericConcordeRand\fP   18U"
 .br
 .in -1c
 .SS "Typedefs"
@@ -77,61 +89,77 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .br
 .RI "Given a CPLEX-generated solution, create a more convenient representation\&. "
 .ti -1c
-.RI "void \fBrandom_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBRandom_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Generate a random solution for the instance\&. "
+.RI "Generate a Random solution for the instance\&. "
 .ti -1c
-.RI "void \fBdummy_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBDummy_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with degree constraints-only model\&. "
 .ti -1c
-.RI "void \fBmtz_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBMTZ_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Sequential Formulation' model by Miller, Tucker and Zemlin (1960)\&. "
 .ti -1c
-.RI "void \fBflow1_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBFlow1_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Single Commodity Flow' model by Gavish and Graves (1978)\&. "
 .ti -1c
-.RI "void \fBmtzlazy_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBLazyMTZ_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Sequential Formulation' model with lazy constraints\&. "
 .ti -1c
-.RI "void \fBflow1lazy_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBLazyFlow1_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with 'Single Commodity Flow' model with lazy constraints\&. "
 .ti -1c
-.RI "void \fBloopBC_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBLoop_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with dummy 'Branch and Cut' model, restarting cplex after every intermediate solution\&. "
+.RI "Branch and Cut model with SEC added at every restart\&. "
 .ti -1c
-.RI "void \fBloopBCf_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBLoopF_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with dummy 'Branch and Cut' model (variant 'F'), restarting cplex after every intermediate solution\&. "
+.RI "Variant F of Loop model\&. "
 .ti -1c
-.RI "void \fBloopBCm_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBLoopM_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with dummy 'Branch and Cut' model (variant 'M'), restarting cplex after every intermediate solution\&. "
+.RI "Variant M of Loop model\&. "
 .ti -1c
-.RI "void \fBloopBCx_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBLoopX_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with dummy 'Branch and Cut' model (variant 'X'), restarting cplex after every intermediate solution\&. "
+.RI "Variant X of Loop model\&. "
 .ti -1c
-.RI "void \fBlazyBC_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBLegacy_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with 'Branch and Cut' model with lazy constraint callback\&. "
+.RI "Branch and Cut model with legacy lazy cut callback\&. "
 .ti -1c
-.RI "void \fBlazyBCg_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBGeneric_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with 'Branch and Cut' model with lazy constraint generic callback\&. "
+.RI "Branch and Cut model with generic candidate cut callback\&. "
 .ti -1c
-.RI "void \fBlazyBCc_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBLegacyConcorde_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with 'Branch and Cut' model with lazy constraint callback and Concorde user cuts\&. "
+.RI "Like Legacy, but also cuts the relaxation using Concorde routines\&. "
 .ti -1c
-.RI "void \fBlazyBCcg_model\fP (\fBinstance\fP *problem)"
+.RI "void \fBGenericConcorde_model\fP (\fBinstance\fP *problem)"
 .br
-.RI "Solve with 'Branch and Cut' model with lazy constraint generic callback and Concorde user cuts\&. "
+.RI "Like Generic, but also cuts the relaxation using Concorde routines\&. "
+.ti -1c
+.RI "void \fBLegacyConcordeShallow_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Like LegacyConcorde but only cuts nodes close to the root\&. "
+.ti -1c
+.RI "void \fBGenericConcordeShallow_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Like GenericConcorde but only cuts nodes close to the root\&. "
+.ti -1c
+.RI "void \fBLegacyConcordeRand_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Like LegacyConcorde but only cuts nodes with decreasing probability\&. "
+.ti -1c
+.RI "void \fBGenericConcordeRand_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Like GenericConcorde but only cuts nodes with decreasing probability\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -147,33 +175,41 @@ Francesco Cazzaro, Marco Cieno
 
 .SH "Macro Definition Documentation"
 .PP 
-.SS "#define TSP_SOLVER_DUMMY   2U"
+.SS "#define TSP_SOLVER_Dummy   2U"
 Dummy model\&. 
-.SS "#define TSP_SOLVER_FLOW1   4U"
+.SS "#define TSP_SOLVER_Flow1   4U"
 Single Commodity Flow model (Gavish and Graves (1978))\&. 
-.SS "#define TSP_SOLVER_FLOW1LAZY   6U"
+.SS "#define TSP_SOLVER_Generic   12U"
+Branch and Cut model with generic candidate cut callback\&. 
+.SS "#define TSP_SOLVER_GenericConcorde   14U"
+Like Generic, but also cuts the relaxation using Concorde routines\&. 
+.SS "#define TSP_SOLVER_GenericConcordeRand   18U"
+Like GenericConcorde but only cuts nodes with decreasing probability\&. 
+.SS "#define TSP_SOLVER_GenericConcordeShallow   16U"
+Like GenericConcorde but only cuts nodes close to the root\&. 
+.SS "#define TSP_SOLVER_LazyFlow1   6U"
 Single Commodity Flow model with lazy constraints\&. 
-.SS "#define TSP_SOLVER_LAZYBC   11U"
-Branch and Cut model with lazy constraint callback\&. 
-.SS "#define TSP_SOLVER_LAZYBCC   13U"
-Branch and Cut model with Concorde callback\&. 
-.SS "#define TSP_SOLVER_LAZYBCCG   14U"
-Branch and Cut model with Concorde with generic callback\&. 
-.SS "#define TSP_SOLVER_LAZYBCG   12U"
-Branch and Cut model with generic callback\&. 
-.SS "#define TSP_SOLVER_LOOPBC   7U"
-Loop Branch and Cut model\&. 
-.SS "#define TSP_SOLVER_LOOPBCF   8U"
-Variant F of the loop Branch and Cut model\&. 
-.SS "#define TSP_SOLVER_LOOPBCM   9U"
-Variant M of the loop Branch and Cut model\&. 
-.SS "#define TSP_SOLVER_LOOPBCX   10U"
-Variant X of the loop Branch and Cut model\&. 
+.SS "#define TSP_SOLVER_LazyMTZ   5U"
+Sequential Formulation model with lazy constraints\&. 
+.SS "#define TSP_SOLVER_Legacy   11U"
+Branch and Cut model with legacy lazy cut callback\&. 
+.SS "#define TSP_SOLVER_LegacyConcorde   13U"
+Like Legacy, but also cuts the relaxation using Concorde routines\&. 
+.SS "#define TSP_SOLVER_LegacyConcordeRand   17U"
+Like LegacyConcorde but only cuts nodes with decreasing probability\&. 
+.SS "#define TSP_SOLVER_LegacyConcordeShallow   15U"
+Like LegacyConcorde but only cuts nodes close to the root\&. 
+.SS "#define TSP_SOLVER_Loop   7U"
+Branch and Cut model with SEC added at every restart\&. 
+.SS "#define TSP_SOLVER_LoopF   8U"
+Variant F of Loop model\&. 
+.SS "#define TSP_SOLVER_LoopM   9U"
+Variant M of Loop model\&. 
+.SS "#define TSP_SOLVER_LoopX   10U"
+Variant X of Loop model\&. 
 .SS "#define TSP_SOLVER_MTZ   3U"
 Sequential Formulation model (Miller, Tucker and Zemlin (1960))\&. 
-.SS "#define TSP_SOLVER_MTZLAZY   5U"
-Sequential Formulation model with lazy constraints\&. 
-.SS "#define TSP_SOLVER_RANDOM   1U"
+.SS "#define TSP_SOLVER_Random   1U"
 Random model\&. 
 .SH "Function Documentation"
 .PP 
@@ -215,7 +251,7 @@ The number of subtours is written to \fCncomps\fP, hence \fCxopt\fP is a valid T
 .RE
 .PP
 
-.SS "void dummy_model (\fBinstance\fP * problem)"
+.SS "void Dummy_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with degree constraints-only model\&. 
@@ -231,7 +267,7 @@ This method does not include subtour elimination constraints\&.
 .RE
 .PP
 
-.SS "void flow1_model (\fBinstance\fP * problem)"
+.SS "void Flow1_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with 'Single Commodity Flow' model by Gavish and Graves (1978)\&. 
@@ -242,7 +278,51 @@ Solve with 'Single Commodity Flow' model by Gavish and Graves (1978)\&.
 .RE
 .PP
 
-.SS "void flow1lazy_model (\fBinstance\fP * problem)"
+.SS "void Generic_model (\fBinstance\fP * problem)"
+
+.PP
+Branch and Cut model with generic candidate cut callback\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void GenericConcorde_model (\fBinstance\fP * problem)"
+
+.PP
+Like Generic, but also cuts the relaxation using Concorde routines\&. This model uses Concorde to find cuts based on max-flow\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void GenericConcordeRand_model (\fBinstance\fP * problem)"
+
+.PP
+Like GenericConcorde but only cuts nodes with decreasing probability\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void GenericConcordeShallow_model (\fBinstance\fP * problem)"
+
+.PP
+Like GenericConcorde but only cuts nodes close to the root\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void LazyFlow1_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with 'Single Commodity Flow' model with lazy constraints\&. 
@@ -253,106 +333,7 @@ Solve with 'Single Commodity Flow' model with lazy constraints\&.
 .RE
 .PP
 
-.SS "void lazyBC_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with 'Branch and Cut' model with lazy constraint callback\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void lazyBCc_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with 'Branch and Cut' model with lazy constraint callback and Concorde user cuts\&. This model uses Concorde to find cuts based on max-flow
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void lazyBCcg_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with 'Branch and Cut' model with lazy constraint generic callback and Concorde user cuts\&. This model uses Concorde to find cuts based on max-flow
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void lazyBCg_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with 'Branch and Cut' model with lazy constraint generic callback\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void loopBC_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with dummy 'Branch and Cut' model, restarting cplex after every intermediate solution\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void loopBCf_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with dummy 'Branch and Cut' model (variant 'F'), restarting cplex after every intermediate solution\&. This model is similar to \fBloopBC_model()\fP\&. The main difference is that it starts with a loose EPGAP and tightens it iteration after iteration, until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void loopBCm_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with dummy 'Branch and Cut' model (variant 'M'), restarting cplex after every intermediate solution\&. This model is similar to \fBloopBC_model()\fP\&. The main difference is that it starts with a loose EPGAP and a small limit of solutions\&. It tightens the gap and increases the solution limit until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void loopBCx_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with dummy 'Branch and Cut' model (variant 'X'), restarting cplex after every intermediate solution\&. This model is similar to \fBloopBC_model()\fP\&. The main difference is that it starts with a tight EPGAP and a large limit of solutions\&. It looses them according to the number of components it found at each solution, until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void mtz_model (\fBinstance\fP * problem)"
-
-.PP
-Solve with 'Sequential Formulation' model by Miller, Tucker and Zemlin (1960)\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIproblem\fP Pointer to the instance structure\&. 
-.RE
-.PP
-
-.SS "void mtzlazy_model (\fBinstance\fP * problem)"
+.SS "void LazyMTZ_model (\fBinstance\fP * problem)"
 
 .PP
 Solve with 'Sequential Formulation' model with lazy constraints\&. 
@@ -363,10 +344,109 @@ Solve with 'Sequential Formulation' model with lazy constraints\&.
 .RE
 .PP
 
-.SS "void random_model (\fBinstance\fP * problem)"
+.SS "void Legacy_model (\fBinstance\fP * problem)"
 
 .PP
-Generate a random solution for the instance\&. 
+Branch and Cut model with legacy lazy cut callback\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void LegacyConcorde_model (\fBinstance\fP * problem)"
+
+.PP
+Like Legacy, but also cuts the relaxation using Concorde routines\&. This model uses Concorde to find cuts based on max-flow
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void LegacyConcordeRand_model (\fBinstance\fP * problem)"
+
+.PP
+Like LegacyConcorde but only cuts nodes with decreasing probability\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void LegacyConcordeShallow_model (\fBinstance\fP * problem)"
+
+.PP
+Like LegacyConcorde but only cuts nodes close to the root\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void Loop_model (\fBinstance\fP * problem)"
+
+.PP
+Branch and Cut model with SEC added at every restart\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void LoopF_model (\fBinstance\fP * problem)"
+
+.PP
+Variant F of Loop model\&. This model is similar to \fBLoop_model()\fP\&. The main difference is that it starts with a loose EPGAP and tightens it iteration after iteration, until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void LoopM_model (\fBinstance\fP * problem)"
+
+.PP
+Variant M of Loop model\&. This model is similar to \fBLoop_model()\fP\&. The main difference is that it starts with a loose EPGAP and a small limit of solutions\&. It tightens the gap and increases the solution limit until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void LoopX_model (\fBinstance\fP * problem)"
+
+.PP
+Variant X of Loop model\&. This model is similar to \fBLoop_model()\fP\&. The main difference is that it starts with a tight EPGAP and a large limit of solutions\&. It looses them according to the number of components it found at each solution, until a single component is found, possibly sub-optimal\&. At that point, the default MIP optimizer is run\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void MTZ_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with 'Sequential Formulation' model by Miller, Tucker and Zemlin (1960)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void Random_model (\fBinstance\fP * problem)"
+
+.PP
+Generate a Random solution for the instance\&. 
 .PP
 \fBParameters:\fP
 .RS 4
