@@ -278,7 +278,7 @@ lazyBCcg_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-hardfix_model ( instance *problem );
+hardfix_model ( instance *problem, double timelimit );
 
 
 #endif

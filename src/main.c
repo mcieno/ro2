@@ -226,7 +226,7 @@ main ( int argc, char *argv[] )
             if ( loglevel >= LOG_INFO ) {
                 fprintf( stderr, CINFO "Running harfix heuristic.\n" );
             }
-            hardfix_model(&problem);
+            hardfix_model(&problem, conf.timelimit);
             break;
 
         default:
