@@ -242,9 +242,9 @@ main ( int argc, char *argv[] )
         plot_solution( &problem );
     }
 
-    log_warn( "Time elapsed: %lf",  problem.elapsedtime  );
-    log_warn( "Visited nodes: %zu", problem.visitednodes );
-    log_warn( "Solution cost: %lf", problem.solcost      );
+    log_out( "Time elapsed: %lf",  problem.elapsedtime  );
+    log_out( "Visited nodes: %zu", problem.visitednodes );
+    log_out( "Solution cost: %lf", problem.solcost      );
 
     fprintf( stdout, "%lf\n", problem.elapsedtime  );
     fprintf( stdout, "%zu\n", problem.visitednodes );
