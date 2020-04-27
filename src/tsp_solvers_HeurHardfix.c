@@ -501,7 +501,29 @@ _callbackfunc_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, vo
 void
 HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt )
 {
+
+    struct timeb start_heur, end_heur;
+    double total_heur_time = 0;
+ 
+  ;
+
+    ftime( &start_heur );
+    //For the first solution we stop at the root node
+    CPXsetlongparam(env, CPX_PARAM_NODELIM, 1);
+    if ( CPXmipopt( env, lp ) ) {
+        log_fatal( "CPXmipopt error." );
+        exit( EXIT_FAILURE );   
+    }
+
+    CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
+    _xopt2solution( xopt, problem, _HeurHardfix_xpos );
+    CPXsetlongparam(env, CPX_PARAM_NODELIM, LONG_MAX);
+
+    ftime( &end_heur );
+    total_heur_time += ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000.;
+
     /* Start with dumb solution */
+    /*
     for ( int i = 0; i < problem->nnodes - 1; ++i) {
         problem->solution[i][0] = i;
         problem->solution[i][1] = i + 1;
@@ -509,6 +531,7 @@ HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt
 
     problem->solution[problem->nnodes - 1][0] = problem->nnodes - 1;
     problem->solution[problem->nnodes - 1][1] = 0;
+    */
 
     /* Start improving solution */
     int fix_ind[problem->nnodes];
@@ -520,13 +543,19 @@ HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt
     if ( conf.timelimit <= 0. ) {
         timelimit = 600.;
     }
+    else{timelimit=conf.timelimit;}
+    
 
-    double single_run_timelimit = 2.;
+    double single_run_timelimit = conf.heur_timelimit;
     CPXsetdblparam( env, CPXPARAM_TimeLimit, single_run_timelimit );
 
     double bestcost = __DBL_MAX__;
-    for ( size_t k = 0; k < ceil( timelimit / single_run_timelimit ); ++k )
+
+   
+
+    for ( size_t k = 0; total_heur_time<timelimit; ++k )
     {
+        ftime( &start_heur );
         /* Hard fix ~90% of the edges */
         int counter_fixed = 0;
 
@@ -553,6 +582,7 @@ HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt
         log_info( "Retrieving %zu-th heuristic solution.", k + 1 );
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
         _xopt2solution( xopt, problem, &_HeurHardfix_xpos );
+        //fprintf(stderr, "Heuristic sol cost: %f\n" ,compute_solution_cost(problem));
 
         for ( int i = 0; i < counter_fixed; ++i ) {
             fix_bd[i] = 0.;
@@ -568,6 +598,9 @@ HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt
             break;
         }
         bestcost = problem->solcost;
+        ftime( &end_heur );
+        total_heur_time += ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000.;
+        //fprintf(stderr, "Heuristic sol cost: %f %d, %f %f\n" ,total_heur_time, total_heur_time<timelimit, timelimit, single_run_timelimit);
     }
 }
 
