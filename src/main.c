@@ -223,8 +223,13 @@ main ( int argc, char *argv[] )
             break;
 
         case TSP_SOLVER_HeurHardfix:
-            log_info( "Running harfix heuristic." );
+            log_info( "Solving with Hardfix heuristic." );
             HeurHardfix_model( &problem );
+            break;
+
+        case TSP_SOLVER_HeurLocalBranching:
+            log_info( "Solving with LocalBranching heuristic." );
+            HeurLocalBranching_model( &problem );
             break;
 
         default:
@@ -363,8 +368,11 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else if ( !strcasecmp( "GenericConcordeRand", arg ) ) {
                 conf.solving_method = TSP_SOLVER_GenericConcordeRand;
 
-            } else if ( !strcmp( "HeurHardfix", arg ) ) {
+            } else if ( !strcasecmp( "HeurHardfix", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurHardfix;
+
+            } else if ( !strcasecmp( "HeurLocalBranching", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurLocalBranching;
 
             } else {
                 argp_error(
