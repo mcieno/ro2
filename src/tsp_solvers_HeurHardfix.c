@@ -500,7 +500,7 @@ void
 HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt )
 {
     struct timeb start_heur, end_heur;
-    double total_heur_time = 0;
+    double elapsedtime = 0;
 
     ftime( &start_heur );
 
@@ -515,9 +515,9 @@ HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt
     _xopt2solution( xopt, problem, _HeurHardfix_xpos );
 
     ftime( &end_heur );
-    total_heur_time += ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000.;
+    elapsedtime += ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000.;
 
-    log_debug( "Feasible solution found in $.3lf seconds.", total_heur_time );
+    log_debug( "Feasible solution found in $.3lf seconds.", elapsedtime );
 
     /* Start improving solution */
     int fix_ind[problem->nnodes];
@@ -538,8 +538,11 @@ HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt
 
     double bestcost = __DBL_MAX__;
 
-    for ( size_t k = 0; total_heur_time < timelimit; ++k )
+    for ( size_t k = 0; elapsedtime < timelimit; ++k )
     {
+        /* Update timelimit to remaining time */
+        CPXsetdblparam( env, CPXPARAM_TimeLimit, conf.timelimit - elapsedtime );
+
         ftime( &start_heur );
         /* Hard fix ~90% of the edges */
         int counter_fixed = 0;
@@ -565,13 +568,14 @@ HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt
         }
 
         ftime( &end_heur );
-        total_heur_time += ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000.;
+        elapsedtime += ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000.;
 
         log_debug( "Found %d-th heuristic solution in %.3lf seconds.",
             k + 1, ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000. );
 
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
         _xopt2solution( xopt, problem, &_HeurHardfix_xpos );
+        problem->solcost = compute_solution_cost( problem );
 
         for ( int i = 0; i < counter_fixed; ++i ) {
             fix_bd[i] = 0.;
