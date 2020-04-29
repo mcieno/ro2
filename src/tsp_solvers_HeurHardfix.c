@@ -497,12 +497,11 @@ _callbackfunc_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, vo
 
 
 void
-HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt )
+HeurHardfix_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt )
 {
-    struct timeb start_heur, end_heur;
-    double elapsedtime = 0;
+    struct timeb start, end;
 
-    ftime( &start_heur );
+    ftime( &start );
 
     // For the first solution we stop at the root node
     CPXsetlongparam(env, CPXPARAM_MIP_Limits_Nodes, 1);
@@ -514,51 +513,41 @@ HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
     _xopt2solution( xopt, problem, _HeurHardfix_xpos );
 
-    ftime( &end_heur );
-    elapsedtime += ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000.;
+    ftime( &end );
 
-    log_debug( "Feasible solution found in $.3lf seconds.", elapsedtime );
+    log_debug( "Feasible solution found in %.3lf seconds.",
+        ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+
+    CPXsetlongparam( env, CPXPARAM_MIP_Limits_Nodes,  LONG_MAX );
 
     /* Start improving solution */
-    int fix_ind[problem->nnodes];
-    char fix_lu[problem->nnodes];
-    double fix_bd[problem->nnodes];
+    int    fix_index[problem->nnodes];
+    char   fix_lower[problem->nnodes];
+    double fix_bound[problem->nnodes];
 
-    /* If timelimit is not set, default heuristic to 10 minutes */
-    double timelimit;
+    double elapsedtime = 0;
+    ftime( &start );
 
-    if ( conf.timelimit <= 0. ) {
-        timelimit = 600.;
-    } else {
-        timelimit = conf.timelimit;
-    }
-
-    CPXsetdblparam(  env, CPXPARAM_TimeLimit,         conf.heur_timelimit );
-    CPXsetlongparam( env, CPXPARAM_MIP_Limits_Nodes,  LONG_MAX            );
-
-    double bestcost = __DBL_MAX__;
-
-    for ( size_t k = 0; elapsedtime < timelimit; ++k )
+    for ( size_t k = 0; elapsedtime + 1e-3 < conf.heurtime; ++k )
     {
         /* Update timelimit to remaining time */
-        CPXsetdblparam( env, CPXPARAM_TimeLimit, conf.timelimit - elapsedtime );
+        CPXsetdblparam( env, CPXPARAM_TimeLimit, conf.heurtime - elapsedtime );
 
-        ftime( &start_heur );
         /* Hard fix ~90% of the edges */
-        int counter_fixed = 0;
+        int cnt = 0;
 
         for ( int i = 0; i < problem->nnodes; ++i )
         {
             if ( rand() >= INT_MAX / 10 ) {
-                fix_ind[counter_fixed] = _HeurHardfix_xpos( problem->solution[i][0], problem->solution[i][1], problem );
-                fix_lu[counter_fixed] = 'L';
-                fix_bd[counter_fixed] = 1.0;
-                ++counter_fixed;
+                fix_index[cnt] = _HeurHardfix_xpos( problem->solution[i][0], problem->solution[i][1], problem );
+                fix_lower[cnt] = 'L';
+                fix_bound[cnt] = 1.0;
+                ++cnt;
             }
         }
 
-        if ( CPXchgbds( env, lp, counter_fixed, fix_ind, fix_lu, fix_bd ) ) {
-            log_fatal( "CPXchgbds");
+        if ( CPXchgbds( env, lp, cnt, fix_index, fix_lower, fix_bound ) ) {
+            log_fatal( "CPXchgbds" );
             exit( EXIT_FAILURE );
         }
 
@@ -567,32 +556,24 @@ HeurHardfix_solve ( instance *problem, CPXENVptr env,  CPXLPptr lp, double *xopt
             exit( EXIT_FAILURE );
         }
 
-        ftime( &end_heur );
-        elapsedtime += ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000.;
+        /* Retrieve new solution to calculate next hard fixing bounds */
+        CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
+        _xopt2solution( xopt, problem, _HeurHardfix_xpos );
+
+        ftime( &end );
+        elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 
         log_debug( "Found %d-th heuristic solution in %.3lf seconds.",
-            k + 1, ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000. );
+            k + 1, ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
-        CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-        _xopt2solution( xopt, problem, &_HeurHardfix_xpos );
-        problem->solcost = compute_solution_cost( problem );
-
-        for ( int i = 0; i < counter_fixed; ++i ) {
-            fix_bd[i] = 0.;
+        for ( int i = 0; i < cnt; ++i ) {
+            fix_bound[i] = 0.;
         }
 
-        if ( CPXchgbds( env, lp, counter_fixed, fix_ind, fix_lu, fix_bd ) ) {
-            log_fatal( "CPXchgbds");
+        if ( CPXchgbds( env, lp, cnt, fix_index, fix_lower, fix_bound ) ) {
+            log_fatal( "CPXchgbds" );
             exit( EXIT_FAILURE );
         }
-
-        if ( ( bestcost - problem->solcost ) / problem->solcost  < 1e-3 ) {
-            /* Not really getting better anymore */
-            log_debug( "Solution did not improve the cost enough." );
-            break;
-        }
-
-        bestcost = problem->solcost;
     }
 }
 
@@ -631,17 +612,18 @@ HeurHardfix_model ( instance *problem )
     }
 
     log_debug( "Starting heuristic loop." );
-    HeurHardfix_solve( problem, env, lp, xopt );
+    HeurHardfix_solve( env, lp, problem, xopt );
 
     ftime( &end );
 
-
-    free( xopt );
-
+    /* Retrieve final solution */
+    CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
+    _xopt2solution( xopt, problem, &_HeurHardfix_xpos );
     problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
     problem->visitednodes = CPXgetnodecnt( env, lp );
     problem->solcost      = compute_solution_cost( problem );
 
+    free( xopt );
     CPXfreeprob( env, &lp );
     CPXcloseCPLEX( &env );
 }

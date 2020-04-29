@@ -60,7 +60,7 @@ static struct argp_option options[]  =
 {
     /* Global configuration */
     { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE, "Optimizer time limit in seconds."        },
-    { "heur_timelimit", 'h',       "SECONDS", OPTION_NO_USAGE, "Heuristic iteration time limit in seconds."        },
+    { "heurtime",  'h',       "SECONDS", OPTION_NO_USAGE, "Heuristic time limit. Default: 10min."   },
     { "nodelimit", 'n',       "NODES",   OPTION_NO_USAGE, "MIP node limit."                         },
     { "memory",    'm',       "SIZE",    OPTION_NO_USAGE, "Maximum working memory (size in MB)."    },
     { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL,
@@ -80,7 +80,8 @@ static struct argp_option options[]  =
                                                           "LegacyConcordeShallow, "
                                                           "GenericConcordeShallow, "
                                                           "LegacyConcordeRand, "
-                                                          "GenericConcordeRand, HeurHardfix. "
+                                                          "GenericConcordeRand, HeurHardfix, "
+                                                          "HeurLocalBranching. "
                                                           "Default: Generic."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
@@ -408,16 +409,17 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             break;
 
+
         case 'h':
-            conf.heur_timelimit = strtod( arg, NULL );
-            if ( errno || conf.timelimit == 0ULL ) {
+            conf.heurtime = strtod( arg, NULL );
+            if ( errno || conf.heurtime == 0ULL ) {
                 argp_error(
                     state,
-                    "Bad value for option -t --timelimit: %s.", strerror( errno ? errno : EDOM )
+                    "Bad value for option -h --heurtime: %s.", strerror( errno ? errno : EDOM )
                 );
             }
 
-            break;    
+            break;
 
 
         case 'n':

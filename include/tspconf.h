@@ -54,8 +54,8 @@
  *     If the program does not terminate within this time, it should be terminated anyway.
  *     A meaningful value is between 1 and __DBL_MAX__. Default: no limit.
  *
- * \param heur_timelimit
- *     Maxumym number of seconds one iteration of the hard fix heuritic may run.
+ * \param heurtime
+ *     Maximum time to allocate to improve an heuristic solution.
  *
  * \param cutup
  *     Upper cutoff value for the problem.
@@ -76,7 +76,7 @@ typedef struct
     size_t    memory;
     size_t    nodelimit;
     double    timelimit;
-    double    heur_timelimit;
+    double    heurtime;
     double    cutup;
     double    epgap;
     int       scrind;

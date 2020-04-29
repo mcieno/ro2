@@ -22,7 +22,7 @@ tspconf_init ()
     conf.threads        = 0;
     conf.memory         = 0;
     conf.timelimit      = 0.;
-    conf.heur_timelimit = 60.;
+    conf.heurtime       = 600.;
     conf.nodelimit      = 0;
     conf.cutup          = 0.;
     conf.epgap          = 0.;

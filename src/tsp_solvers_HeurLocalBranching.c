@@ -499,10 +499,9 @@ _callbackfunc_HeurLocalBranching ( CPXCALLBACKCONTEXTptr context, CPXLONG contex
 void
 HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt )
 {
-    struct timeb start_heur, end_heur;
-    double elapsedtime = 0;
+    struct timeb start, end;
 
-    ftime( &start_heur );
+    ftime( &start );
 
     // For the first solution we stop at the root node
     CPXsetlongparam(env, CPXPARAM_MIP_Limits_Nodes, 1);
@@ -514,34 +513,30 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
     _xopt2solution( xopt, problem, _HeurLocalBranching_xpos );
 
-    ftime( &end_heur );
-    elapsedtime += ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000.;
+    ftime( &end );
 
-    log_debug( "Feasible solution found in %.3lf seconds.", elapsedtime );
+    log_debug( "Feasible solution found in %.3lf seconds.",
+        ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
-    /* If timelimit is not set, default heuristic to 10 minutes */
-    if ( conf.timelimit <= 0. ) {
-        conf.timelimit = 600.;
-    }
+    CPXsetlongparam( env, CPXPARAM_MIP_Limits_Nodes,  LONG_MAX );
 
-    CPXsetlongparam( env, CPXPARAM_MIP_Limits_Nodes,  LONG_MAX            );
-
-    double bestcost = __DBL_MAX__;
-    char sense = 'G';
-    int rmatbeg = 0;
-    int nzcnt = problem->nnodes;
-    int rmatind[nzcnt];
+    /* Start improving solution */
+    char   sense = 'G';
+    int    rmatbeg = 0;
+    int    nzcnt = problem->nnodes;
+    int    rmatind[nzcnt];
     double rmatval[nzcnt];
-    char *cname = "LocalBranchingConstraint";
+    char   *cname = "LocalBranchingConstraint";
     double rhs;
-    int lbrow;
+    int    lbrow;
 
-    for ( size_t k = 0; elapsedtime < conf.timelimit; ++k )
+    double elapsedtime = 0;
+    ftime( &start );
+
+    for ( size_t k = 0; elapsedtime + 1e-3 < conf.heurtime; ++k )
     {
         /* Update timelimit to remaining time */
-        CPXsetdblparam( env, CPXPARAM_TimeLimit, conf.timelimit - elapsedtime );
-
-        ftime( &start_heur );
+        CPXsetdblparam( env, CPXPARAM_TimeLimit, conf.heurtime - elapsedtime );
 
         /* Soft-fix 90% of the edges */
         rhs = .9 * problem->nnodes;
@@ -552,7 +547,11 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
             rmatval[i] = 1.0;
         }
 
-        CPXaddrows( env, lp, 0, 1, nzcnt, &rhs, &sense, &rmatbeg, rmatind, rmatval, NULL, &cname );
+        if ( CPXaddrows( env, lp, 0, 1, nzcnt, &rhs, &sense, &rmatbeg, rmatind, rmatval, NULL, &cname ) ) {
+            log_fatal( "CPXaddrows" );
+            exit( EXIT_FAILURE );
+        }
+
         lbrow = CPXgetnumrows( env, lp ) - 1;
 
         if ( CPXmipopt( env, lp ) ) {
@@ -560,27 +559,22 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
             exit( EXIT_FAILURE );
         }
 
-        /* Undo the fixing */
-        CPXdelrows( env, lp, lbrow, lbrow );
+        /* Retrieve new solution to calculate next local branching constraint */
+        CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
+        _xopt2solution( xopt, problem, _HeurLocalBranching_xpos );
 
         /* Update elapsed time */
-        ftime( &end_heur );
-        elapsedtime += ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000.;
+        ftime( &end );
+        elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 
         log_debug( "Found %d-th heuristic solution in %.3lf seconds.",
-            k + 1, ( 1000. * ( end_heur.time - start_heur.time ) + end_heur.millitm - start_heur.millitm ) / 1000. );
+            k + 1, ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
-        CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-        _xopt2solution( xopt, problem, &_HeurLocalBranching_xpos );
-        problem->solcost = compute_solution_cost( problem );
-
-        if ( ( bestcost - problem->solcost ) / problem->solcost  < 1e-3 ) {
-            /* Not really getting better anymore */
-            log_debug( "Solution did not improve the cost enough." );
-            break;
+        /* Undo the fixing */
+        if ( CPXdelrows( env, lp, lbrow, lbrow ) ) {
+            log_fatal( "CPXdelrows");
+            exit( EXIT_FAILURE );
         }
-
-        bestcost = problem->solcost;
     }
 }
 
@@ -623,13 +617,14 @@ HeurLocalBranching_model ( instance *problem )
 
     ftime( &end );
 
-
-    free( xopt );
-
+    /* Retrieve final solution */
+    CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
+    _xopt2solution( xopt, problem, &_HeurLocalBranching_xpos );
     problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
     problem->visitednodes = CPXgetnodecnt( env, lp );
     problem->solcost      = compute_solution_cost( problem );
 
+    free( xopt );
     CPXfreeprob( env, &lp );
     CPXcloseCPLEX( &env );
 }
