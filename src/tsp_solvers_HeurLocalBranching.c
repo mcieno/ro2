@@ -503,20 +503,48 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
 
     ftime( &start );
 
-    // For the first solution we stop at the root node
-    CPXsetlongparam(env, CPXPARAM_MIP_Limits_Nodes, 1);
-    if ( CPXmipopt( env, lp ) ) {
-        log_fatal( "CPXmipopt error." );
-        exit( EXIT_FAILURE );
+    int solntype = CPX_NO_SOLN;
+    for ( long nlim = 1L; solntype == CPX_NO_SOLN; ++nlim )
+    {
+        CPXsetdblparam( env, CPXPARAM_TimeLimit, conf.timelimit -
+            ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+
+        log_debug( "Searching initial solution with nodelimit of %d.", nlim );
+
+        CPXsetlongparam(env, CPXPARAM_MIP_Limits_Nodes, nlim);
+        if ( CPXmipopt( env, lp ) ) {
+            log_fatal( "CPXmipopt error." );
+            exit( EXIT_FAILURE );
+        }
+        if ( CPXsolninfo(env, lp, NULL, &solntype, NULL, NULL) ) {
+            log_fatal( "CPXmipopt error." );
+            exit( EXIT_FAILURE );
+        }
+
+        ftime( &end );
+
+        if ( ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. + 1e-4 > conf.timelimit) {
+            break;
+        }
     }
 
-    CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-    _xopt2solution( xopt, problem, _HeurLocalBranching_xpos );
+    if ( solntype == CPX_NO_SOLN ) {
+        log_warn( "Couldn't find a decent initial solution. Using a random one." );
 
-    ftime( &end );
+        for ( size_t i = 0; i < problem->nnodes; ++i ) {
+            problem->solution[i][0] = i;
+            problem->solution[i][1] = i + 1;
+        }
 
-    log_debug( "Feasible solution found in %.3lf seconds.",
-        ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+        problem->solution[problem->nnodes - 1][1] = 0;
+
+    } else {
+        log_debug( "Feasible solution found in %.3lf seconds.",
+            ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+
+        CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
+        _xopt2solution( xopt, problem, _HeurLocalBranching_xpos );
+    }
 
     CPXsetlongparam( env, CPXPARAM_MIP_Limits_Nodes,  LONG_MAX );
 
