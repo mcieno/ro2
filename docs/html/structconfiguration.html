@@ -85,6 +85,7 @@ $(function() {
     <tr><td class="paramname">memory</td><td>Maximum amount of memory (in MB) the program may use. If the program cannot proceed without requesting more memory, it should be terminated. A meaningful value is between 1 and SIZE_MAX. Default: no limit. Notice that if the real system does not have enough memory, the program may be terminated by the OOM Killer.</td></tr>
     <tr><td class="paramname">nodelimit</td><td>Maximum number of nodes the program may visit. If the program does not find a solution within these nodes, it should be terminated anyway. A meaningful value is between 1 and SIZE_MAX. Default: no limit.</td></tr>
     <tr><td class="paramname">timelimit</td><td>Maximum number of seconds the program may run. If the program does not terminate within this time, it should be terminated anyway. A meaningful value is between 1 and <b>DBL_MAX</b>. Default: no limit.</td></tr>
+    <tr><td class="paramname">heurtime</td><td>Maximum time to allocate to improve an heuristic solution.</td></tr>
     <tr><td class="paramname">cutup</td><td>Upper cutoff value for the problem.</td></tr>
     <tr><td class="paramname">epgap</td><td>CPLEX optimality gap. Default: automatic.</td></tr>
     <tr><td class="paramname">seed</td><td>CPLEX Random seed. Default: automatic. </td></tr>

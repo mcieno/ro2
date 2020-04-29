@@ -49,14 +49,14 @@ ccinfo_t;
  *     Pointer to the instance structure.
  */
 size_t
-_HeurHardfix_xpos ( size_t i, size_t j, const instance *problem )
+_HeurLocalBranching_xpos ( size_t i, size_t j, const instance *problem )
 {
 if ( i == j ) {
         log_fatal( "i == j" );
         exit( EXIT_FAILURE );
     }
 
-    if ( i > j ) return _HeurHardfix_xpos( j, i, problem );
+    if ( i > j ) return _HeurLocalBranching_xpos( j, i, problem );
 
     return i * problem->nnodes + j - ( ( i + 1 ) * ( i + 2 ) / 2UL );
 }
@@ -76,7 +76,7 @@ if ( i == j ) {
  *     CPLEX problem.
  */
 void
-_add_constraints_HeurHardfix ( const instance *problem, CPXENVptr env, CPXLPptr lp )
+_add_constraints_HeurLocalBranching ( const instance *problem, CPXENVptr env, CPXLPptr lp )
 {
     char ctype;
     double lb, ub, obj, rhs;
@@ -106,7 +106,7 @@ _add_constraints_HeurHardfix ( const instance *problem, CPXENVptr env, CPXLPptr 
                 exit( EXIT_FAILURE );
             }
 
-            if ( CPXgetnumcols( env, lp ) - 1 != _HeurHardfix_xpos( i, j, problem ) ) {
+            if ( CPXgetnumcols( env, lp ) - 1 != _HeurLocalBranching_xpos( i, j, problem ) ) {
                 log_fatal( "CPXgetnumcols [%s: x(%zu, %zu)]", cname, i + 1, j + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -130,7 +130,7 @@ _add_constraints_HeurHardfix ( const instance *problem, CPXENVptr env, CPXLPptr 
         for ( size_t i = 0; i < problem->nnodes; ++i )
         {
             if ( i == h ) continue;
-            if ( CPXchgcoef( env, lp, lastrow, _HeurHardfix_xpos( i, h, problem ), 1.0 ) ) {
+            if ( CPXchgcoef( env, lp, lastrow, _HeurLocalBranching_xpos( i, h, problem ), 1.0 ) ) {
                 log_fatal( "CPXchgcoef [%s: x(%zu, %zu)]", cname, i + 1, h + 1 );
                 exit( EXIT_FAILURE );
             }
@@ -143,7 +143,7 @@ _add_constraints_HeurHardfix ( const instance *problem, CPXENVptr env, CPXLPptr 
 
 
 void
-_add_subtour_constraints_HeurHardfix ( const instance       *problem,
+_add_subtour_constraints_HeurLocalBranching ( const instance       *problem,
                                        CPXCALLBACKCONTEXTptr context,
                                        size_t                *next,
                                        size_t                *comps,
@@ -195,7 +195,7 @@ _add_subtour_constraints_HeurHardfix ( const instance       *problem,
         int nzcnt = 0;
         for (size_t i = 0; i < compsize; ++i) {
             for (size_t j = i + 1; j < compsize; ++j) {
-                rmatind[nzcnt] = _HeurHardfix_xpos( cnodes[i], cnodes[j], problem );
+                rmatind[nzcnt] = _HeurLocalBranching_xpos( cnodes[i], cnodes[j], problem );
                 rmatval[nzcnt] = 1.0;
                 ++nzcnt;
             }
@@ -212,7 +212,7 @@ _add_subtour_constraints_HeurHardfix ( const instance       *problem,
 
 
 static int CPXPUBLIC
-_candidatecutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
+_candidatecutcallback_HeurLocalBranching ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
 {
     int status = 0;
 
@@ -243,12 +243,12 @@ _candidatecutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG conte
         goto TERMINATE;
     }
 
-    _xopt2subtours( info->problem, x, next, comps, &ncomps, _HeurHardfix_xpos );
+    _xopt2subtours( info->problem, x, next, comps, &ncomps, _HeurLocalBranching_xpos );
 
     log_debug( "Found %zu components", ncomps );
 
     if ( ncomps > 1 ) {
-        _add_subtour_constraints_HeurHardfix( info->problem, context, next, comps, ncomps );
+        _add_subtour_constraints_HeurLocalBranching( info->problem, context, next, comps, ncomps );
     }
 
 TERMINATE :
@@ -262,7 +262,7 @@ TERMINATE :
 
 
 int
-_concorde_callback_HeurHardfix ( double val, int cutcount, int *cut, void *userhandle )
+_concorde_callback_HeurLocalBranching ( double val, int cutcount, int *cut, void *userhandle )
 {
     ccinfo_t *ccinfo = (ccinfo_t *) userhandle;
 
@@ -309,7 +309,7 @@ _concorde_callback_HeurHardfix ( double val, int cutcount, int *cut, void *userh
             }
 
             /* Node j is in V \ S */
-            rmatind[nzcnt] = _HeurHardfix_xpos( i, j, ccinfo->info->problem );
+            rmatind[nzcnt] = _HeurLocalBranching_xpos( i, j, ccinfo->info->problem );
             rmatval[nzcnt] = 1.0;
             ++nzcnt;
 
@@ -333,7 +333,7 @@ _concorde_callback_HeurHardfix ( double val, int cutcount, int *cut, void *userh
 
 
 static int CPXPUBLIC
-_relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
+_relaxationcutcallback_HeurLocalBranching ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
 {
     static unsigned int seed;
 
@@ -404,7 +404,7 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
         /* The solution is connected, search for violated cuts */
 
         if ( CCcut_violated_cuts( info->problem->nnodes, nedge, elist, x, 1.99,
-                                  _concorde_callback_HeurHardfix, &ccinfo) )
+                                  _concorde_callback_HeurLocalBranching, &ccinfo) )
         {
             log_fatal( "CCcut_violated_cuts" );
             status = 1;
@@ -445,7 +445,7 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
 
             for ( ; i < compend; ++i ) {
                 for ( int j = i + 1; j < compend; ++j ) {
-                    rmatind[nzcnt] = _HeurHardfix_xpos( comps[i], comps[j], info->problem );
+                    rmatind[nzcnt] = _HeurLocalBranching_xpos( comps[i], comps[j], info->problem );
                     rmatval[nzcnt] = 1.0;
                     ++nzcnt;
                 }
@@ -474,18 +474,18 @@ TERMINATE:
 
 
 static int CPXPUBLIC
-_callbackfunc_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
+_callbackfunc_HeurLocalBranching ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle )
 {
     int status = 1;
 
     switch ( contextid )
     {
         case CPX_CALLBACKCONTEXT_RELAXATION:
-            status = _relaxationcutcallback_HeurHardfix( context, contextid, userhandle );
+            status = _relaxationcutcallback_HeurLocalBranching( context, contextid, userhandle );
             break;
 
         case CPX_CALLBACKCONTEXT_CANDIDATE:
-            status = _candidatecutcallback_HeurHardfix( context, contextid, userhandle );
+            status = _candidatecutcallback_HeurLocalBranching( context, contextid, userhandle );
             break;
 
         default:
@@ -497,7 +497,7 @@ _callbackfunc_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, vo
 
 
 void
-HeurHardfix_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt )
+HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt )
 {
     struct timeb start, end;
 
@@ -543,20 +543,20 @@ HeurHardfix_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt 
             ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
-        _xopt2solution( xopt, problem, _HeurHardfix_xpos );
+        _xopt2solution( xopt, problem, _HeurLocalBranching_xpos );
     }
-
-    ftime( &end );
-
-    log_debug( "Feasible solution found in %.3lf seconds.",
-        ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
     CPXsetlongparam( env, CPXPARAM_MIP_Limits_Nodes,  LONG_MAX );
 
     /* Start improving solution */
-    int    fix_index[problem->nnodes];
-    char   fix_lower[problem->nnodes];
-    double fix_bound[problem->nnodes];
+    char   sense = 'G';
+    int    rmatbeg = 0;
+    int    nzcnt = problem->nnodes;
+    int    rmatind[nzcnt];
+    double rmatval[nzcnt];
+    char   *cname = "LocalBranchingConstraint";
+    double rhs;
+    int    lbrow;
 
     double elapsedtime = 0;
     ftime( &start );
@@ -566,45 +566,41 @@ HeurHardfix_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt 
         /* Update timelimit to remaining time */
         CPXsetdblparam( env, CPXPARAM_TimeLimit, conf.heurtime - elapsedtime );
 
-        /* Hard fix ~90% of the edges */
-        int cnt = 0;
+        /* Soft-fix 90% of the edges */
+        rhs = .9 * problem->nnodes;
 
-        for ( int i = 0; i < problem->nnodes; ++i )
+        for ( size_t i = 0; i < problem->nnodes; ++i )
         {
-            if ( rand() >= INT_MAX / 10 ) {
-                fix_index[cnt] = _HeurHardfix_xpos( problem->solution[i][0], problem->solution[i][1], problem );
-                fix_lower[cnt] = 'L';
-                fix_bound[cnt] = 1.0;
-                ++cnt;
-            }
+            rmatind[i] = _HeurLocalBranching_xpos( problem->solution[i][0], problem->solution[i][1], problem );
+            rmatval[i] = 1.0;
         }
 
-        if ( CPXchgbds( env, lp, cnt, fix_index, fix_lower, fix_bound ) ) {
-            log_fatal( "CPXchgbds" );
+        if ( CPXaddrows( env, lp, 0, 1, nzcnt, &rhs, &sense, &rmatbeg, rmatind, rmatval, NULL, &cname ) ) {
+            log_fatal( "CPXaddrows" );
             exit( EXIT_FAILURE );
         }
+
+        lbrow = CPXgetnumrows( env, lp ) - 1;
 
         if ( CPXmipopt( env, lp ) ) {
             log_fatal( "CPXmipopt error." );
             exit( EXIT_FAILURE );
         }
 
-        /* Retrieve new solution to calculate next hard fixing bounds */
+        /* Retrieve new solution to calculate next local branching constraint */
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
-        _xopt2solution( xopt, problem, _HeurHardfix_xpos );
+        _xopt2solution( xopt, problem, _HeurLocalBranching_xpos );
 
+        /* Update elapsed time */
         ftime( &end );
         elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 
         log_debug( "Found %d-th heuristic solution in %.3lf seconds.",
             k + 1, ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
-        for ( int i = 0; i < cnt; ++i ) {
-            fix_bound[i] = 0.;
-        }
-
-        if ( CPXchgbds( env, lp, cnt, fix_index, fix_lower, fix_bound ) ) {
-            log_fatal( "CPXchgbds" );
+        /* Undo the fixing */
+        if ( CPXdelrows( env, lp, lbrow, lbrow ) ) {
+            log_fatal( "CPXdelrows");
             exit( EXIT_FAILURE );
         }
     }
@@ -612,7 +608,7 @@ HeurHardfix_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt 
 
 
 void
-HeurHardfix_model ( instance *problem )
+HeurLocalBranching_model ( instance *problem )
 {
     int error;
 
@@ -622,12 +618,12 @@ HeurHardfix_model ( instance *problem )
 
     /* BUILD MODEL */
     log_info( "Adding constraints to the model." );
-    _add_constraints_HeurHardfix(problem, env, lp);
+    _add_constraints_HeurLocalBranching(problem, env, lp);
 
     log_info( "Setting up callbacks." );
     cbinfo_t info = { problem, CPXgetnumcols( env, lp ) };
     CPXcallbacksetfunc( env, lp, CPX_CALLBACKCONTEXT_RELAXATION | CPX_CALLBACKCONTEXT_CANDIDATE,
-                        _callbackfunc_HeurHardfix, &info );
+                        _callbackfunc_HeurLocalBranching, &info );
 
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
@@ -645,13 +641,13 @@ HeurHardfix_model ( instance *problem )
     }
 
     log_debug( "Starting heuristic loop." );
-    HeurHardfix_solve( env, lp, problem, xopt );
+    HeurLocalBranching_solve( env, lp, problem, xopt );
 
     ftime( &end );
 
     /* Retrieve final solution */
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
-    _xopt2solution( xopt, problem, &_HeurHardfix_xpos );
+    _xopt2solution( xopt, problem, &_HeurLocalBranching_xpos );
     problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
     problem->visitednodes = CPXgetnodecnt( env, lp );
     problem->solcost      = compute_solution_cost( problem );

@@ -39,6 +39,7 @@ Solve a Traveling Salesman Problem instance.
 
   -c, --cutup=VALUE          Upper cutoff. Default: don't cut.
   -e, --epgap=EPGAP          Relative MIP gap tolerance.
+  -h, --heurtime=SECONDS     Heuristic time limit. Default: 10min.
   -j, --threads[=N]          Global thread count. Default ALL.
   -m, --memory=SIZE          Maximum working memory (size in MB).
   -M, --model=MODEL          Solving technique. Available: Random, Dummy, MTZ,
@@ -46,8 +47,8 @@ Solve a Traveling Salesman Problem instance.
                              LoopX, Legacy, Generic LegacyConcorde,
                              GenericConcorde, LegacyConcordeShallow,
                              GenericConcordeShallow, LegacyConcordeRand,
-                             GenericConcordeRand, HeurHardfix. Default:
-                             Generic.
+                             GenericConcordeRand, HeurHardfix,
+                             HeurLocalBranching. Default: Generic.
   -n, --nodelimit=NODES      MIP node limit.
       --name=TSPNAME         Name to assign to this problem.
       --noplot               Do not sketch the solution.
@@ -88,7 +89,8 @@ Available models are:
 - `GenericConcordeShallow,`
 - `LegacyConcordeRand,`
 - `GenericConcordeRand,`
-- `HeurHardfix.`
+- `HeurHardfix,`
+- `HeurLocalBranching.`
 
 Default model is `Generic`, i.e., branch and cut model with generic "candidate cut" callback.
 
