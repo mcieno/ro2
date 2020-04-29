@@ -9,6 +9,7 @@ var searchData=
   ['tsp_5fsolver_5fgenericconcorderand',['TSP_SOLVER_GenericConcordeRand',['../tsp__solvers_8h.html#ae3671260b7b06b26dbecbb445d0f3e5b',1,'tsp_solvers.h']]],
   ['tsp_5fsolver_5fgenericconcordeshallow',['TSP_SOLVER_GenericConcordeShallow',['../tsp__solvers_8h.html#a488294db43442435277401c4b2ab436f',1,'tsp_solvers.h']]],
   ['tsp_5fsolver_5fheurhardfix',['TSP_SOLVER_HeurHardfix',['../tsp__solvers_8h.html#ac8c4d3d65bb457a7fd77db86e435d3ec',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5fheurlocalbranching',['TSP_SOLVER_HeurLocalBranching',['../tsp__solvers_8h.html#a54f229153181254d84dd0ae480cc07e5',1,'tsp_solvers.h']]],
   ['tsp_5fsolver_5flazyflow1',['TSP_SOLVER_LazyFlow1',['../tsp__solvers_8h.html#a6bec79317bda0befc12571e3ca356929',1,'tsp_solvers.h']]],
   ['tsp_5fsolver_5flazymtz',['TSP_SOLVER_LazyMTZ',['../tsp__solvers_8h.html#ac2c1a5c59ccba03b32f502d285c4014f',1,'tsp_solvers.h']]],
   ['tsp_5fsolver_5flegacy',['TSP_SOLVER_Legacy',['../tsp__solvers_8h.html#a698e910db24af2b12a0d3de1bfcd5bb4',1,'tsp_solvers.h']]],

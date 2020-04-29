@@ -122,6 +122,8 @@ Macros</h2></td></tr>
 <tr class="separator:ae3671260b7b06b26dbecbb445d0f3e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8c4d3d65bb457a7fd77db86e435d3ec"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#ac8c4d3d65bb457a7fd77db86e435d3ec">TSP_SOLVER_HeurHardfix</a>&#160;&#160;&#160;19U</td></tr>
 <tr class="separator:ac8c4d3d65bb457a7fd77db86e435d3ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54f229153181254d84dd0ae480cc07e5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a54f229153181254d84dd0ae480cc07e5">TSP_SOLVER_HeurLocalBranching</a>&#160;&#160;&#160;20U</td></tr>
+<tr class="separator:a54f229153181254d84dd0ae480cc07e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -194,6 +196,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a67ba0d3a57808c82f44d250c531965ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a67ba0d3a57808c82f44d250c531965ac">HeurHardfix_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
 <tr class="memdesc:a67ba0d3a57808c82f44d250c531965ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with Hardfix heuristic.  <a href="#a67ba0d3a57808c82f44d250c531965ac">More...</a><br /></td></tr>
 <tr class="separator:a67ba0d3a57808c82f44d250c531965ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24b9fed1879372485368aa6d97c57db1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a24b9fed1879372485368aa6d97c57db1">HeurLocalBranching_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a24b9fed1879372485368aa6d97c57db1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve with Local Branching heuristic.  <a href="#a24b9fed1879372485368aa6d97c57db1">More...</a><br /></td></tr>
+<tr class="separator:a24b9fed1879372485368aa6d97c57db1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Methods for solving a TSP problem. </p>
@@ -301,6 +306,21 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Hardfix Heuristic. </p>
+
+</div>
+</div>
+<a id="a54f229153181254d84dd0ae480cc07e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54f229153181254d84dd0ae480cc07e5">&#9670;&nbsp;</a></span>TSP_SOLVER_HeurLocalBranching</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_HeurLocalBranching&#160;&#160;&#160;20U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>LocalBranching Heuristic. </p>
 
 </div>
 </div>
@@ -772,6 +792,33 @@ Functions</h2></td></tr>
 
 <p>Solve with Hardfix heuristic. </p>
 <p>This model uses the hard-fixing technique to find an heuristic solution.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a24b9fed1879372485368aa6d97c57db1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24b9fed1879372485368aa6d97c57db1">&#9670;&nbsp;</a></span>HeurLocalBranching_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HeurLocalBranching_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solve with Local Branching heuristic. </p>
+<p>This model uses the Local Branching for soft-fixing variables and find an heuristic solution.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
