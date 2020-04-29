@@ -55,8 +55,8 @@
  *     A meaningful value is between 1 and __DBL_MAX__. Default: no limit.
  *
  * \param heur_timelimit
- *     Maxumym number of seconds one iteration of the hard fix heuritic run.
- * 
+ *     Maxumym number of seconds one iteration of the hard fix heuritic may run.
+ *
  * \param cutup
  *     Upper cutoff value for the problem.
  *

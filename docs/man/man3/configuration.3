@@ -1,4 +1,4 @@
-.TH "configuration" 3 "Mon Apr 27 2020" "TSP Solver" \" -*- nroff -*-
+.TH "configuration" 3 "Wed Apr 29 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -34,6 +34,8 @@ This structure is used by parse_opt() to store command line arguments as they ar
 \fInodelimit\fP Maximum number of nodes the program may visit\&. If the program does not find a solution within these nodes, it should be terminated anyway\&. A meaningful value is between 1 and SIZE_MAX\&. Default: no limit\&.
 .br
 \fItimelimit\fP Maximum number of seconds the program may run\&. If the program does not terminate within this time, it should be terminated anyway\&. A meaningful value is between 1 and \fBDBL_MAX\fP\&. Default: no limit\&.
+.br
+\fIheur_timelimit\fP Maxumym number of seconds one iteration of the hard fix heuritic may run\&.
 .br
 \fIcutup\fP Upper cutoff value for the problem\&.
 .br
