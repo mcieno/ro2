@@ -60,6 +60,7 @@ static struct argp_option options[]  =
 {
     /* Global configuration */
     { "timelimit", 't',       "SECONDS", OPTION_NO_USAGE, "Optimizer time limit in seconds."        },
+    { "heur_timelimit", 'h',       "SECONDS", OPTION_NO_USAGE, "Heuristic iteration time limit in seconds."        },
     { "nodelimit", 'n',       "NODES",   OPTION_NO_USAGE, "MIP node limit."                         },
     { "memory",    'm',       "SIZE",    OPTION_NO_USAGE, "Maximum working memory (size in MB)."    },
     { "threads",   'j',       "N",       OPTION_NO_USAGE | OPTION_ARG_OPTIONAL,
@@ -242,9 +243,9 @@ main ( int argc, char *argv[] )
         plot_solution( &problem );
     }
 
-    log_warn( "Time elapsed: %lf",  problem.elapsedtime  );
-    log_warn( "Visited nodes: %zu", problem.visitednodes );
-    log_warn( "Solution cost: %lf", problem.solcost      );
+    log_out( "Time elapsed: %lf",  problem.elapsedtime  );
+    log_out( "Visited nodes: %zu", problem.visitednodes );
+    log_out( "Solution cost: %lf", problem.solcost      );
 
     fprintf( stdout, "%lf\n", problem.elapsedtime  );
     fprintf( stdout, "%zu\n", problem.visitednodes );
@@ -398,6 +399,17 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             }
 
             break;
+
+        case 'h':
+            conf.heur_timelimit = strtod( arg, NULL );
+            if ( errno || conf.timelimit == 0ULL ) {
+                argp_error(
+                    state,
+                    "Bad value for option -t --timelimit: %s.", strerror( errno ? errno : EDOM )
+                );
+            }
+
+            break;    
 
 
         case 'n':

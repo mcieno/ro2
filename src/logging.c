@@ -40,11 +40,11 @@ static struct
 } L;
 
 static const char *level_names[] = {
-    "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+    "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OUT"};
 
 #ifdef LOG_USE_COLOR
 static const char *level_colors[] = {
-    "\x1b[94m", "\x1b[36m", "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[35m"};
+    "\x1b[94m", "\x1b[36m", "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[35m", "\x1b[1m"};
 #endif
 
 static void lock(void)

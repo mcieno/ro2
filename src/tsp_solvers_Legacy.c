@@ -236,7 +236,7 @@ _lazyconstraintcallback_Legacy ( CPXCENVptr env, void *cbdata, int wherefrom, vo
 
     _xopt2subtours( info->problem, x, next, comps, &ncomps, _Legacy_xpos );
 
-    log_info( "Found %zu components.", ncomps );
+    log_debug( "Found %zu components.", ncomps );
 
     if ( ncomps > 1 ) {
         _add_subtour_constraints_Legacy( info->problem, env, next, comps, ncomps, cbdata, wherefrom );

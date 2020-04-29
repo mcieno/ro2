@@ -23,7 +23,8 @@ typedef enum
     LOG_INFO,
     LOG_WARN,
     LOG_ERROR,
-    LOG_FATAL
+    LOG_FATAL,
+    LOG_OUT
 }
 loglevel_t;
 
@@ -37,6 +38,7 @@ extern loglevel_t loglevel;
 #define log_warn(...)  do{}while(0)
 #define log_error(...) do{}while(0)
 #define log_fatal(...) do{}while(0)
+#define log_out(...) do{}while(0)
 
 #else
 
@@ -46,6 +48,7 @@ extern loglevel_t loglevel;
 #define log_warn(...) log_log(LOG_WARN, __FILE__, __func__, __LINE__, __VA_ARGS__)
 #define log_error(...) log_log(LOG_ERROR, __FILE__, __func__, __LINE__, __VA_ARGS__)
 #define log_fatal(...) log_log(LOG_FATAL, __FILE__, __func__, __LINE__, __VA_ARGS__)
+#define log_out(...) log_log(LOG_OUT, __FILE__, __func__, __LINE__, __VA_ARGS__)
 
 #endif
 
