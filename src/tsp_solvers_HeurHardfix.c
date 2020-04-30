@@ -517,7 +517,7 @@ HeurHardfix_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt 
             exit( EXIT_FAILURE );
         }
         if ( CPXsolninfo(env, lp, NULL, &solntype, NULL, NULL) ) {
-            log_fatal( "CPXmipopt error." );
+            log_fatal( "CPXsolninfo" );
             exit( EXIT_FAILURE );
         }
 
@@ -559,19 +559,33 @@ HeurHardfix_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt 
     double fix_bound[problem->nnodes];
 
     double elapsedtime = 0;
+    int wall;
     ftime( &start );
 
     for ( size_t k = 0; elapsedtime + 1e-3 < conf.heurtime; ++k )
     {
-        /* Update timelimit to remaining time */
-        CPXsetdblparam( env, CPXPARAM_TimeLimit, conf.heurtime - elapsedtime );
+        /* Update timelimit so that at least 10 heuristic loops are ensured. */
+        CPXsetdblparam( env, CPXPARAM_TimeLimit, ( conf.heurtime - elapsedtime > conf.heurtime / 10. )
+            ? conf.heurtime / 10.
+            : conf.heurtime - elapsedtime
+        );
 
-        /* Hard fix ~90% of the edges */
+        /* Hard fix ~90/80/70% of the edges, depending on the remaining time. */
+        if ( conf.heurtime - elapsedtime < conf.heurtime / 3. ) {
+            log_debug( "Fixing ~70%% of the edges." );
+            wall = INT_MAX / 30;
+        } else if ( conf.heurtime - elapsedtime < 2. * conf.heurtime / 3. ) {
+            log_debug( "Fixing ~80%% of the edges." );
+            wall = INT_MAX / 20;
+        } else {
+            log_debug( "Fixing ~90%% of the edges." );
+            wall = INT_MAX / 10;
+        }
+
         int cnt = 0;
-
         for ( int i = 0; i < problem->nnodes; ++i )
         {
-            if ( rand() >= INT_MAX / 10 ) {
+            if ( rand() >= wall ) {
                 fix_index[cnt] = _HeurHardfix_xpos( problem->solution[i][0], problem->solution[i][1], problem );
                 fix_lower[cnt] = 'L';
                 fix_bound[cnt] = 1.0;
@@ -590,14 +604,21 @@ HeurHardfix_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt 
         }
 
         /* Retrieve new solution to calculate next hard fixing bounds */
-        CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
-        _xopt2solution( xopt, problem, _HeurHardfix_xpos );
+        if ( CPXsolninfo(env, lp, NULL, &solntype, NULL, NULL) ) {
+            log_fatal( "CPXsolninfo" );
+            exit( EXIT_FAILURE );
+        }
+
+        if ( solntype != CPX_NO_SOLN ) {
+            CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
+            _xopt2solution( xopt, problem, _HeurHardfix_xpos );
+        }
 
         ftime( &end );
         elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 
-        log_debug( "Found %d-th heuristic solution in %.3lf seconds.",
-            k + 1, ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+        log_debug( "Found #%d heuristic solution. Still %.3lf seconds remaining.",
+            k + 1, conf.heurtime - elapsedtime );
 
         for ( int i = 0; i < cnt; ++i ) {
             fix_bound[i] = 0.;
