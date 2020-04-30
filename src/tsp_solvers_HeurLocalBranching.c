@@ -517,7 +517,7 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
             exit( EXIT_FAILURE );
         }
         if ( CPXsolninfo(env, lp, NULL, &solntype, NULL, NULL) ) {
-            log_fatal( "CPXmipopt error." );
+            log_fatal( "CPXsolninfo" );
             exit( EXIT_FAILURE );
         }
 
@@ -563,11 +563,23 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
 
     for ( size_t k = 0; elapsedtime + 1e-3 < conf.heurtime; ++k )
     {
-        /* Update timelimit to remaining time */
-        CPXsetdblparam( env, CPXPARAM_TimeLimit, conf.heurtime - elapsedtime );
+        /* Update timelimit so that at least 10 heuristic loops are ensured. */
+        CPXsetdblparam( env, CPXPARAM_TimeLimit, ( conf.heurtime - elapsedtime > conf.heurtime / 10. )
+            ? conf.heurtime / 10.
+            : conf.heurtime - elapsedtime
+        );
 
-        /* Soft-fix 90% of the edges */
-        rhs = .9 * problem->nnodes;
+        /* Soft fix ~90/80/70% of the edges, depending on the remaining time. */
+        if ( conf.heurtime - elapsedtime < conf.heurtime / 3. ) {
+            log_debug( "Fixing ~70%% of the edges." );
+            rhs = .7 * problem->nnodes;
+        } else if ( conf.heurtime - elapsedtime < 2. * conf.heurtime / 3. ) {
+            log_debug( "Fixing ~80%% of the edges." );
+            rhs = .8 * problem->nnodes;
+        } else {
+            log_debug( "Fixing ~90%% of the edges." );
+            rhs = .9 * problem->nnodes;
+        }
 
         for ( size_t i = 0; i < problem->nnodes; ++i )
         {
@@ -588,15 +600,22 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
         }
 
         /* Retrieve new solution to calculate next local branching constraint */
-        CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
-        _xopt2solution( xopt, problem, _HeurLocalBranching_xpos );
+        if ( CPXsolninfo(env, lp, NULL, &solntype, NULL, NULL) ) {
+            log_fatal( "CPXsolninfo" );
+            exit( EXIT_FAILURE );
+        }
+
+        if ( solntype != CPX_NO_SOLN ) {
+            CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
+            _xopt2solution( xopt, problem, _HeurLocalBranching_xpos );
+        }
 
         /* Update elapsed time */
         ftime( &end );
         elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 
-        log_debug( "Found %d-th heuristic solution in %.3lf seconds.",
-            k + 1, ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+        log_debug( "Found #%d heuristic solution. Still %.3lf seconds remaining.",
+            k + 1, conf.heurtime - elapsedtime );
 
         /* Undo the fixing */
         if ( CPXdelrows( env, lp, lbrow, lbrow ) ) {
