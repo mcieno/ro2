@@ -255,6 +255,7 @@ main ( int argc, char *argv[] )
 
     fprintf( stdout, "%lf\n", problem.elapsedtime  );
     fprintf( stdout, "%zu\n", problem.visitednodes );
+    fprintf( stdout, "%lf\n", problem.solcost      );
 
     destroy_instance( &problem );
 }
