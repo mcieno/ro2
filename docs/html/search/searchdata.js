@@ -1,7 +1,7 @@
 var indexSectionsWithContent =
 {
-  0: "_cdfghilmprst",
-  1: "cit",
+  0: "_cdefghilmprst",
+  1: "ceit",
   2: "mt",
   3: "_cdfghilmprst",
   4: "t",

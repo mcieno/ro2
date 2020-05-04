@@ -1,8 +1,8 @@
-.TH "CCbigchunkptr" 3 "Mon May 4 2020" "TSP Solver" \" -*- nroff -*-
+.TH "edge_t" 3 "Mon May 4 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
-CCbigchunkptr
+edge_t
 .SH SYNOPSIS
 .br
 .PP
@@ -10,13 +10,16 @@ CCbigchunkptr
 
 .in +1c
 .ti -1c
-.RI "void * \fBthis_one\fP"
+.RI "int \fBavailable\fP"
 .br
 .ti -1c
-.RI "struct CCbigchunk * \fBthis_chunk\fP"
+.RI "int \fBv\fP"
 .br
 .ti -1c
-.RI "struct \fBCCbigchunkptr\fP * \fBnext\fP"
+.RI "int \fBu\fP"
+.br
+.ti -1c
+.RI "double \fBcost\fP"
 .br
 .in -1c
 

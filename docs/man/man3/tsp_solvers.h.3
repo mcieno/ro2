@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Wed Apr 29 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Mon May 4 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -74,6 +74,12 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .br
 .ti -1c
 .RI "#define \fBTSP_SOLVER_HeurLocalBranching\fP   20U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_HeurNearestNeighbor\fP   21U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_HeurGRASP\fP   22U"
 .br
 .in -1c
 .SS "Typedefs"
@@ -174,6 +180,14 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .RI "void \fBHeurLocalBranching_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with Local Branching heuristic\&. "
+.ti -1c
+.RI "void \fBHeurNearestNeighbor_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with Nearest Neighbor heuristic\&. "
+.ti -1c
+.RI "void \fBHeurGRASP_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Solve with GRASP heuristic\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -201,10 +215,14 @@ Like Generic, but also cuts the relaxation using Concorde routines\&.
 Like GenericConcorde but only cuts nodes with decreasing probability\&. 
 .SS "#define TSP_SOLVER_GenericConcordeShallow   16U"
 Like GenericConcorde but only cuts nodes close to the root\&. 
+.SS "#define TSP_SOLVER_HeurGRASP   22U"
+GRASP Heuristic\&. 
 .SS "#define TSP_SOLVER_HeurHardfix   19U"
 Hardfix Heuristic\&. 
 .SS "#define TSP_SOLVER_HeurLocalBranching   20U"
-LocalBranching Heuristic\&. 
+Local Branching Heuristic\&. 
+.SS "#define TSP_SOLVER_HeurNearestNeighbor   21U"
+Nearest Neighbor Heuristic\&. 
 .SS "#define TSP_SOLVER_LazyFlow1   6U"
 Single Commodity Flow model with lazy constraints\&. 
 .SS "#define TSP_SOLVER_LazyMTZ   5U"
@@ -340,6 +358,17 @@ Like GenericConcorde but only cuts nodes close to the root\&.
 .RE
 .PP
 
+.SS "void HeurGRASP_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with GRASP heuristic\&. Similar to Nearest Neighbor, but choses the nearest with probability 1/4, the second-nearest with probability 1/16, the third with 1/64 and so on\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
 .SS "void HeurHardfix_model (\fBinstance\fP * problem)"
 
 .PP
@@ -355,6 +384,17 @@ Solve with Hardfix heuristic\&. This model uses the hard-fixing technique to fin
 
 .PP
 Solve with Local Branching heuristic\&. This model uses the Local Branching for soft-fixing variables and find an heuristic solution\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void HeurNearestNeighbor_model (\fBinstance\fP * problem)"
+
+.PP
+Solve with Nearest Neighbor heuristic\&. This model repeatedly applies the Nearest Neighbor heuristic starting from various nodes and accumulating the best solution\&.
 .PP
 \fBParameters:\fP
 .RS 4

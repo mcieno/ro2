@@ -48,7 +48,8 @@ Solve a Traveling Salesman Problem instance.
                              GenericConcorde, LegacyConcordeShallow,
                              GenericConcordeShallow, LegacyConcordeRand,
                              GenericConcordeRand, HeurHardfix,
-                             HeurLocalBranching. Default: Generic.
+                             HeurLocalBranching, HeurNearestNeighbor,
+                             HeurGRASP. Default: Generic.
   -n, --nodelimit=NODES      MIP node limit.
       --name=TSPNAME         Name to assign to this problem.
       --noplot               Do not sketch the solution.
@@ -71,26 +72,31 @@ Sample files are provided in folder `data` and come courtesy of the [TSPLIB](htt
 
 Available models are:
 
-- `Random`,
-- `Dummy`,
-- `MTZ`,
-- `Flow1`,
-- `LazyMTZ`,
-- `LazyFlow1`,
-- `Loop`,
-- `LoopF`,
-- `LoopM`,
-- `LoopX`,
-- `Legacy`,
-- `Generic`,
-- `LegacyConcorde`,
-- `GenericConcorde`,
-- `LegacyConcordeShallow,`
-- `GenericConcordeShallow,`
-- `LegacyConcordeRand,`
-- `GenericConcordeRand,`
-- `HeurHardfix,`
-- `HeurLocalBranching.`
+- `Random`
+- `Dummy`
+- `MTZ`
+- `Flow1`
+- `LazyMTZ`
+- `LazyFlow1`
+- `Loop`
+- `LoopF`
+- `LoopM`
+- `LoopX`
+- `Legacy`
+- `Generic`
+- `LegacyConcorde`
+- `GenericConcorde`
+- `LegacyConcordeShallow`
+- `GenericConcordeShallow`
+- `LegacyConcordeRand`
+- `GenericConcordeRand`
+
+Available heuristics are:
+
+- `HeurHardfix`
+- `HeurLocalBranching`
+- `HeurNearestNeighbor`
+- `HeurGRASP`
 
 Default model is `Generic`, i.e., branch and cut model with generic "candidate cut" callback.
 
