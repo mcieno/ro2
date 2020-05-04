@@ -92,3 +92,12 @@ tspconf_apply ( CPXENVptr env )
     if (    conf.scrind > 0  ) CPXsetintparam( env, CPXPARAM_ScreenOutput,               conf.scrind    );
     if (      conf.seed > 0  ) CPXsetintparam( env, CPXPARAM_RandomSeed,                 conf.seed      );
 }
+
+
+void
+tspconf_destroy()
+{
+    if ( conf.filename != NULL)  free( conf.filename );
+    if ( conf.name     != NULL)  free( conf.name     );
+    tspconf_init();
+}

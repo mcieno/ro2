@@ -257,6 +257,7 @@ main ( int argc, char *argv[] )
     fprintf( stdout, "%zu\n", problem.visitednodes );
 
     destroy_instance( &problem );
+    tspconf_destroy();
 }
 
 
