@@ -129,7 +129,7 @@ else
     seeds=( $@ )
 fi
 
-echo "${#models[@]} ${models[@]}" | tr -s ' ' ',' > $bmfile
+echo "$((${#models[@]}+1)) Optimal,${models[@]}" | tr -s ' ' ',' > $bmfile
 
 echo "[*] Testing ${#models[@]} models (${models[@]}) on ${#testbed[@]} files (${#seeds} seeds each)"
 
@@ -177,9 +177,10 @@ sleep 1  # let file streams flush
 python2 ./perfprof.py        \
     -D ','                   \
     -S 0                     \
-    -M 5                     \
+    -M 3                     \
     $bmfile                  \
     $bmfile_png              \
-    -P "Heuristc solutions"  > /dev/null
+    -X "Cost ratio"          \
+    -P "Heuristc solutions ($(($heurtime/60)) min)"  > /dev/null
 
 echo -e "\n\n[+] All done"
