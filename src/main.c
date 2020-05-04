@@ -239,6 +239,11 @@ main ( int argc, char *argv[] )
             HeurNearestNeighbor_model( &problem );
             break;
 
+        case TSP_SOLVER_HeurGRASP:
+            log_info( "Solving with GRASP heuristic." );
+            HeurGRASP_model( &problem );
+            break;
+
         default:
             log_error( "No model specified. Exit..." );
             exit( EXIT_FAILURE );
@@ -384,6 +389,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcasecmp( "HeurNearestNeighbor", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurNearestNeighbor;
+
+            } else if ( !strcasecmp( "HeurGRASP", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurGRASP;
 
             } else {
                 argp_error(

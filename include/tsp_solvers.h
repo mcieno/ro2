@@ -32,6 +32,7 @@
 #define TSP_SOLVER_HeurHardfix             19U  /*!< Hardfix Heuristic.  */
 #define TSP_SOLVER_HeurLocalBranching      20U  /*!< Local Branching Heuristic.  */
 #define TSP_SOLVER_HeurNearestNeighbor     21U  /*!< Nearest Neighbor Heuristic.  */
+#define TSP_SOLVER_HeurGRASP               22U  /*!< GRASP Heuristic.  */
 
 typedef unsigned model_t;
 
@@ -350,6 +351,19 @@ HeurLocalBranching_model ( instance *problem );
  */
 void
 HeurNearestNeighbor_model ( instance *problem );
+
+/*!
+ * \brief Solve with GRASP heuristic.
+ *
+ * Similar to Nearest Neighbor, but choses the nearest with probability 1/4,
+ * the second-nearest with probability 1/16, the third with 1/64 and so on.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurGRASP_model ( instance *problem );
 
 
 #endif

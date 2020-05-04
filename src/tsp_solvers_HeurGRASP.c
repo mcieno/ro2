@@ -17,6 +17,8 @@
 #include "tspconf.h"
 
 
+static unsigned int __SEED;
+
 typedef struct
 {
     int available;
@@ -36,7 +38,7 @@ edge_t;
  *          0 if `cost(a) == cost(b)`.
  */
 int
-_cmp_HeurNearestNeighbor( const void *a, const void *b ) {
+_cmp_HeurGRASP( const void *a, const void *b ) {
     const edge_t* ea = (const edge_t*) a;
     const edge_t* eb = (const edge_t*) b;
 
@@ -49,7 +51,7 @@ _cmp_HeurNearestNeighbor( const void *a, const void *b ) {
 
 
 void
-HeurNearestNeighbor_solve ( instance *problem )
+HeurGRASP_solve ( instance *problem )
 {
     struct timeb start, end;
 
@@ -79,7 +81,7 @@ HeurNearestNeighbor_solve ( instance *problem )
 
     log_debug( "Sorting edges by cost." );
     ftime( &start );
-    qsort( edges, nedges, sizeof( *edges ), _cmp_HeurNearestNeighbor );
+    qsort( edges, nedges, sizeof( *edges ), _cmp_HeurGRASP );
     ftime( &end );
     log_debug( "Done sorting in %.3lf seconds.",
                ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
@@ -105,27 +107,35 @@ HeurNearestNeighbor_solve ( instance *problem )
     size_t from;
     ftime( &start );
 
-    for ( size_t startnode = 0; startnode < problem->nnodes && elapsedtime + 1e-3 < conf.heurtime; ++startnode )
+    /* Multiple runs starting from i-th node will find different solutions
+     * due to randomization. Hence, this loop is worth running for the whole
+     * heurtime given.  */
+    for ( size_t startnode = 0; elapsedtime + 1e-3 < conf.heurtime; startnode = (startnode + 1) % problem->nnodes )
     {
         /* Run Nearest Neighbor heuristc starting from startnode.  */
         from = startnode;
         for ( size_t k = 0; k < problem->nnodes - 1; ++k )
         {
-            /* Search the shortest edge where `from` occurs.  */
-            for ( pos = 0; pos < nedges; ++pos ) {
-                /* Because edges are sorted, we care about the first match.  */
+            /* Search the almost-shortest edge where `from` occurs.  */
+            for ( pos = 0;  ; pos = (pos + 1) % nedges ) {
+                /* Flip a coin and decide whether to stop here or keep going.
+                 * If we run out of edges prior to successfull coinflip,
+                 * simply restart the loop. Note that this method terminates
+                 * with probability 1.  */
                 if ( edges[pos].available && ( edges[pos].v == from || edges[pos].u == from ) )
                 {
-                    currentsol[k][0] = edges[pos].v;
-                    currentsol[k][1] = edges[pos].u;
-                    break;
+                    if ( rand_r(&__SEED) >= RAND_MAX / 4 ) {
+                        currentsol[k][0] = edges[pos].v;
+                        currentsol[k][1] = edges[pos].u;
+                        break;
+                    }
                 }
             }
 
             log_trace("Greedy choice #%zu was %zu - %zu", k, currentsol[k][0], currentsol[k][1]);
 
             /* Avoid subtours removing all other edges where `from` occurs.  */
-            for ( ; pos < nedges; ++pos ) {
+            for ( pos = 0; pos < nedges; ++pos ) {
                 if ( edges[pos].available && ( edges[pos].v == from || edges[pos].u == from ) )
                 {
                     edges[pos].available = 0;
@@ -177,13 +187,14 @@ HeurNearestNeighbor_solve ( instance *problem )
 
 
 void
-HeurNearestNeighbor_model ( instance *problem )
+HeurGRASP_model ( instance *problem )
 {
     struct timeb start, end;
     ftime( &start );
+    __SEED = conf.seed;
 
     log_debug( "Starting solver." );
-    HeurNearestNeighbor_solve( problem );
+    HeurGRASP_solve( problem );
 
     ftime( &end );
 
