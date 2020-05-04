@@ -19,6 +19,7 @@
 
 typedef struct
 {
+    int available;
     int v;
     int u;
     double cost;
@@ -36,8 +37,8 @@ edge_t;
  */
 int
 _cmp_edges( const void *a, const void *b ) {
-    edge_t* ea = (edge_t*) a;
-    edge_t* eb = (edge_t*) b;
+    const edge_t* ea = (const edge_t*) a;
+    const edge_t* eb = (const edge_t*) b;
 
     return ea->cost < eb->cost
                 ? -1
@@ -52,7 +53,7 @@ HeurNearestNeighbor_solve ( instance *problem )
 {
     struct timeb start, end;
 
-    int nedges = ( problem->nnodes * ( problem->nnodes + 1 ) ) / 2;
+    size_t nedges = ( problem->nnodes * ( problem->nnodes + 1 ) ) / 2 - problem->nnodes;
 
     /* Build a list with all edges and sort them.  */
     edge_t *edges = malloc( nedges * sizeof( *edges ) );
@@ -61,11 +62,11 @@ HeurNearestNeighbor_solve ( instance *problem )
         exit( EXIT_FAILURE );
     }
 
-    int k = 0;
-    for ( int i = 0; i < problem->nnodes; ++i ) {
-        for (int j = 0; j < problem->nnodes; ++j ) {
-            edges[k++] = (edge_t) {
-                i, j,
+    size_t pos = 0;
+    for ( size_t i = 0; i < problem->nnodes; ++i ) {
+        for ( size_t j = i + 1; j < problem->nnodes; ++j ) {
+            edges[pos++] = (edge_t) {
+                1, i, j,
                 _euclidean_distance(
                     problem->xcoord[i],
                     problem->ycoord[i],
@@ -77,53 +78,106 @@ HeurNearestNeighbor_solve ( instance *problem )
     }
 
     log_debug( "Sorting edges by cost." );
+    ftime( &start );
     qsort( edges, nedges, sizeof( *edges ), _cmp_edges );
+    ftime( &end );
+    log_debug( "Done sorting in %.3lf seconds.",
+               ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
     /* `currentsol` will contain the solution obtained starting the nearest
      * neighbor heuristic from `startnode`.  */
-    int *currentsol = malloc( problem->nnodes * sizeof( *currentsol ) );
+    double bestcost = __DBL_MAX__;
+    size_t **bestsol = problem->solution;
+    size_t **currentsol = malloc( problem->nnodes * sizeof( *currentsol ) );
     if ( currentsol == NULL ) {
         log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
-    for (int i = 0; i < problem->nnodes; ++i) {
-        currentsol[i] = calloc( 2, sizeof( *currentsol ) );
-        if ( currentsol == NULL ) {
+    for (size_t i = 0; i < problem->nnodes; ++i) {
+        currentsol[i] = malloc( 2 * sizeof( *currentsol[i] ) );
+        if ( currentsol[i] == NULL ) {
             log_fatal( "Out of memory." );
             exit( EXIT_FAILURE );
         }
     }
 
     double elapsedtime = 0;
+    size_t from;
     ftime( &start );
 
-    for ( size_t startnode = 0; elapsedtime + 1e-3 < conf.heurtime; ++startnode )
+    for ( size_t startnode = 0; startnode < problem->nnodes && elapsedtime + 1e-3 < conf.heurtime; ++startnode )
     {
         /* Run Nearest Neighbor heuristc starting from startnode.  */
-        currentsol[0] = startnode;
-        for ( int k = 1; k < problem->nnodes; ++k ) {
-            for ( int i = 0; i < nedges; ++i ) {
-                if ( edges[i].v ==  ) {
-                    if ()
+        from = startnode;
+        for ( size_t k = 0; k < problem->nnodes - 1; ++k )
+        {
+            /* Search the shortest edge where `from` occurs.  */
+            for ( pos = 0; pos < nedges; ++pos ) {
+                /* Because edges are sorted, we care about the first match.  */
+                if ( edges[pos].available && ( edges[pos].v == from || edges[pos].u == from ) )
+                {
+                    currentsol[k][0] = edges[pos].v;
+                    currentsol[k][1] = edges[pos].u;
+                    break;
                 }
             }
+            log_trace("Greedy choice #%zu was %zu - %zu", k, currentsol[k][0], currentsol[k][1]);
+
+            /* Avoid subtours removing all other edges where `from` occurs.  */
+            for ( ; pos < nedges; ++pos ) {
+                if ( edges[pos].available && ( edges[pos].v == from || edges[pos].u == from ) )
+                {
+                    edges[pos].available = 0;
+                }
+            }
+
+            /* Update `from` to start from the just added neighbor.  */
+            from ^= currentsol[k][0] ^ currentsol[k][1];
         }
 
+        /* Set last edge.  */
+        currentsol[problem->nnodes - 1][0] = from;
+        currentsol[problem->nnodes - 1][1] = startnode;
 
-        elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
-        log_debug( "Found #%d heuristic solution. Still %.3lf seconds remaining.",
-            startnode + 1, conf.heurtime - elapsedtime );
+        /* Reset all edges availability to properly start next iteration.  */
+        for ( pos = 0; pos < nedges; ++pos ) {
+            edges[pos].available = 1;
+        }
 
         ftime( &end );
+
+        elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+        log_debug( "Found heuristic solution #%zu/%zu. Still %.3lf seconds remaining.",
+                   startnode + 1, problem->nnodes, conf.heurtime - elapsedtime );
+
+        /* Compute solution cost and update `bestsol` and `bestcost`
+         * accordingly.  */
+        problem->solution = currentsol;
+        problem->solcost = compute_solution_cost( problem );
+
+        if ( problem->solcost < bestcost ) {
+            /* Swap `currentsol` and `bestsol`, so we can reuse the arrays
+             * during the next itaration.  */
+            log_info( "Heuristic solution #%d improves (%.3lf < %.3lf).", problem->solcost, bestcost );
+            currentsol = bestsol;
+            bestsol = problem->solution;
+            bestcost = problem->solcost;
+        }
+
     }
+
+    problem->solution = bestsol;
+    problem->solcost  = bestcost;
+
+    /* Free `currentsol`, which may have been swapped in the mean time.  */
+    for ( size_t i = 0; i < problem->nnodes; ++i )  free( currentsol[i] );
+    free( currentsol );
 }
 
 
 void
 HeurNearestNeighbor_model ( instance *problem )
 {
-    int error;
-
     struct timeb start, end;
     ftime( &start );
 
@@ -134,5 +188,4 @@ HeurNearestNeighbor_model ( instance *problem )
 
     problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
     problem->visitednodes = 0;
-    problem->solcost      = compute_solution_cost( problem );
 }

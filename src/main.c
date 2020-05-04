@@ -230,8 +230,13 @@ main ( int argc, char *argv[] )
             break;
 
         case TSP_SOLVER_HeurLocalBranching:
-            log_info( "Solving with LocalBranching heuristic." );
+            log_info( "Solving with Local Branching heuristic." );
             HeurLocalBranching_model( &problem );
+            break;
+
+        case TSP_SOLVER_HeurNearestNeighbor:
+            log_info( "Solving with Nearest Neighbor heuristic." );
+            HeurNearestNeighbor_model( &problem );
             break;
 
         default:
@@ -376,6 +381,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcasecmp( "HeurLocalBranching", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurLocalBranching;
+
+            } else if ( !strcasecmp( "HeurNearestNeighbor", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurNearestNeighbor;
 
             } else {
                 argp_error(

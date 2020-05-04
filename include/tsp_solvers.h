@@ -30,7 +30,8 @@
 #define TSP_SOLVER_LegacyConcordeRand      17U  /*!< Like LegacyConcorde but only cuts nodes with decreasing probability.  */
 #define TSP_SOLVER_GenericConcordeRand     18U  /*!< Like GenericConcorde but only cuts nodes with decreasing probability.  */
 #define TSP_SOLVER_HeurHardfix             19U  /*!< Hardfix Heuristic.  */
-#define TSP_SOLVER_HeurLocalBranching      20U  /*!< LocalBranching Heuristic.  */
+#define TSP_SOLVER_HeurLocalBranching      20U  /*!< Local Branching Heuristic.  */
+#define TSP_SOLVER_HeurNearestNeighbor     21U  /*!< Nearest Neighbor Heuristic.  */
 
 typedef unsigned model_t;
 
@@ -336,6 +337,19 @@ HeurHardfix_model ( instance *problem );
  */
 void
 HeurLocalBranching_model ( instance *problem );
+
+/*!
+ * \brief Solve with Nearest Neighbor heuristic.
+ *
+ * This model repeatedly applies the Nearest Neighbor heuristic starting from
+ * various nodes and accumulating the best solution.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurNearestNeighbor_model ( instance *problem );
 
 
 #endif
