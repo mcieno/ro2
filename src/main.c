@@ -234,6 +234,11 @@ main ( int argc, char *argv[] )
             HeurLocalBranching_model( &problem );
             break;
 
+        case TSP_SOLVER_HeurInsertion:
+            log_info( "Solving with Insertion heuristic." );
+            HeurInsertion_model( &problem );
+            break;    
+
         default:
             log_error( "No model specified. Exit..." );
             exit( EXIT_FAILURE );
@@ -377,6 +382,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else if ( !strcasecmp( "HeurLocalBranching", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurLocalBranching;
 
+            } else if ( !strcasecmp( "HeurInsertion", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurInsertion; 
             } else {
                 argp_error(
                     state,

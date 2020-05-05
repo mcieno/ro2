@@ -31,6 +31,8 @@
 #define TSP_SOLVER_GenericConcordeRand     18U  /*!< Like GenericConcorde but only cuts nodes with decreasing probability.  */
 #define TSP_SOLVER_HeurHardfix             19U  /*!< Hardfix Heuristic.  */
 #define TSP_SOLVER_HeurLocalBranching      20U  /*!< LocalBranching Heuristic.  */
+#define TSP_SOLVER_HeurInsertion           21U  /*!< LocalBranching Heuristic.  */
+
 
 typedef unsigned model_t;
 
@@ -336,6 +338,19 @@ HeurHardfix_model ( instance *problem );
  */
 void
 HeurLocalBranching_model ( instance *problem );
+
+/*!
+ * \brief Solve with Insertion heuristic.
+ *
+ * This model uses the insertion method tos find an
+ * heuristic solution.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurInsertion_model ( instance *problem );
 
 
 #endif
