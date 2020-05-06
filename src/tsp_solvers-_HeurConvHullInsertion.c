@@ -191,16 +191,24 @@ convhullinsertion_sol(instance *problem, double *best_sol_cost, size_t H[], size
         //fprintf(stderr, "%lu, %lu, %lu, %lu\n", i, edges[i][0]+1, edges[i][1]+1, k);
     }
     size_t edges_counter = k-1;
-    
+
+
+
     size_t nodes[problem->nnodes];
     size_t nodes_counter = problem->nnodes;
     for(size_t i=0; i<problem->nnodes; i++){
         nodes[i]=i;
     }
     for(size_t i=0; i<k-1;i++){
-        
-        nodes[H[i]] = nodes[(nodes_counter--)-1];
+        for(size_t j=0;j<nodes_counter; j++){
+            if(nodes[j]==H[i]){
+            nodes[j] = nodes[(nodes_counter--)-1];
+            continue;
+            }
+        }
     }
+
+
 
     size_t x;
 
