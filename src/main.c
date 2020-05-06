@@ -237,7 +237,12 @@ main ( int argc, char *argv[] )
         case TSP_SOLVER_HeurInsertion:
             log_info( "Solving with Insertion heuristic." );
             HeurInsertion_model( &problem );
-            break;    
+            break; 
+
+        case TSP_SOLVER_HeurConvHullInsertion:
+            log_info( "Solving with Convex Hull Insertion heuristic." );
+            HeurConvHullInsertion_model( &problem );
+            break;        
 
         default:
             log_error( "No model specified. Exit..." );
@@ -384,6 +389,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcasecmp( "HeurInsertion", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurInsertion; 
+            } else if ( !strcasecmp( "HeurConvHullInsertion", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurConvHullInsertion;     
             } else {
                 argp_error(
                     state,

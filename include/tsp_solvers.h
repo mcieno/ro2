@@ -32,6 +32,7 @@
 #define TSP_SOLVER_HeurHardfix             19U  /*!< Hardfix Heuristic.  */
 #define TSP_SOLVER_HeurLocalBranching      20U  /*!< LocalBranching Heuristic.  */
 #define TSP_SOLVER_HeurInsertion           21U  /*!< LocalBranching Heuristic.  */
+#define TSP_SOLVER_HeurConvHullInsertion           22U  /*!< LocalBranching Heuristic.  */
 
 
 typedef unsigned model_t;
@@ -342,7 +343,7 @@ HeurLocalBranching_model ( instance *problem );
 /*!
  * \brief Solve with Insertion heuristic.
  *
- * This model uses the insertion method tos find an
+ * This model uses the insertion method to find an
  * heuristic solution.
  *
  *
@@ -351,6 +352,19 @@ HeurLocalBranching_model ( instance *problem );
  */
 void
 HeurInsertion_model ( instance *problem );
+
+/*!
+ * \brief Solve with Convex Hull Insertion heuristic.
+ *
+ * This model uses the convex hull insertion method to find an
+ * heuristic solution.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurConvHullInsertion_model ( instance *problem );
 
 
 #endif
