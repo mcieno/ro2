@@ -20,37 +20,39 @@
 
 static unsigned int __SEED;
 
-void swap( size_t *xp, size_t *yp )
+typedef struct
 {
-    size_t temp = *xp;
-    *xp = *yp;
-    *yp = temp;
+    int available;
+    int index;
+    double x;
+    double y;
+}
+node_t;
+
+/**
+ * Comparator for the edge_t type.
+ *
+ * @param a void pointer to an `edge_t` element.
+ * @param b void pointer to an `edge_t` element.
+ * @returns negative if `cost(a) < cost(b)`, positive if `cost(a) > cost(b)`,
+ *          0 if `cost(a) == cost(b)`.
+ */
+int
+_cmp_HeurConvHullInsertion( const void *a, const void *b ) {
+    const node_t *na = (const node_t *) a;
+    const node_t *nb = (const node_t *) b;
+
+    return na->x < nb->x
+               ? -1
+               : na->x > nb->x
+                     ? +1
+                     : na->y > nb->y
+                           ? -1
+                           : na->y > nb->y
+                                 ? +1
+                                 : 0;
 }
 
-// Function to perform Selection Sort
-void selectionSort(size_t arr[], size_t n, instance *problem)
-{
-    size_t i, j, min_idx;
-
-    // One by one move boundary of unsorted subarray
-    for (i = 0; i < n - 1; i++) {
-
-        // Find the minimum element in unsorted array
-        min_idx = i;
-        for (j = i + 1; j < n; j++)
-
-            if ( problem->xcoord[arr[j]] < problem->xcoord[arr[min_idx]])
-                min_idx = j;
-            else if(problem->xcoord[arr[j]] < problem->xcoord[arr[min_idx]]){
-                if ( problem->ycoord[arr[j]] < problem->ycoord[arr[min_idx]])
-                min_idx = j;
-            }
-
-        // Swap the found minimum element
-        // with the first element
-        swap(&arr[min_idx], &arr[i]);
-    }
-}
 
 // Copyright 2001 softSurfer, 2012 Dan Sunday
 // This code may be freely used and modified for any purpose
@@ -284,23 +286,39 @@ HeurConvHullInsertion_model ( instance *problem )
 {
     struct timeb start, end;
 
+    node_t *nodes = malloc( problem->nnodes * sizeof( *nodes ) );
+    size_t *P     = malloc( problem->nnodes * sizeof( *P     ) );
+    size_t *H     = malloc( problem->nnodes * sizeof( *H     ) );
+
+    if ( nodes == NULL || P == NULL || H == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
+
+    /* Sort the nodes and put their indices in P.  */
+    ftime( &start );
+    log_debug( "Sorting nodes by X-coordinates." );
+
+    for ( size_t i = 0; i < problem->nnodes; ++i ) {
+        nodes[i] = (node_t) {1, i, problem->xcoord[i], problem->ycoord[i] };
+    }
+
+    qsort( nodes, problem->nnodes, sizeof( *nodes ), _cmp_HeurConvHullInsertion );
+
+    for ( size_t i = 0; i < problem->nnodes; ++i ) {
+        P[i] = nodes[i].index;
+    }
+
+    ftime( &end );
+    log_debug( "Done sorting in %.3lf seconds.",
+               ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+
+    /* Compute the convex hull.  */
+    size_t k = chainHull_2D( P, problem->nnodes, H, problem );
+
     double bestcost = __DBL_MAX__;
     __SEED = conf.seed;
     double elapsedtime = 0;
-
-    ftime( &start );
-
-    size_t P[problem->nnodes];
-    for ( size_t i = 0; i < problem->nnodes; ++i ) {
-        P[i] = i;
-    }
-
-    /* Presort by increasing x and y-coordinates */
-    selectionSort(P, problem->nnodes, problem);
-
-    /* Compute convex hull.  */
-    size_t H[problem->nnodes];
-    size_t k = chainHull_2D( P, problem->nnodes, H, problem );
 
     for ( size_t j = 0; elapsedtime + 1e-3 < conf.heurtime; ++j ) {
         HeurConvHullInsertion_solve( problem, &bestcost, H, k );
@@ -315,4 +333,7 @@ HeurConvHullInsertion_model ( instance *problem )
     problem->elapsedtime  = elapsedtime;
     problem->solcost = compute_solution_cost( problem );
 
+    free( nodes );
+    free( P     );
+    free( H     );
 }

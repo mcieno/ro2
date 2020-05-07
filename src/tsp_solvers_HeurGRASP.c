@@ -39,14 +39,14 @@ edge_t;
  */
 int
 _cmp_HeurGRASP( const void *a, const void *b ) {
-    const edge_t* ea = (const edge_t*) a;
-    const edge_t* eb = (const edge_t*) b;
+    const edge_t *ea = (const edge_t *)a;
+    const edge_t *eb = (const edge_t *)b;
 
     return ea->cost < eb->cost
-                ? -1
-                : ea->cost == eb->cost
-                    ? 0
-                    : +1;
+               ? -1
+               : ea->cost == eb->cost
+                     ? 0
+                     : +1;
 }
 
 
