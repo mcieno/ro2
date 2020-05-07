@@ -172,7 +172,7 @@ chainHull_2D( size_t *P, size_t n, size_t *H, instance *problem )
 
 
 void
-HeurConvHullInsertion_sol( instance *problem, double *bestcost, size_t *H, size_t k )
+HeurConvHullInsertion_solve( instance *problem, double *bestcost, size_t *H, size_t k )
 {
 
     //initialize edges and nodes array
@@ -200,40 +200,38 @@ HeurConvHullInsertion_sol( instance *problem, double *bestcost, size_t *H, size_
 
     size_t x;
 
-    //Insertions
+    /* Make insertions */
     size_t first_insertion = 0;
     for ( size_t iter = 0; iter < problem->nnodes - k + 1; ++iter ) {
-
         /* Select a random node */
-        x = rand_r(&__SEED) % nodes_counter;
-        --nodes_counter;
+        x           = rand_r(&__SEED) % nodes_counter;
         size_t node = nodes[x];
-        nodes[x] = nodes[nodes_counter - 1];
-        /* Check which is shortest insertion path */
+        nodes[x]    = nodes[nodes_counter - 2];
+        --nodes_counter;
+
+        /* Find the shortest insertion path */
         size_t best_edge = 0;
         double best_path_cost = _euclidean_distance(
-                problem->xcoord[edges[0][0]],
-                problem->ycoord[edges[0][0]],
-                problem->xcoord[node],
-                problem->ycoord[node]
-            ) + _euclidean_distance(
-                problem->xcoord[edges[0][1]],
-                problem->ycoord[edges[0][1]],
-                problem->xcoord[node],
-                problem->ycoord[node]
-            );
+                                    problem->xcoord[edges[0][0]],
+                                    problem->ycoord[edges[0][0]],
+                                    problem->xcoord[node],
+                                    problem->ycoord[node]) +
+                                _euclidean_distance(
+                                    problem->xcoord[edges[0][1]],
+                                    problem->ycoord[edges[0][1]],
+                                    problem->xcoord[node],
+                                    problem->ycoord[node]);
 
         for ( size_t i = 1; i < edges_counter; ++i ) {
             double cost = _euclidean_distance(
-                    problem->xcoord[edges[i][0]],
-                    problem->ycoord[edges[i][0]],
-                    problem->xcoord[node], problem->ycoord[node]
-                ) + _euclidean_distance(
-                    problem->xcoord[edges[i][1]],
-                    problem->ycoord[edges[i][1]],
-                    problem->xcoord[node],
-                    problem->ycoord[node]
-                );
+                              problem->xcoord[edges[i][0]],
+                              problem->ycoord[edges[i][0]],
+                              problem->xcoord[node], problem->ycoord[node]) +
+                          _euclidean_distance(
+                              problem->xcoord[edges[i][1]],
+                              problem->ycoord[edges[i][1]],
+                              problem->xcoord[node],
+                              problem->ycoord[node]);
 
             if ( cost < best_path_cost ) {
                 best_edge = i;
@@ -241,31 +239,34 @@ HeurConvHullInsertion_sol( instance *problem, double *bestcost, size_t *H, size_
             }
         }
 
-        //insert node
+        /* Insert node */
         if ( first_insertion ) {
-            edges[edges_counter][0] = node;
+            edges[edges_counter][0]   = node;
             edges[edges_counter++][1] = edges[best_edge][0];
-            edges[edges_counter][0] = node;
+            edges[edges_counter][0]   = node;
             edges[edges_counter++][1] = edges[best_edge][1];
-            first_insertion = 0;
+            first_insertion           = 0;
         } else {
-            edges[edges_counter][0] = node;
+            edges[edges_counter][0]   = node;
             edges[edges_counter++][1] = edges[best_edge][1];
-            edges[best_edge][1] = node;
+            edges[best_edge][1]       = node;
         }
 
     }
 
+    /* Compute solution cost */
     double currentcost = 0;
     for ( size_t i = 0; i < problem->nnodes; ++i ) {
 
         size_t node_1 = edges[i][0];
         size_t node_2 = edges[i][1];
-        currentcost += _euclidean_distance( problem->xcoord[node_1], problem->ycoord[node_1],
-                                            problem->xcoord[node_2], problem->ycoord[node_2] );
+        currentcost  += _euclidean_distance( problem->xcoord[node_1], problem->ycoord[node_1],
+                                             problem->xcoord[node_2], problem->ycoord[node_2] );
     }
 
     if ( currentcost < *bestcost ) {
+        log_info( "Heuristic solution improved (%.3e < %.3e).", currentcost, bestcost );
+
         for ( size_t i = 0; i < problem->nnodes; ++i ) {
             problem->solution[i][0] = edges[i][0];
             problem->solution[i][1] = edges[i][1];
@@ -302,9 +303,11 @@ HeurConvHullInsertion_model ( instance *problem )
     size_t k = chainHull_2D( P, problem->nnodes, H, problem );
 
     for ( size_t j = 0; elapsedtime + 1e-3 < conf.heurtime; ++j ) {
-        HeurConvHullInsertion_sol( problem, &bestcost, H, k );
+        HeurConvHullInsertion_solve( problem, &bestcost, H, k );
+
         ftime( &end );
         elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+
         log_debug( "Found heuristic solution #%zu. Still %.3lf seconds remaining.",
                    j + 1, conf.heurtime - elapsedtime );
     }
