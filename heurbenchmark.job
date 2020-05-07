@@ -1,0 +1,10 @@
+#!/bin/bash
+# See: https://www.dei.unipd.it/bladecluster
+#
+#$ -N heurbenchmark
+#
+#$ -cwd
+#
+#$ -m ea
+
+./heurbenchmark.blade.sh $@

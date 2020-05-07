@@ -572,11 +572,11 @@ HeurHardfix_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt 
 
         /* Hard fix ~90/80/70% of the edges, depending on the remaining time. */
         if ( conf.heurtime - elapsedtime < conf.heurtime / 3. ) {
-            log_debug( "Fixing ~70%% of the edges." );
-            wall = INT_MAX / 30;
+            log_debug( "Fixing ~50%% of the edges." );
+            wall = INT_MAX / 2;
         } else if ( conf.heurtime - elapsedtime < 2. * conf.heurtime / 3. ) {
-            log_debug( "Fixing ~80%% of the edges." );
-            wall = INT_MAX / 20;
+            log_debug( "Fixing ~70%% of the edges." );
+            wall = INT_MAX / 3;
         } else {
             log_debug( "Fixing ~90%% of the edges." );
             wall = INT_MAX / 10;

@@ -234,6 +234,16 @@ main ( int argc, char *argv[] )
             HeurLocalBranching_model( &problem );
             break;
 
+        case TSP_SOLVER_HeurInsertion:
+            log_info( "Solving with Insertion heuristic." );
+            HeurInsertion_model( &problem );
+            break; 
+
+        case TSP_SOLVER_HeurConvHullInsertion:
+            log_info( "Solving with Convex Hull Insertion heuristic." );
+            HeurConvHullInsertion_model( &problem );
+            break;        
+
         default:
             log_error( "No model specified. Exit..." );
             exit( EXIT_FAILURE );
@@ -255,6 +265,7 @@ main ( int argc, char *argv[] )
 
     fprintf( stdout, "%lf\n", problem.elapsedtime  );
     fprintf( stdout, "%zu\n", problem.visitednodes );
+    fprintf( stdout, "%lf\n", problem.solcost      );
 
     destroy_instance( &problem );
 }
@@ -376,6 +387,10 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else if ( !strcasecmp( "HeurLocalBranching", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurLocalBranching;
 
+            } else if ( !strcasecmp( "HeurInsertion", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurInsertion; 
+            } else if ( !strcasecmp( "HeurConvHullInsertion", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurConvHullInsertion;     
             } else {
                 argp_error(
                     state,
