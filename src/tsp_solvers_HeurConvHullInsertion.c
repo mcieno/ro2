@@ -175,42 +175,59 @@ chainHull_2D( size_t *P, size_t n, size_t *H, instance *problem )
 
 
 void
-HeurConvHullInsertion_solve( instance *problem, double *bestcost, size_t *H, size_t k )
+HeurConvHullInsertion_solve( instance *problem, size_t *H, size_t k )
 {
 
-    //initialize edges and nodes array
-    size_t edges[problem->nnodes][2];
+    /* Initialize edges.  */
+    size_t **edges = malloc( problem->nnodes * sizeof( *edges ) );
+    if ( edges == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
+    for (size_t i = 0; i < problem->nnodes; ++i) {
+        edges[i] = malloc( 2 * sizeof( *edges[i] ) );
+        if ( edges[i] == NULL ) {
+            log_fatal( "Out of memory." );
+            exit( EXIT_FAILURE );
+        }
+    }
+
     for ( size_t i = 0; i < k - 1; ++i ) {
         edges[i][0] = H[i];
         edges[i][1] = H[i + 1];
     }
-    size_t edges_counter = k - 1;
 
-    size_t nodes[problem->nnodes];
-    size_t nodes_counter = problem->nnodes;
+    size_t nedges = k - 1;
+
+    /* Initialize nodes.  */
+    size_t nnodes = problem->nnodes;
+    size_t *nodes = malloc( problem->nnodes * sizeof( *nodes ) );
+    if ( nodes == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
+
     for ( size_t i = 0; i < problem->nnodes; ++i ) {
         nodes[i] = i;
     }
     for ( size_t i = 0; i < k - 1; ++i ) {
-        for ( size_t j = 0; j < nodes_counter; ++j ) {
+        for ( size_t j = 0; j < nnodes; ++j ) {
             if ( nodes[j] == H[i] ) {
-                --nodes_counter;
-                nodes[j] = nodes[nodes_counter - 1];
+                nodes[j] = nodes[--nnodes - 1];
                 continue;
             }
         }
     }
 
-    size_t x;
-
     /* Make insertions */
-    size_t first_insertion = 0;
+    size_t x;
+    size_t is_first = 0;
+
     for ( size_t iter = 0; iter < problem->nnodes - k + 1; ++iter ) {
         /* Select a random node */
-        x           = rand_r(&__SEED) % nodes_counter;
+        x           = rand_r( &__SEED ) % nnodes;
         size_t node = nodes[x];
-        nodes[x]    = nodes[nodes_counter - 2];
-        --nodes_counter;
+        nodes[x]    = nodes[--nnodes - 1];
 
         /* Find the shortest insertion path */
         size_t best_edge = 0;
@@ -225,7 +242,7 @@ HeurConvHullInsertion_solve( instance *problem, double *bestcost, size_t *H, siz
                                     problem->xcoord[node],
                                     problem->ycoord[node]);
 
-        for ( size_t i = 1; i < edges_counter; ++i ) {
+        for ( size_t i = 1; i < nedges; ++i ) {
             double cost = _euclidean_distance(
                               problem->xcoord[edges[i][0]],
                               problem->ycoord[edges[i][0]],
@@ -243,42 +260,39 @@ HeurConvHullInsertion_solve( instance *problem, double *bestcost, size_t *H, siz
         }
 
         /* Insert node */
-        if ( first_insertion ) {
-            edges[edges_counter][0]   = node;
-            edges[edges_counter++][1] = edges[best_edge][0];
-            edges[edges_counter][0]   = node;
-            edges[edges_counter++][1] = edges[best_edge][1];
-            first_insertion           = 0;
+        if ( is_first ) {
+            edges[nedges][0]    = node;
+            edges[nedges++][1]  = edges[best_edge][0];
+            edges[nedges][0]    = node;
+            edges[nedges++][1]  = edges[best_edge][1];
+            is_first            = 0;
         } else {
-            edges[edges_counter][0]   = node;
-            edges[edges_counter++][1] = edges[best_edge][1];
-            edges[best_edge][1]       = node;
+            edges[nedges][0]    = node;
+            edges[nedges++][1]  = edges[best_edge][1];
+            edges[best_edge][1] = node;
         }
 
     }
 
-    /* Compute solution cost */
-    double currentcost = 0;
-    for ( size_t i = 0; i < problem->nnodes; ++i ) {
+    /* Compute new solution cost.  */
+    size_t **bestsol = problem->solution;
+    double bestcost  = problem->solcost;
 
-        size_t node_1 = edges[i][0];
-        size_t node_2 = edges[i][1];
-        currentcost  += _euclidean_distance( problem->xcoord[node_1], problem->ycoord[node_1],
-                                             problem->xcoord[node_2], problem->ycoord[node_2] );
+    problem->solution = edges;
+    problem->solcost  = compute_solution_cost( problem );
+
+    if ( problem->solcost > bestcost ) {
+        /* If no improvement was made, restore previous solution.  */
+        problem->solution = bestsol;
+        problem->solcost  = bestcost;
+    } else {
+        /* Put the old `problem->solution` into `edges` to be freed.  */
+        log_info( "Heuristic solution improved (%.3e < %.3e).", problem->solcost, bestcost );
+        edges = bestsol;
     }
-
-    if ( currentcost < *bestcost ) {
-        log_info( "Heuristic solution improved (%.3e < %.3e).", currentcost, bestcost );
-
-        for ( size_t i = 0; i < problem->nnodes; ++i ) {
-            problem->solution[i][0] = edges[i][0];
-            problem->solution[i][1] = edges[i][1];
-        }
-
-        *bestcost = currentcost;
-    }
-
-
+    for ( size_t i = 0; i < problem->nnodes; ++i )  free( edges[i] );
+    free( edges );
+    free( nodes );
 }
 
 
@@ -317,12 +331,12 @@ HeurConvHullInsertion_model ( instance *problem )
     /* Compute the convex hull.  */
     size_t k = chainHull_2D( P, problem->nnodes, H, problem );
 
-    double bestcost = __DBL_MAX__;
     __SEED = conf.seed;
     double elapsedtime = 0;
+    problem->solcost = __DBL_MAX__;
 
     for ( size_t j = 0; elapsedtime + 1e-3 < conf.heurtime; ++j ) {
-        HeurConvHullInsertion_solve( problem, &bestcost, H, k );
+        HeurConvHullInsertion_solve( problem, H, k );
 
         ftime( &end );
         elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
@@ -331,8 +345,7 @@ HeurConvHullInsertion_model ( instance *problem )
                    j + 1, conf.heurtime - elapsedtime );
     }
 
-    problem->elapsedtime  = elapsedtime;
-    problem->solcost = compute_solution_cost( problem );
+    problem->elapsedtime = elapsedtime;
 
     free( nodes );
     free( P     );

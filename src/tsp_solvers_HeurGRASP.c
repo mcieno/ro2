@@ -124,7 +124,7 @@ HeurGRASP_solve ( instance *problem )
                  * with probability 1.  */
                 if ( edges[pos].available && ( edges[pos].v == from || edges[pos].u == from ) )
                 {
-                    if ( rand_r(&__SEED) >= RAND_MAX / 4 ) {
+                    if ( rand_r( &__SEED ) >= RAND_MAX / 4 ) {
                         currentsol[k][0] = edges[pos].v;
                         currentsol[k][1] = edges[pos].u;
                         break;

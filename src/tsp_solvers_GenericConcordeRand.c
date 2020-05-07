@@ -351,7 +351,7 @@ _relaxationcutcallback_GenericConcordeRand ( CPXCALLBACKCONTEXTptr context, CPXL
     }
 
     /* Cut node at depth i with probability 2^-i. Root is cut with probability 1. */
-    int rnd = rand_r(&seed);
+    int rnd = rand_r( &seed );
     if ( rnd > ( INT_MAX >> nodedepth ) ) return status;
 
 
