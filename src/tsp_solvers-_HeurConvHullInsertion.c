@@ -284,14 +284,14 @@ HeurConvHullInsertion_model ( instance *problem )
     //presort by increasing x and y-coordinates
     selectionSort(P, problem->nnodes, problem); 
     //compute convex hull
-    size_t k = chainHull_2D(&P, problem->nnodes, H, problem);
+    size_t k = chainHull_2D(P, problem->nnodes, H, problem);
     ftime(&end);
     elapsed_time += ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
 
     for(size_t j=0; elapsed_time + 1e-3 < conf.timelimit; j++){
     //for(size_t j=0; j<1; j++){
         ftime( &start );
-        convhullinsertion_sol(problem, &best_sol_cost, &H, k);
+        convhullinsertion_sol(problem, &best_sol_cost, H, k);
         ftime( &end );
         elapsed_time += ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
     }
