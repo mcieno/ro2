@@ -93,7 +93,7 @@ chainHull_2D( size_t *P, size_t n, size_t *H, instance *problem )
     // Get the indices of points with min x-coord and min|max y-coord
     size_t minmin = 0, minmax;
     double xmin = problem->xcoord[P[0]];
-    for ( i = 1; i < n && problem->xcoord[P[i]] != xmin; ++i )
+    for ( i = 1; i < n && problem->xcoord[P[i]] == xmin; ++i )
         ;
     minmax = i - 1;
 
@@ -110,7 +110,7 @@ chainHull_2D( size_t *P, size_t n, size_t *H, instance *problem )
     // Get the indices of points with max x-coord and min|max y-coord
     size_t maxmin, maxmax = n-1;
     double xmax = problem->xcoord[P[n - 1]];
-    for ( i = n - 2; i >= 0 && problem->xcoord[P[i]] != xmax; --i )
+    for ( i = n - 2; i >= 0 && problem->xcoord[P[i]] == xmax; --i )
         ;
     maxmin = i + 1;
 
@@ -177,7 +177,6 @@ chainHull_2D( size_t *P, size_t n, size_t *H, instance *problem )
 void
 HeurConvHullInsertion_solve( instance *problem, size_t *H, size_t k )
 {
-
     /* Initialize edges.  */
     size_t **edges = malloc( problem->nnodes * sizeof( *edges ) );
     if ( edges == NULL ) {
