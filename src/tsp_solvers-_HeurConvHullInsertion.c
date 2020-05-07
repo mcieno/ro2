@@ -51,15 +51,10 @@ void selectionSort(size_t arr[], size_t n, instance *problem)
     } 
 } 
   
-// Function to print an array  
-void printArray(size_t arr[], size_t size) 
-{ 
-    size_t i; 
-    for (i = 0; i < size; i++) 
-        printf("%d ", arr[i]); 
-    printf("\n"); 
-} 
-  
+double
+_ecl_dst_ch(size_t node_a, size_t node_b, instance *problem){
+    return _euclidean_distance(problem->xcoord[node_a], problem->ycoord[node_a], problem->xcoord[node_b], problem->ycoord[node_b]);
+}
 
 // Copyright 2001 softSurfer, 2012 Dan Sunday
 // This code may be freely used and modified for any purpose
@@ -223,9 +218,9 @@ convhullinsertion_sol(instance *problem, double *best_sol_cost, size_t H[], size
 
         //Check which is shortest insertion path
         size_t best_edge = 0;
-        double best_path_cost = _ecl_dst(edges[0][0], node, problem) + _ecl_dst(edges[0][1], node, problem);
+        double best_path_cost = _ecl_dst_ch(edges[0][0], node, problem) + _ecl_dst_ch(edges[0][1], node, problem);
         for(size_t i=1; i<edges_counter;i++){
-            double cost = _ecl_dst(edges[i][0], node, problem) + _ecl_dst(edges[i][1], node, problem);
+            double cost = _ecl_dst_ch(edges[i][0], node, problem) + _ecl_dst_ch(edges[i][1], node, problem);
             if(cost<best_path_cost){
                 best_edge = i;
                 best_path_cost = cost;
