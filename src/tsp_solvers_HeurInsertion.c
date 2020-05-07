@@ -140,12 +140,13 @@ HeurInsertion_solve ( instance *problem )
 void
 HeurInsertion_model ( instance *problem )
 {
-
-    struct timeb start, end;
-    ftime( &start );
-
     __SEED = conf.seed;
+
     double elapsedtime = 0;
+    struct timeb start, end;
+
+    /* Start searching for the best solution */
+    ftime( &start );
     problem->solcost = __DBL_MAX__;
 
     for ( size_t j = 0; elapsedtime + 1e-3 < conf.heurtime; ++j ) {

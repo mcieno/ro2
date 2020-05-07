@@ -299,6 +299,9 @@ HeurConvHullInsertion_solve( instance *problem, size_t *H, size_t k )
 void
 HeurConvHullInsertion_model ( instance *problem )
 {
+    __SEED = conf.seed;
+
+    double elapsedtime = 0;
     struct timeb start, end;
 
     node_t *nodes = malloc( problem->nnodes * sizeof( *nodes ) );
@@ -312,7 +315,7 @@ HeurConvHullInsertion_model ( instance *problem )
 
     /* Sort the nodes and put their indices in P.  */
     ftime( &start );
-    log_debug( "Sorting nodes by X-coordinates." );
+    log_debug( "Sorting nodes by X-coordinates..." );
 
     for ( size_t i = 0; i < problem->nnodes; ++i ) {
         nodes[i] = (node_t) {1, i, problem->xcoord[i], problem->ycoord[i] };
@@ -329,10 +332,17 @@ HeurConvHullInsertion_model ( instance *problem )
                ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
 
     /* Compute the convex hull.  */
+    ftime( &start );
+    log_debug( "Finding the convex hull..." );
+
     size_t k = chainHull_2D( P, problem->nnodes, H, problem );
 
-    __SEED = conf.seed;
-    double elapsedtime = 0;
+    ftime( &end );
+    log_info( "Convex hull found in %.3lf seconds. It contains %zu nodes.",
+              ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000., k );
+
+    /* Start searching for the best solution */
+    ftime( &start );
     problem->solcost = __DBL_MAX__;
 
     for ( size_t j = 0; elapsedtime + 1e-3 < conf.heurtime; ++j ) {
