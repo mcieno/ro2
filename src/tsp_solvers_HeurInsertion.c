@@ -1,5 +1,5 @@
 /*
- * \brief   Insertion heuristic.
+ * \brief   Insertion heuristic method.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

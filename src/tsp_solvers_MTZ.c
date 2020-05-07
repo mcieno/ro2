@@ -1,5 +1,5 @@
 /*
- * \brief   Basic MTZ model.
+ * \brief   MTZ model.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

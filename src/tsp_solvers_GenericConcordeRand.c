@@ -1,5 +1,5 @@
 /*
- * \brief   Like GenericConcorde but only cuts nodes close to the root.
+ * \brief   Like GenericConcorde, but cuts nodes with descending probability.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

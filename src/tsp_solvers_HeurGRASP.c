@@ -1,5 +1,5 @@
 /*
- * \brief   Hard-Fix heuristic method
+ * \brief   GRASP heuristic method.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

@@ -1,5 +1,5 @@
 /*
- * \brief   Hard-Fix heuristic method
+ * \brief   Hard-Fix heuristic method.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

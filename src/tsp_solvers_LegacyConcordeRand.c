@@ -1,5 +1,5 @@
 /*
- * \brief   Like Legacy, but also cuts the relaxation using Concorde routines.
+ * \brief   Like LegacyConcorde, but cuts nodes with descending probability.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
