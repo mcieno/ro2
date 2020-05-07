@@ -88,7 +88,7 @@ extern tspconf_t conf;
 
 
 /*!
- * \brief Init TSP configuration global structure.
+ * \brief Initialize the TSP configuration global structure.
  */
 void
 tspconf_init ();
@@ -102,6 +102,13 @@ tspconf_init ();
  */
 void
 tspconf_apply ( CPXENVptr env );
+
+
+/*!
+ * \brief Destroy the TSP configuration global structure.
+ */
+void
+tspconf_destroy ();
 
 
 #endif

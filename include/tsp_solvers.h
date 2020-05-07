@@ -31,9 +31,10 @@
 #define TSP_SOLVER_GenericConcordeRand     18U  /*!< Like GenericConcorde but only cuts nodes with decreasing probability.  */
 #define TSP_SOLVER_HeurHardfix             19U  /*!< Hardfix Heuristic.  */
 #define TSP_SOLVER_HeurLocalBranching      20U  /*!< LocalBranching Heuristic.  */
-#define TSP_SOLVER_HeurInsertion           21U  /*!< LocalBranching Heuristic.  */
-#define TSP_SOLVER_HeurConvHullInsertion           22U  /*!< LocalBranching Heuristic.  */
-
+#define TSP_SOLVER_HeurNearestNeighbor     21U  /*!< Nearest Neighbor Heuristic.  */
+#define TSP_SOLVER_HeurGRASP               22U  /*!< GRASP Heuristic.  */
+#define TSP_SOLVER_HeurInsertion           23U  /*!< Insertion Heuristic.  */
+#define TSP_SOLVER_HeurConvHullInsertion   24U  /*!< Convex Hull Insertion Heuristic.  */
 
 typedef unsigned model_t;
 
@@ -341,6 +342,32 @@ void
 HeurLocalBranching_model ( instance *problem );
 
 /*!
+ * \brief Solve with Nearest Neighbor heuristic.
+ *
+ * This model repeatedly applies the Nearest Neighbor heuristic starting from
+ * various nodes and accumulating the best solution.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurNearestNeighbor_model ( instance *problem );
+
+/*!
+ * \brief Solve with GRASP heuristic.
+ *
+ * Similar to Nearest Neighbor, but choses the nearest with probability 1/4,
+ * the second-nearest with probability 1/16, the third with 1/64 and so on.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurGRASP_model ( instance *problem );
+
+/*!
  * \brief Solve with Insertion heuristic.
  *
  * This model uses the insertion method to find an
@@ -365,6 +392,5 @@ HeurInsertion_model ( instance *problem );
  */
 void
 HeurConvHullInsertion_model ( instance *problem );
-
 
 #endif

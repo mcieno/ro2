@@ -81,7 +81,9 @@ static struct argp_option options[]  =
                                                           "GenericConcordeShallow, "
                                                           "LegacyConcordeRand, "
                                                           "GenericConcordeRand, HeurHardfix, "
-                                                          "HeurLocalBranching. "
+                                                          "HeurLocalBranching, "
+                                                          "HeurNearestNeighbor, HeurGRASP, "
+                                                          "HeurInsertion, HeurConvHullInsertion. "
                                                           "Default: Generic."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
@@ -230,19 +232,29 @@ main ( int argc, char *argv[] )
             break;
 
         case TSP_SOLVER_HeurLocalBranching:
-            log_info( "Solving with LocalBranching heuristic." );
+            log_info( "Solving with Local Branching heuristic." );
             HeurLocalBranching_model( &problem );
+            break;
+
+        case TSP_SOLVER_HeurNearestNeighbor:
+            log_info( "Solving with Nearest Neighbor heuristic." );
+            HeurNearestNeighbor_model( &problem );
+            break;
+
+        case TSP_SOLVER_HeurGRASP:
+            log_info( "Solving with GRASP heuristic." );
+            HeurGRASP_model( &problem );
             break;
 
         case TSP_SOLVER_HeurInsertion:
             log_info( "Solving with Insertion heuristic." );
             HeurInsertion_model( &problem );
-            break; 
+            break;
 
         case TSP_SOLVER_HeurConvHullInsertion:
             log_info( "Solving with Convex Hull Insertion heuristic." );
             HeurConvHullInsertion_model( &problem );
-            break;        
+            break;
 
         default:
             log_error( "No model specified. Exit..." );
@@ -268,6 +280,7 @@ main ( int argc, char *argv[] )
     fprintf( stdout, "%lf\n", problem.solcost      );
 
     destroy_instance( &problem );
+    tspconf_destroy();
 }
 
 
@@ -386,11 +399,18 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcasecmp( "HeurLocalBranching", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurLocalBranching;
+            } else if ( !strcasecmp( "HeurNearestNeighbor", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurNearestNeighbor;
+
+            } else if ( !strcasecmp( "HeurGRASP", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurGRASP;
 
             } else if ( !strcasecmp( "HeurInsertion", arg ) ) {
-                conf.solving_method = TSP_SOLVER_HeurInsertion; 
+                conf.solving_method = TSP_SOLVER_HeurInsertion;
+
             } else if ( !strcasecmp( "HeurConvHullInsertion", arg ) ) {
-                conf.solving_method = TSP_SOLVER_HeurConvHullInsertion;     
+                conf.solving_method = TSP_SOLVER_HeurConvHullInsertion;
+
             } else {
                 argp_error(
                     state,

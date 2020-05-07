@@ -1,4 +1,4 @@
-.TH "include/tspconf.h" 3 "Thu Apr 30 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tspconf.h" 3 "Thu May 7 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -29,11 +29,15 @@ include/tspconf.h \- Configuration of a TSP instance that can be applied to CPLE
 .ti -1c
 .RI "void \fBtspconf_init\fP ()"
 .br
-.RI "Init TSP configuration global structure\&. "
+.RI "Initialize the TSP configuration global structure\&. "
 .ti -1c
 .RI "void \fBtspconf_apply\fP (CPXENVptr env)"
 .br
 .RI "Apply the global configuration to CPLEX environment\&. "
+.ti -1c
+.RI "void \fBtspconf_destroy\fP ()"
+.br
+.RI "Destroy the TSP configuration global structure\&. "
 .in -1c
 .SS "Variables"
 

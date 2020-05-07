@@ -77,6 +77,11 @@ destroy_instance ( instance *problem )
     }
 
     if ( problem->solution != NULL ) {
+        for ( int i = 0; i < problem->nnodes; ++i ) {
+            if ( problem->solution[i] != NULL ) {
+                free( problem->solution[i] );
+            }
+        }
         free( problem->solution );
     }
 

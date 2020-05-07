@@ -51,7 +51,7 @@ insertion_sol(instance *problem, double *best_sol_cost)
         //select a random node
         x = rand()%nodes_counter;
         size_t node = nodes[x];
-        nodes[x]= nodes[(nodes_counter--)-1];  
+        nodes[x]= nodes[(nodes_counter--)-1];
 
         //Check which is shortest insertion path
         size_t best_edge = 0;
@@ -104,14 +104,11 @@ void
 HeurInsertion_model ( instance *problem )
 {
 
-    srand(time(0));
+    srand( conf.seed );
     struct timeb start, end;
     double best_sol_cost = LONG_MAX;
 
     double elapsed_time = 0;
-    struct timeb start_iter, end_iter;
-
-
 
     for(size_t k=0; elapsed_time + 1e-3 < conf.timelimit; k++){
         ftime( &start );

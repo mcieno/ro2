@@ -22,7 +22,7 @@ tspconf_init ()
     conf.threads        = 0;
     conf.memory         = 0;
     conf.timelimit      = 0.;
-    conf.heurtime       = 0.;
+    conf.heurtime       = 600.;
     conf.nodelimit      = 0;
     conf.cutup          = 0.;
     conf.epgap          = 0.;
@@ -91,4 +91,13 @@ tspconf_apply ( CPXENVptr env )
     if (     conf.epgap > 0. ) CPXsetdblparam( env, CPXPARAM_MIP_Tolerances_MIPGap,      conf.epgap     );
     if (    conf.scrind > 0  ) CPXsetintparam( env, CPXPARAM_ScreenOutput,               conf.scrind    );
     if (      conf.seed > 0  ) CPXsetintparam( env, CPXPARAM_RandomSeed,                 conf.seed      );
+}
+
+
+void
+tspconf_destroy()
+{
+    if ( conf.filename != NULL)  free( conf.filename );
+    if ( conf.name     != NULL)  free( conf.name     );
+    tspconf_init();
 }
