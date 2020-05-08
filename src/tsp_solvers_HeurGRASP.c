@@ -1,5 +1,5 @@
 /*
- * \brief   Hard-Fix heuristic method
+ * \brief   GRASP heuristic method.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
@@ -39,14 +39,14 @@ edge_t;
  */
 int
 _cmp_HeurGRASP( const void *a, const void *b ) {
-    const edge_t* ea = (const edge_t*) a;
-    const edge_t* eb = (const edge_t*) b;
+    const edge_t *ea = (const edge_t *)a;
+    const edge_t *eb = (const edge_t *)b;
 
     return ea->cost < eb->cost
-                ? -1
-                : ea->cost == eb->cost
-                    ? 0
-                    : +1;
+               ? -1
+               : ea->cost == eb->cost
+                     ? 0
+                     : +1;
 }
 
 
@@ -81,7 +81,9 @@ HeurGRASP_solve ( instance *problem )
 
     log_debug( "Sorting edges by cost." );
     ftime( &start );
+
     qsort( edges, nedges, sizeof( *edges ), _cmp_HeurGRASP );
+
     ftime( &end );
     log_debug( "Done sorting in %.3lf seconds.",
                ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
@@ -124,7 +126,7 @@ HeurGRASP_solve ( instance *problem )
                  * with probability 1.  */
                 if ( edges[pos].available && ( edges[pos].v == from || edges[pos].u == from ) )
                 {
-                    if ( rand_r(&__SEED) >= RAND_MAX / 4 ) {
+                    if ( rand_r( &__SEED ) >= RAND_MAX / 4 ) {
                         currentsol[k][0] = edges[pos].v;
                         currentsol[k][1] = edges[pos].u;
                         break;

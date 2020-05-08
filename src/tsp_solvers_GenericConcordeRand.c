@@ -1,5 +1,5 @@
 /*
- * \brief   Like GenericConcorde but only cuts nodes close to the root.
+ * \brief   Like GenericConcorde, but cuts nodes with descending probability.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
@@ -351,7 +351,7 @@ _relaxationcutcallback_GenericConcordeRand ( CPXCALLBACKCONTEXTptr context, CPXL
     }
 
     /* Cut node at depth i with probability 2^-i. Root is cut with probability 1. */
-    int rnd = rand_r(&seed);
+    int rnd = rand_r( &seed );
     if ( rnd > ( INT_MAX >> nodedepth ) ) return status;
 
 

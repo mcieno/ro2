@@ -1,5 +1,5 @@
 /*
- * \brief   Dummy model: degree constraints only.
+ * \brief   Degree constraints only.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

@@ -1,5 +1,5 @@
 /*
- * \brief   Basic MTZ model.
+ * \brief   MTZ model with lazy constraints.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>

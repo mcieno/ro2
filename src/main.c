@@ -114,7 +114,7 @@ main ( int argc, char *argv[] )
 
     parse_tsp_file( conf.filename, &problem );
 
-    if ( conf.shouldplot && loglevel >= LOG_INFO ) {
+    if ( conf.shouldplot && loglevel <= LOG_INFO ) {
         /* Plot before solving only if verbose */
         plot_instance( &problem );
     }

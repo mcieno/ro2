@@ -1,5 +1,5 @@
 /*
- * \brief   Hard-Fix heuristic method
+ * \brief   Hard-Fix heuristic method.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
@@ -346,7 +346,7 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
     }
 
     /* Cut node at depth i with probability 2^-i. Root is cut with probability 1. */
-    int rnd = rand_r(&seed);
+    int rnd = rand_r( &seed );
     if ( rnd > ( INT_MAX >> nodedepth ) ) return status;
 
 

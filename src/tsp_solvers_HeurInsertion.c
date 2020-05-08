@@ -1,5 +1,5 @@
 /*
- * \brief   Insertion heuristic.
+ * \brief   Insertion heuristic method.
  * \authors Francesco Cazzaro, Marco Cieno
  */
 #include <errno.h>
@@ -16,109 +16,148 @@
 #include "tsp.h"
 #include "tspconf.h"
 
-
-double
-_ecl_dst(size_t node_a, size_t node_b, instance *problem){
-    return _euclidean_distance(problem->xcoord[node_a], problem->ycoord[node_a], problem->xcoord[node_b], problem->ycoord[node_b]);
-}
+static unsigned int __SEED;
 
 
 void
-insertion_sol(instance *problem, double *best_sol_cost)
+HeurInsertion_solve ( instance *problem )
 {
-
-    size_t nodes[problem->nnodes];
-    size_t edges[problem->nnodes][2];
-
-    size_t nodes_counter = problem->nnodes;
-    for(size_t i=0; i<problem->nnodes; i++){
-        nodes[i]=i;
+    /* Initialize edges.  */
+    size_t **edges = malloc( problem->nnodes * sizeof( *edges ) );
+    if ( edges == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
     }
-    size_t edges_counter = 0;
+    for (size_t i = 0; i < problem->nnodes; ++i) {
+        edges[i] = malloc( 2 * sizeof( *edges[i] ) );
+        if ( edges[i] == NULL ) {
+            log_fatal( "Out of memory." );
+            exit( EXIT_FAILURE );
+        }
+    }
 
-    //random edge subtour initializations
-    size_t x = rand()%nodes_counter;
-    edges[edges_counter][0] = nodes[x];
-    nodes[x]= nodes[(nodes_counter--)-1];
-    x = rand()%nodes_counter;
-    edges[edges_counter++][1] = nodes[x];
-    nodes[x]= nodes[(nodes_counter--)-1];
+    size_t nedges = 0;
+    size_t nnodes = problem->nnodes;
+
+    size_t *nodes = malloc( problem->nnodes * sizeof( *nodes ) );
+    if ( nodes == NULL ) {
+        log_fatal( "Out of memory." );
+        exit( EXIT_FAILURE );
+    }
+
+    for ( size_t i = 0; i < problem->nnodes; ++i ) {
+        nodes[i] = i;
+    }
+
+    /* random edge subtour initializations */
+    size_t x;
+
+    x = rand_r( &__SEED ) % nnodes;
+    edges[nedges][0] = nodes[x];
+    nodes[x] = nodes[--nnodes - 1];
+
+    x = rand_r( &__SEED ) % nnodes;
+    edges[nedges][1] = nodes[x];
+    nodes[x] = nodes[--nnodes - 1];
+
+    ++nedges;
 
 
-    //Insertions
-    size_t first_insertion = 1;
-    for(size_t iter=0; iter<problem->nnodes-2; iter++){
-        //select a random node
-        x = rand()%nodes_counter;
+    /* Make insertions */
+    size_t is_first = 1;
+    for ( size_t iter = 0; iter < problem->nnodes - 2; ++iter ) {
+        /* Select a random node */
+        x           = rand_r( &__SEED ) % nnodes;
         size_t node = nodes[x];
-        nodes[x]= nodes[(nodes_counter--)-1];
+        nodes[x]    = nodes[--nnodes - 1];
 
-        //Check which is shortest insertion path
+        /* Find the shortest insertion path */
         size_t best_edge = 0;
-        double best_path_cost = _ecl_dst(edges[0][0], node, problem) + _ecl_dst(edges[0][1], node, problem);
-        for(size_t i=1; i<edges_counter;i++){
-            double cost = _ecl_dst(edges[i][0], node, problem) + _ecl_dst(edges[i][1], node, problem);
-            if(cost<best_path_cost){
-                best_edge = i;
+        double best_path_cost = _euclidean_distance(
+                                    problem->xcoord[edges[0][0]],
+                                    problem->ycoord[edges[0][0]],
+                                    problem->xcoord[node],
+                                    problem->ycoord[node]) +
+                                _euclidean_distance(
+                                    problem->xcoord[edges[0][1]],
+                                    problem->ycoord[edges[0][1]],
+                                    problem->xcoord[node],
+                                    problem->ycoord[node]);
+
+        for ( size_t i = 1; i < nedges; ++i ) {
+            double cost = _euclidean_distance(
+                              problem->xcoord[edges[i][0]],
+                              problem->ycoord[edges[i][0]],
+                              problem->xcoord[node], problem->ycoord[node]) +
+                          _euclidean_distance(
+                              problem->xcoord[edges[i][1]],
+                              problem->ycoord[edges[i][1]],
+                              problem->xcoord[node],
+                              problem->ycoord[node]);
+
+            if ( cost < best_path_cost ) {
+                best_edge      = i;
                 best_path_cost = cost;
             }
         }
 
-        //insert node
-        if(first_insertion){
-            edges[edges_counter][0]=node;
-            edges[edges_counter++][1]=edges[best_edge][0];
-            edges[edges_counter][0]=node;
-            edges[edges_counter++][1]=edges[best_edge][1];
-            first_insertion =0;
-        } else{
-            edges[edges_counter][0]=node;
-            edges[edges_counter++][1]=edges[best_edge][1];
+        /* Insert node */
+        if ( is_first ) {
+            edges[nedges][0]    = node;
+            edges[nedges++][1]  = edges[best_edge][0];
+            edges[nedges][0]    = node;
+            edges[nedges++][1]  = edges[best_edge][1];
+            is_first            = 0;
+        } else {
+            edges[nedges][0]    = node;
+            edges[nedges++][1]  = edges[best_edge][1];
             edges[best_edge][1] = node;
         }
-
     }
 
 
-    //sol cost
-    double total_cost = 0;
-    for ( size_t i = 0; i < problem->nnodes; ++i ) {
-        size_t node_1 = edges[i][0];
-        size_t node_2 = edges[i][1];
-        total_cost += _euclidean_distance( problem->xcoord[node_1], problem->ycoord[node_1],
-                                     problem->xcoord[node_2], problem->ycoord[node_2] );
+    /* Compute new solution cost.  */
+    size_t **bestsol = problem->solution;
+    double bestcost  = problem->solcost;
+
+    problem->solution = edges;
+    problem->solcost  = compute_solution_cost( problem );
+
+    if ( problem->solcost > bestcost ) {
+        /* If no improvement was made, restore previous solution.  */
+        problem->solution = bestsol;
+        problem->solcost  = bestcost;
+    } else {
+        /* Put the old `problem->solution` into `edges` to be freed.  */
+        log_info( "Heuristic solution improved (%.3e < %.3e).", problem->solcost, bestcost );
+        edges = bestsol;
     }
-
-    if(total_cost<*best_sol_cost){
-        for(size_t i=0; i<problem->nnodes; i++){
-            problem->solution[i][0]=edges[i][0];
-            problem->solution[i][1]=edges[i][1];
-        }
-        *best_sol_cost = total_cost;
-    }
-
-
+    for ( size_t i = 0; i < problem->nnodes; ++i )  free( edges[i] );
+    free( edges );
+    free( nodes );
 }
 
 void
 HeurInsertion_model ( instance *problem )
 {
+    __SEED = conf.seed;
 
-    srand( conf.seed );
+    double elapsedtime = 0;
     struct timeb start, end;
-    double best_sol_cost = LONG_MAX;
 
-    double elapsed_time = 0;
+    /* Start searching for the best solution */
+    ftime( &start );
+    problem->solcost = __DBL_MAX__;
 
-    for(size_t k=0; elapsed_time + 1e-3 < conf.timelimit; k++){
-        ftime( &start );
-        insertion_sol(problem, &best_sol_cost);
+    for ( size_t j = 0; elapsedtime + 1e-3 < conf.heurtime; ++j ) {
+        HeurInsertion_solve( problem );
+
         ftime( &end );
-        elapsed_time += ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+        elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+
+        log_debug( "Found heuristic solution #%zu. Still %.3lf seconds remaining.",
+                   j + 1, conf.heurtime - elapsedtime );
     }
 
-    problem->elapsedtime  = elapsed_time;
-
-    problem->solcost = compute_solution_cost( problem );
-
+    problem->elapsedtime = elapsedtime;
 }

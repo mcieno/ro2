@@ -4,7 +4,7 @@ echo "[*] Building with make all"
 make -f Makefile.blade all > /dev/null || exit 1
 
 timelimit=600       # 10 minutes for finding the first solution
-heurtime=600        # 10 minutes for optimizing it
+heurtime=120        # 2 minutes for optimizing the initial solution
 
 bmdir="benchmarks"
 bmsig="$bmdir/bm_$(date +%F_%T)"
@@ -19,12 +19,13 @@ echo "[*] Saving benchmark to $bmfile"
 models=(
     HeurHardfix
     HeurLocalBranching
+    HeurNearestNeighbor
+    HeurGRASP
+    HeurInsertion
+    HeurConvHullInsertion
 )
 
 testbed=(
-    data/burma14.tsp
-    data/ulysses16.tsp
-    data/ulysses22.tsp
     data/att48.tsp
     data/eil51.tsp
     data/berlin52.tsp
@@ -58,16 +59,10 @@ testbed=(
     data/kroA200.tsp
     data/kroB200.tsp
     data/gr202.tsp
-    #data/ts225.tsp
-    #data/tsp225.tsp
-    #data/pr226.tsp
-    #data/gr229.tsp
-    #data/gil262.tsp
     data/pr264.tsp
     data/a280.tsp
     data/pr299.tsp
     data/lin318.tsp
-    data/linhp318.tsp
     data/rd400.tsp
     data/fl417.tsp
     data/gr431.tsp
@@ -83,39 +78,61 @@ testbed=(
     data/gr666.tsp
     data/u724.tsp
     data/rat783.tsp
-    data/dsj1000.tsp
-    ###data/pr1002.tsp
-    ###data/u1060.tsp
-    ###data/vm1084.tsp
-    ###data/pcb1173.tsp
-    ###data/d1291.tsp
-    ###data/rl1304.tsp
-    ###data/rl1323.tsp
-    ###data/nrw1379.tsp
-    ###data/fl1400.tsp
-    ###data/u1432.tsp
-    ###data/fl1577.tsp
-    ###data/d1655.tsp
-    ###data/vm1748.tsp
-    ###data/u1817.tsp
-    ###data/rl1889.tsp
-    ###data/d2103.tsp
-    ###data/u2152.tsp
-    ###data/u2319.tsp
-    ###data/pr2392.tsp
-    ###data/pcb3038.tsp
-    ###data/fl3795.tsp
-    ###data/fnl4461.tsp
-    ###data/rl5915.tsp
-    ###data/rl5934.tsp
-    ###data/pla7397.tsp
-    ###data/rl11849.tsp
-    ###data/usa13509.tsp
-    ###data/brd14051.tsp
-    ###data/d15112.tsp
-    ###data/d18512.tsp
-    ###data/pla33810.tsp
-    ###data/pla85900.tsp
+)
+
+testbedopt=(
+    33523.708507
+    428.871756
+    7544.365902
+    677.109609
+    544.369053
+    108159.438274
+    510.886315
+    1219.243769
+    21285.443182
+    22139.074615
+    20750.762504
+    21294.290821
+    22068.758669
+    7910.396210
+    640.211591
+    14382.995933
+    44301.683677
+    59030.735703
+    118293.523816
+    6110.722200
+    96770.924122
+    706.289816
+    58535.221761
+    6530.902722
+    26524.863036
+    26127.357889
+    73683.640628
+    42075.670040
+    2333.873188
+    15808.652051
+    29369.407047
+    29440.412221
+    486.349386
+    49135.004963
+    2586.769648
+    48194.920103
+    42042.535089
+    15275.984985
+    11914.306105
+    1924.155132
+    107215.301715
+    50783.547514
+    35019.220247
+    86742.422162
+    2009.446807
+    36934.771414
+    6795.967520
+    34646.834710
+    48917.596353
+    3088.465842
+    41907.722275
+    8842.994960
 )
 
 # Check if seeds are provided as command line args
@@ -135,41 +152,34 @@ echo "[*] Testing ${#models[@]} models (${models[@]}) on ${#testbed[@]} files ($
 
 
 for file in "${testbed[@]}"; do
-    testresult=( $(timeout 7200 ./bin/tsp $file --model=GenericConcordeRand -j16 --noplot --quiet) )
+    # Pop true optimal solution
+    trueopt="${testbedopt[0]}"
+    testbedopt=("${testbedopt[@]:1}")
+    echo -e "\n[O] Optimal solution for $file is $trueopt. Starting heuristics..."
 
-    if [ $? -ne 0 ]; then
-        # very high cost on timeout
-        echo -e "\n[!] Timeout while computing optimal solution for $file. Skipping..."
+    for seed in "${seeds[@]}"; do
+        echo -e "\n[*] ================ $file : $seed ================"
 
-    else
+        echo -n "$file:$seed,$trueopt" >> $bmfile
 
-        trueopt="${testresult[2]}"
-        echo -e "\n[O] Optimal solution for $file found: ${seeds[@]}. Starting heuristics..."
+        for model in "${models[@]}"; do
+            testresult=( $(./bin/tsp $file --model=$model --seed $seed --timelimit $timelimit --heurtime $heurtime -j4 --noplot --quiet) )
 
-        for seed in "${seeds[@]}"; do
-            echo -e "\n[*] ================ $file : $seed ================"
+            if [ $? -ne 0 ]; then
+                # very high cost on timeout
+                testresult=( $timelimit 0 10000000 )
+                echo "[-] $model timed out ($timelimit)"
+            else
+                echo "[>] $model finished in ${testresult[0]}s (cost: ${testresult[2]})"
+            fi
 
-            echo -n "$file:$seed,$trueopt" >> $bmfile
+            echo -n ",${testresult[2]}" >> $bmfile
 
-            for model in "${models[@]}"; do
-                testresult=( $(./bin/tsp $file --model=$model --seed $seed --timelimit $timelimit --heurtime $heurtime -j4 --noplot --quiet) )
-
-                if [ $? -ne 0 ]; then
-                    # very high cost on timeout
-                    testresult=( $timelimit 0 10000000 )
-                    echo "[-] $model timed out ($timelimit)"
-                else
-                    echo "[>] $model finished in ${testresult[0]}s (cost: ${testresult[2]})"
-                fi
-
-                echo -n ",${testresult[2]}" >> $bmfile
-
-                sleep 1
-            done
-
-            echo "" >> $bmfile
+            sleep 1
         done
-    fi
+
+        echo "" >> $bmfile
+    done
 done
 
 sleep 1  # let file streams flush
