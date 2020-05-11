@@ -102,6 +102,7 @@ Available heuristics are:
 - `HeurGRASP`
 - `HeurInsertion`
 - `HeurConvHullInsertion`
+- `HeurGRASPWith2OPTRefinement`
 
 Default model is `Generic`, i.e., branch and cut model with generic "candidate cut" callback.
 

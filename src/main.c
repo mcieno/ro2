@@ -84,7 +84,8 @@ static struct argp_option options[]  =
                                                           "GenericConcordeRandWithPatching, "
                                                           "HeurHardfix, HeurLocalBranching, "
                                                           "HeurNearestNeighbor, HeurGRASP, "
-                                                          "HeurInsertion, HeurConvHullInsertion. "
+                                                          "HeurInsertion, HeurConvHullInsertion, "
+                                                          "HeurGRASPWith2OPTRefinement. "
                                                           "Default: Generic."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },

@@ -90,6 +90,9 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .ti -1c
 .RI "#define \fBTSP_SOLVER_HeurConvHullInsertion\fP   25U"
 .br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_HeurGRASPWith2OPTRefinement\fP   26U"
+.br
 .in -1c
 .SS "Typedefs"
 
@@ -209,6 +212,10 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .RI "void \fBHeurConvHullInsertion_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with Convex Hull Insertion heuristic\&. "
+.ti -1c
+.RI "void \fBHeurGRASPWith2OPTRefinement_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "GRASP heuristic method with 2-OPT refinement method\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -242,6 +249,8 @@ Like GenericConcorde but only cuts nodes close to the root\&.
 Convex Hull Insertion Heuristic\&. 
 .SS "#define TSP_SOLVER_HeurGRASP   23U"
 GRASP Heuristic\&. 
+.SS "#define TSP_SOLVER_HeurGRASPWith2OPTRefinement   26U"
+GRASP heuristic method with 2-OPT refinement method\&. 
 .SS "#define TSP_SOLVER_HeurHardfix   20U"
 Hardfix Heuristic\&. 
 .SS "#define TSP_SOLVER_HeurInsertion   24U"
@@ -411,6 +420,17 @@ Solve with Convex Hull Insertion heuristic\&. This model uses the convex hull in
 
 .PP
 Solve with GRASP heuristic\&. Similar to Nearest Neighbor, but choses the nearest with probability 1/4, the second-nearest with probability 1/16, the third with 1/64 and so on\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void HeurGRASPWith2OPTRefinement_model (\fBinstance\fP * problem)"
+
+.PP
+GRASP heuristic method with 2-OPT refinement method\&. This model applies the 2-OPT refinement method to every solution found with the GRASP heuristic\&.
 .PP
 \fBParameters:\fP
 .RS 4
