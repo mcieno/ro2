@@ -270,6 +270,12 @@ main ( int argc, char *argv[] )
             break;
 
 
+        case TSP_SOLVER_HeurGRASPWith2OPTRefinement:
+            log_info( "Solving with GRASP heuristic with 2-OPT refinement." );
+            HeurGRASPWith2OPTRefinement_model( &problem );
+            break;
+
+
         default:
             log_error( "No model specified. Exit..." );
             exit( EXIT_FAILURE );
@@ -428,6 +434,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcasecmp( "HeurConvHullInsertion", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurConvHullInsertion;
+
+            } else if ( !strcasecmp( "HeurGRASPWith2OPTRefinement", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurGRASPWith2OPTRefinement;
 
             } else {
                 argp_error(

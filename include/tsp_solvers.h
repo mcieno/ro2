@@ -36,6 +36,7 @@
 #define TSP_SOLVER_HeurGRASP                        23U  /*!< GRASP Heuristic.  */
 #define TSP_SOLVER_HeurInsertion                    24U  /*!< Insertion Heuristic.  */
 #define TSP_SOLVER_HeurConvHullInsertion            25U  /*!< Convex Hull Insertion Heuristic.  */
+#define TSP_SOLVER_HeurGRASPWith2OPTRefinement      26U  /*!< GRASP heuristic method with 2-OPT refinement method.  */
 
 typedef unsigned model_t;
 
@@ -405,5 +406,19 @@ HeurInsertion_model ( instance *problem );
  */
 void
 HeurConvHullInsertion_model ( instance *problem );
+
+/*!
+ * \brief GRASP heuristic method with 2-OPT refinement method.
+ *
+ * This model applies the 2-OPT refinement method to every solution found with
+ * the GRASP heuristic.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurGRASPWith2OPTRefinement_model ( instance *problem );
+
 
 #endif
