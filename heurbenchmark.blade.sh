@@ -23,6 +23,7 @@ models=(
     HeurGRASP
     HeurInsertion
     HeurConvHullInsertion
+    HeurGRASPWith2OPTRefinement
 )
 
 testbed=(
