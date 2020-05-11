@@ -7,6 +7,7 @@ var searchData=
   ['tsp_5fsolver_5fgeneric',['TSP_SOLVER_Generic',['../tsp__solvers_8h.html#a82e076dedc49c83ed9a28401b024cfa2',1,'tsp_solvers.h']]],
   ['tsp_5fsolver_5fgenericconcorde',['TSP_SOLVER_GenericConcorde',['../tsp__solvers_8h.html#ab599dc5fa8dfd3cbdf77e15a0c6a575c',1,'tsp_solvers.h']]],
   ['tsp_5fsolver_5fgenericconcorderand',['TSP_SOLVER_GenericConcordeRand',['../tsp__solvers_8h.html#ae3671260b7b06b26dbecbb445d0f3e5b',1,'tsp_solvers.h']]],
+  ['tsp_5fsolver_5fgenericconcorderandwithpatching',['TSP_SOLVER_GenericConcordeRandWithPatching',['../tsp__solvers_8h.html#a3a9ab4ea9d3cab7b1a02b6c2ed4813e6',1,'tsp_solvers.h']]],
   ['tsp_5fsolver_5fgenericconcordeshallow',['TSP_SOLVER_GenericConcordeShallow',['../tsp__solvers_8h.html#a488294db43442435277401c4b2ab436f',1,'tsp_solvers.h']]],
   ['tsp_5fsolver_5fheurconvhullinsertion',['TSP_SOLVER_HeurConvHullInsertion',['../tsp__solvers_8h.html#ac5d43e8238e7ec71993d32efdd2a5d88',1,'tsp_solvers.h']]],
   ['tsp_5fsolver_5fheurgrasp',['TSP_SOLVER_HeurGRASP',['../tsp__solvers_8h.html#afc1a9ddb1dd99d7ba3dab421ec8ab058',1,'tsp_solvers.h']]],

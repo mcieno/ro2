@@ -11,30 +11,31 @@
 #include "tsp.h"
 
 
-#define TSP_SOLVER_Random                   1U  /*!< Random model.  */
-#define TSP_SOLVER_Dummy                    2U  /*!< Dummy model.  */
-#define TSP_SOLVER_MTZ                      3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
-#define TSP_SOLVER_Flow1                    4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
-#define TSP_SOLVER_LazyMTZ                  5U  /*!< Sequential Formulation model with lazy constraints.  */
-#define TSP_SOLVER_LazyFlow1                6U  /*!< Single Commodity Flow model with lazy constraints.  */
-#define TSP_SOLVER_Loop                     7U  /*!< Branch and Cut model with SEC added at every restart.  */
-#define TSP_SOLVER_LoopF                    8U  /*!< Variant F of Loop model.  */
-#define TSP_SOLVER_LoopM                    9U  /*!< Variant M of Loop model.  */
-#define TSP_SOLVER_LoopX                   10U  /*!< Variant X of Loop model.  */
-#define TSP_SOLVER_Legacy                  11U  /*!< Branch and Cut model with legacy lazy cut callback.  */
-#define TSP_SOLVER_Generic                 12U  /*!< Branch and Cut model with generic candidate cut callback.  */
-#define TSP_SOLVER_LegacyConcorde          13U  /*!< Like Legacy, but also cuts the relaxation using Concorde routines.  */
-#define TSP_SOLVER_GenericConcorde         14U  /*!< Like Generic, but also cuts the relaxation using Concorde routines.  */
-#define TSP_SOLVER_LegacyConcordeShallow   15U  /*!< Like LegacyConcorde but only cuts nodes close to the root.  */
-#define TSP_SOLVER_GenericConcordeShallow  16U  /*!< Like GenericConcorde but only cuts nodes close to the root.  */
-#define TSP_SOLVER_LegacyConcordeRand      17U  /*!< Like LegacyConcorde but only cuts nodes with decreasing probability.  */
-#define TSP_SOLVER_GenericConcordeRand     18U  /*!< Like GenericConcorde but only cuts nodes with decreasing probability.  */
-#define TSP_SOLVER_HeurHardfix             19U  /*!< Hardfix Heuristic.  */
-#define TSP_SOLVER_HeurLocalBranching      20U  /*!< LocalBranching Heuristic.  */
-#define TSP_SOLVER_HeurNearestNeighbor     21U  /*!< Nearest Neighbor Heuristic.  */
-#define TSP_SOLVER_HeurGRASP               22U  /*!< GRASP Heuristic.  */
-#define TSP_SOLVER_HeurInsertion           23U  /*!< Insertion Heuristic.  */
-#define TSP_SOLVER_HeurConvHullInsertion   24U  /*!< Convex Hull Insertion Heuristic.  */
+#define TSP_SOLVER_Random                            1U  /*!< Random model.  */
+#define TSP_SOLVER_Dummy                             2U  /*!< Dummy model.  */
+#define TSP_SOLVER_MTZ                               3U  /*!< Sequential Formulation model  (Miller, Tucker and Zemlin (1960)).  */
+#define TSP_SOLVER_Flow1                             4U  /*!< Single Commodity Flow model (Gavish and Graves (1978)).  */
+#define TSP_SOLVER_LazyMTZ                           5U  /*!< Sequential Formulation model with lazy constraints.  */
+#define TSP_SOLVER_LazyFlow1                         6U  /*!< Single Commodity Flow model with lazy constraints.  */
+#define TSP_SOLVER_Loop                              7U  /*!< Branch and Cut model with SEC added at every restart.  */
+#define TSP_SOLVER_LoopF                             8U  /*!< Variant F of Loop model.  */
+#define TSP_SOLVER_LoopM                             9U  /*!< Variant M of Loop model.  */
+#define TSP_SOLVER_LoopX                            10U  /*!< Variant X of Loop model.  */
+#define TSP_SOLVER_Legacy                           11U  /*!< Branch and Cut model with legacy lazy cut callback.  */
+#define TSP_SOLVER_Generic                          12U  /*!< Branch and Cut model with generic candidate cut callback.  */
+#define TSP_SOLVER_LegacyConcorde                   13U  /*!< Like Legacy, but also cuts the relaxation using Concorde routines.  */
+#define TSP_SOLVER_GenericConcorde                  14U  /*!< Like Generic, but also cuts the relaxation using Concorde routines.  */
+#define TSP_SOLVER_LegacyConcordeShallow            15U  /*!< Like LegacyConcorde but only cuts nodes close to the root.  */
+#define TSP_SOLVER_GenericConcordeShallow           16U  /*!< Like GenericConcorde but only cuts nodes close to the root.  */
+#define TSP_SOLVER_LegacyConcordeRand               17U  /*!< Like LegacyConcorde but only cuts nodes with decreasing probability.  */
+#define TSP_SOLVER_GenericConcordeRand              18U  /*!< Like GenericConcorde but only cuts nodes with decreasing probability.  */
+#define TSP_SOLVER_GenericConcordeRandWithPatching  19U  /*!< Like GenericConcordeRand but provides CPLEX with heuristic solutions obtained with the Patching method.  */
+#define TSP_SOLVER_HeurHardfix                      20U  /*!< Hardfix Heuristic.  */
+#define TSP_SOLVER_HeurLocalBranching               21U  /*!< LocalBranching Heuristic.  */
+#define TSP_SOLVER_HeurNearestNeighbor              22U  /*!< Nearest Neighbor Heuristic.  */
+#define TSP_SOLVER_HeurGRASP                        23U  /*!< GRASP Heuristic.  */
+#define TSP_SOLVER_HeurInsertion                    24U  /*!< Insertion Heuristic.  */
+#define TSP_SOLVER_HeurConvHullInsertion            25U  /*!< Convex Hull Insertion Heuristic.  */
 
 typedef unsigned model_t;
 
@@ -315,6 +316,18 @@ LegacyConcordeRand_model ( instance *problem );
  */
 void
 GenericConcordeRand_model ( instance *problem );
+
+
+/*!
+ * \brief Like GenericConcordeRand but provides CPLEX with heuristic solutions
+ *        obtained with the Patching method.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+GenericConcordeRandWithPatching_model ( instance *problem );
 
 /*!
  * \brief Solve with Hardfix heuristic.

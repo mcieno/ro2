@@ -80,8 +80,9 @@ static struct argp_option options[]  =
                                                           "LegacyConcordeShallow, "
                                                           "GenericConcordeShallow, "
                                                           "LegacyConcordeRand, "
-                                                          "GenericConcordeRand, HeurHardfix, "
-                                                          "HeurLocalBranching, "
+                                                          "GenericConcordeRand, "
+                                                          "GenericConcordeRandWithPatching, "
+                                                          "HeurHardfix, HeurLocalBranching, "
                                                           "HeurNearestNeighbor, HeurGRASP, "
                                                           "HeurInsertion, HeurConvHullInsertion. "
                                                           "Default: Generic."                       },
@@ -226,35 +227,48 @@ main ( int argc, char *argv[] )
             GenericConcordeRand_model( &problem );
             break;
 
+
+        case TSP_SOLVER_GenericConcordeRandWithPatching:
+            log_info( "Solving with GenericConcordeRandWithPatching model." );
+            GenericConcordeRandWithPatching_model( &problem );
+            break;
+
+
         case TSP_SOLVER_HeurHardfix:
             log_info( "Solving with Hardfix heuristic." );
             HeurHardfix_model( &problem );
             break;
+
 
         case TSP_SOLVER_HeurLocalBranching:
             log_info( "Solving with Local Branching heuristic." );
             HeurLocalBranching_model( &problem );
             break;
 
+
         case TSP_SOLVER_HeurNearestNeighbor:
             log_info( "Solving with Nearest Neighbor heuristic." );
             HeurNearestNeighbor_model( &problem );
             break;
+
 
         case TSP_SOLVER_HeurGRASP:
             log_info( "Solving with GRASP heuristic." );
             HeurGRASP_model( &problem );
             break;
 
+
         case TSP_SOLVER_HeurInsertion:
             log_info( "Solving with Insertion heuristic." );
             HeurInsertion_model( &problem );
             break;
 
+
         case TSP_SOLVER_HeurConvHullInsertion:
             log_info( "Solving with Convex Hull Insertion heuristic." );
             HeurConvHullInsertion_model( &problem );
             break;
+
 
         default:
             log_error( "No model specified. Exit..." );
@@ -394,11 +408,15 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else if ( !strcasecmp( "GenericConcordeRand", arg ) ) {
                 conf.solving_method = TSP_SOLVER_GenericConcordeRand;
 
+            } else if ( !strcasecmp( "GenericConcordeRandWithPatching", arg ) ) {
+                conf.solving_method = TSP_SOLVER_GenericConcordeRandWithPatching;
+
             } else if ( !strcasecmp( "HeurHardfix", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurHardfix;
 
             } else if ( !strcasecmp( "HeurLocalBranching", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurLocalBranching;
+
             } else if ( !strcasecmp( "HeurNearestNeighbor", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurNearestNeighbor;
 

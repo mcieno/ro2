@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Fri May 8 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Mon May 11 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -70,22 +70,25 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .RI "#define \fBTSP_SOLVER_GenericConcordeRand\fP   18U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_HeurHardfix\fP   19U"
+.RI "#define \fBTSP_SOLVER_GenericConcordeRandWithPatching\fP   19U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_HeurLocalBranching\fP   20U"
+.RI "#define \fBTSP_SOLVER_HeurHardfix\fP   20U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_HeurNearestNeighbor\fP   21U"
+.RI "#define \fBTSP_SOLVER_HeurLocalBranching\fP   21U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_HeurGRASP\fP   22U"
+.RI "#define \fBTSP_SOLVER_HeurNearestNeighbor\fP   22U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_HeurInsertion\fP   23U"
+.RI "#define \fBTSP_SOLVER_HeurGRASP\fP   23U"
 .br
 .ti -1c
-.RI "#define \fBTSP_SOLVER_HeurConvHullInsertion\fP   24U"
+.RI "#define \fBTSP_SOLVER_HeurInsertion\fP   24U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_HeurConvHullInsertion\fP   25U"
 .br
 .in -1c
 .SS "Typedefs"
@@ -179,6 +182,10 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .br
 .RI "Like GenericConcorde but only cuts nodes with decreasing probability\&. "
 .ti -1c
+.RI "void \fBGenericConcordeRandWithPatching_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Like GenericConcordeRand but provides CPLEX with heuristic solutions obtained with the Patching method\&. "
+.ti -1c
 .RI "void \fBHeurHardfix_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Solve with Hardfix heuristic\&. "
@@ -227,19 +234,21 @@ Branch and Cut model with generic candidate cut callback\&.
 Like Generic, but also cuts the relaxation using Concorde routines\&. 
 .SS "#define TSP_SOLVER_GenericConcordeRand   18U"
 Like GenericConcorde but only cuts nodes with decreasing probability\&. 
+.SS "#define TSP_SOLVER_GenericConcordeRandWithPatching   19U"
+Like GenericConcordeRand but provides CPLEX with heuristic solutions obtained with the Patching method\&. 
 .SS "#define TSP_SOLVER_GenericConcordeShallow   16U"
 Like GenericConcorde but only cuts nodes close to the root\&. 
-.SS "#define TSP_SOLVER_HeurConvHullInsertion   24U"
+.SS "#define TSP_SOLVER_HeurConvHullInsertion   25U"
 Convex Hull Insertion Heuristic\&. 
-.SS "#define TSP_SOLVER_HeurGRASP   22U"
+.SS "#define TSP_SOLVER_HeurGRASP   23U"
 GRASP Heuristic\&. 
-.SS "#define TSP_SOLVER_HeurHardfix   19U"
+.SS "#define TSP_SOLVER_HeurHardfix   20U"
 Hardfix Heuristic\&. 
-.SS "#define TSP_SOLVER_HeurInsertion   23U"
+.SS "#define TSP_SOLVER_HeurInsertion   24U"
 Insertion Heuristic\&. 
-.SS "#define TSP_SOLVER_HeurLocalBranching   20U"
+.SS "#define TSP_SOLVER_HeurLocalBranching   21U"
 LocalBranching Heuristic\&. 
-.SS "#define TSP_SOLVER_HeurNearestNeighbor   21U"
+.SS "#define TSP_SOLVER_HeurNearestNeighbor   22U"
 Nearest Neighbor Heuristic\&. 
 .SS "#define TSP_SOLVER_LazyFlow1   6U"
 Single Commodity Flow model with lazy constraints\&. 
@@ -358,6 +367,17 @@ Like Generic, but also cuts the relaxation using Concorde routines\&. This model
 
 .PP
 Like GenericConcorde but only cuts nodes with decreasing probability\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void GenericConcordeRandWithPatching_model (\fBinstance\fP * problem)"
+
+.PP
+Like GenericConcordeRand but provides CPLEX with heuristic solutions obtained with the Patching method\&. 
 .PP
 \fBParameters:\fP
 .RS 4
