@@ -47,7 +47,8 @@ Solve a Traveling Salesman Problem instance.
                              LoopX, Legacy, Generic LegacyConcorde,
                              GenericConcorde, LegacyConcordeShallow,
                              GenericConcordeShallow, LegacyConcordeRand,
-                             GenericConcordeRand, HeurHardfix,
+                             GenericConcordeRand,
+                             GenericConcordeRandWithPatching, HeurHardfix,
                              HeurLocalBranching, HeurNearestNeighbor,
                              HeurGRASP, HeurInsertion, HeurConvHullInsertion.
                              Default: Generic.
@@ -91,6 +92,7 @@ Available models are:
 - `GenericConcordeShallow`
 - `LegacyConcordeRand`
 - `GenericConcordeRand`
+- `GenericConcordeRandWithPatching`
 
 Available heuristics are:
 
@@ -100,6 +102,7 @@ Available heuristics are:
 - `HeurGRASP`
 - `HeurInsertion`
 - `HeurConvHullInsertion`
+- `HeurGRASPWith2OPTRefinement`
 
 Default model is `Generic`, i.e., branch and cut model with generic "candidate cut" callback.
 
