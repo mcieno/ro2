@@ -85,7 +85,8 @@ static struct argp_option options[]  =
                                                           "HeurHardfix, HeurLocalBranching, "
                                                           "HeurNearestNeighbor, HeurGRASP, "
                                                           "HeurInsertion, HeurConvHullInsertion, "
-                                                          "HeurGRASPWith2OPTRefinement. "
+                                                          "HeurGRASPWith2OPTRefinement "
+                                                          "HeurTabuSearch. "
                                                           "Default: Generic."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
@@ -277,6 +278,12 @@ main ( int argc, char *argv[] )
             break;
 
 
+        case TSP_SOLVER_HeurTabuSearch:
+            log_info( "Solving with Tabu Search starting from a refined GRASP solution." );
+            HeurTabuSearch_model( &problem );
+            break;
+
+
         default:
             log_error( "No model specified. Exit..." );
             exit( EXIT_FAILURE );
@@ -438,6 +445,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcasecmp( "HeurGRASPWith2OPTRefinement", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurGRASPWith2OPTRefinement;
+
+            } else if ( !strcasecmp( "HeurTabuSearch", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurTabuSearch;
 
             } else {
                 argp_error(

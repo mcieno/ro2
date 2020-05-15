@@ -149,6 +149,9 @@ _2opt_refine_HeurGRASPWith2OPTRefinement( size_t **currentsol, instance *problem
     }
     currentsol[k][0] = u;
     currentsol[k][1] = v;
+
+    free( prev );
+    free( next );
 }
 
 
@@ -289,6 +292,7 @@ HeurGRASPWith2OPTRefinement_solve ( instance *problem )
     /* Free `currentsol`, which may have been swapped in the mean time.  */
     for ( size_t i = 0; i < problem->nnodes; ++i )  free( currentsol[i] );
     free( currentsol );
+    free( edges );
 }
 
 
