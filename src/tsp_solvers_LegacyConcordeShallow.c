@@ -235,7 +235,7 @@ _lazyconstraintcallback_LegacyConcordeShallow ( CPXCENVptr env, void *cbdata, in
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 
@@ -324,7 +324,7 @@ _concorde_callback_LegacyConcordeShallow( double val, int cutcount, int *cut, vo
     if ( CPXcutcallbackadd( ccinfo->env, ccinfo->cbdata, ccinfo->wherefrom,
                             nzcnt, rhs, sense, cutind, cutval, purgeable ) )
     {
-        log_fatal( "CPXcutcallbackadd");
+        log_fatal( "CPXcutcallbackadd" );
         exit( EXIT_FAILURE );
     }
 
@@ -348,7 +348,7 @@ _usercutcallback_LegacyConcordeShallow( CPXCENVptr env,
     int status  = CPXgetcallbacknodeinfo( env, cbdata, wherefrom, 0, CPX_CALLBACK_INFO_NODE_DEPTH_LONG, &nodedepth );
 
     if ( status ) {
-        log_fatal( "CPXgetcallbacknodeinfo");
+        log_fatal( "CPXgetcallbacknodeinfo" );
         return status;
     }
 
@@ -373,7 +373,7 @@ _usercutcallback_LegacyConcordeShallow( CPXCENVptr env,
                              + info->ncols           * sizeof( *x          ) );
 
     if ( memchunk == NULL ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 

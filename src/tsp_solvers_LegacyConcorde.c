@@ -237,7 +237,7 @@ _lazyconstraintcallback_LegacyConcorde ( CPXCENVptr env,
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 
@@ -326,7 +326,7 @@ _concorde_callback_LegacyConcorde( double val, int cutcount, int *cut, void *use
     if ( CPXcutcallbackadd( ccinfo->env, ccinfo->cbdata, ccinfo->wherefrom,
                             nzcnt, rhs, sense, cutind, cutval, purgeable ) )
     {
-        log_fatal( "CPXcutcallbackadd");
+        log_fatal( "CPXcutcallbackadd" );
         exit( EXIT_FAILURE );
     }
 
@@ -364,7 +364,7 @@ _usercutcallback_LegacyConcorde( CPXCENVptr env,
                              + info->ncols           * sizeof( *x          ) );
 
     if ( memchunk == NULL ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 

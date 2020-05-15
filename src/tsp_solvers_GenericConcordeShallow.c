@@ -229,7 +229,7 @@ _candidatecutcallback_GenericConcordeShallow ( CPXCALLBACKCONTEXTptr context, CP
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 
@@ -327,7 +327,7 @@ _concorde_callback_GenericConcordeShallow ( double val, int cutcount, int *cut, 
     if ( CPXcallbackaddusercuts( ccinfo->context, 1, nzcnt, &rhs, &sense,
                                  &rmatbeg, rmatind, rmatval, &purgeable, &local ) )
     {
-        log_fatal( "CPXcutcallbackadd");
+        log_fatal( "CPXcutcallbackadd" );
         exit( EXIT_FAILURE );
     }
 
@@ -344,7 +344,7 @@ _relaxationcutcallback_GenericConcordeShallow ( CPXCALLBACKCONTEXTptr context, C
     int status = CPXcallbackgetinfolong( context, CPXCALLBACKINFO_NODEDEPTH, &nodedepth );
 
     if ( status ) {
-        log_fatal( "CPXcallbackgetinfolong");
+        log_fatal( "CPXcallbackgetinfolong" );
         return status;
     }
 
@@ -369,7 +369,7 @@ _relaxationcutcallback_GenericConcordeShallow ( CPXCALLBACKCONTEXTptr context, C
                              + info->ncols           * sizeof( *x          ) );
 
     if ( memchunk == NULL ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 

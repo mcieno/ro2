@@ -223,7 +223,7 @@ _callbackfunc_Generic ( CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 

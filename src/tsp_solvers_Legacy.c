@@ -223,7 +223,7 @@ _lazyconstraintcallback_Legacy ( CPXCENVptr env, void *cbdata, int wherefrom, vo
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 

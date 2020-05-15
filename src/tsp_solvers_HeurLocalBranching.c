@@ -224,7 +224,7 @@ _candidatecutcallback_HeurLocalBranching ( CPXCALLBACKCONTEXTptr context, CPXLON
     size_t *comps = calloc( info->problem->nnodes, sizeof( *comps ) );
 
     if ( x == NULL || next == NULL || comps == NULL  ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 
@@ -341,7 +341,7 @@ _relaxationcutcallback_HeurLocalBranching ( CPXCALLBACKCONTEXTptr context, CPXLO
     int status = CPXcallbackgetinfolong( context, CPXCALLBACKINFO_NODEDEPTH, &nodedepth );
 
     if ( status ) {
-        log_fatal( "CPXcallbackgetinfolong");
+        log_fatal( "CPXcallbackgetinfolong" );
         return status;
     }
 
@@ -367,7 +367,7 @@ _relaxationcutcallback_HeurLocalBranching ( CPXCALLBACKCONTEXTptr context, CPXLO
                              + info->ncols           * sizeof( *x          ) );
 
     if ( memchunk == NULL ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 
@@ -619,7 +619,7 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
 
         /* Undo the fixing */
         if ( CPXdelrows( env, lp, lbrow, lbrow ) ) {
-            log_fatal( "CPXdelrows");
+            log_fatal( "CPXdelrows" );
             exit( EXIT_FAILURE );
         }
     }

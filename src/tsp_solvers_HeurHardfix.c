@@ -224,7 +224,7 @@ _candidatecutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG conte
     size_t *comps = calloc( info->problem->nnodes, sizeof( *comps ) );
 
     if ( x == NULL || next == NULL || comps == NULL  ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 
@@ -341,7 +341,7 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
     int status = CPXcallbackgetinfolong( context, CPXCALLBACKINFO_NODEDEPTH, &nodedepth );
 
     if ( status ) {
-        log_fatal( "CPXcallbackgetinfolong");
+        log_fatal( "CPXcallbackgetinfolong" );
         return status;
     }
 
@@ -367,7 +367,7 @@ _relaxationcutcallback_HeurHardfix ( CPXCALLBACKCONTEXTptr context, CPXLONG cont
                              + info->ncols           * sizeof( *x          ) );
 
     if ( memchunk == NULL ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 
