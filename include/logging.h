@@ -14,6 +14,11 @@
 
 #define LOG_VERSION "0.1.0"
 
+#ifndef CLOCK_MONOTONIC
+#define CLOCK_MONOTONIC 1
+#endif
+
+
 typedef void (*log_LockFn)(void *udata, int lock);
 
 typedef enum

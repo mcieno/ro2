@@ -259,30 +259,6 @@ _tabu_search_HeurTabuSearch( size_t **currentsol, double *currentcost_p, size_t 
                 wuu_ = _euclidean_distance( problem->xcoord[u], problem->ycoord[u], problem->xcoord[u_], problem->ycoord[u_] );
                 wvv_ = _euclidean_distance( problem->xcoord[v], problem->ycoord[v], problem->xcoord[v_], problem->ycoord[v_] );
 
-                /* If the new cost is improving the incumbent, then update regardless of the Tabu List */
-                if ( *currentcost_p - ( wuv + wu_v_ ) + ( wuu_ + wvv_ ) < problem->solcost - 1e-5 )
-                {
-                    /* Swap all the rout from v to u_ */
-                    log_trace( "2-OPT MOVE improves incumbent: (%zu, %zu) X (%zu, %zu)", u, v, u_, v_ );
-                    for ( size_t r = 0; r < problem->nnodes; ++r ) {
-                        if ( problem->solution[r][0] == u || problem->solution[r][1] == u ) {
-                            if ( problem->solution[r][0] == v || problem->solution[r][1] == v ) {
-                                problem->solution[r][0] = u;
-                                problem->solution[r][1] = u_;
-                            }
-                        }
-                        else if ( problem->solution[r][0] == u_ || problem->solution[r][1] == u_ ) {
-                            if ( problem->solution[r][0] == v_ || problem->solution[r][1] == v_ ) {
-                                problem->solution[r][0] = v_;
-                                problem->solution[r][1] = v;
-                            }
-                        }
-                    }
-
-                    problem->solcost = compute_solution_cost( problem );
-                    break;
-                }
-
                 /* Check if this improvement/degratation is better than the best known so far */
                 if ( wuu_ + wvv_ - wuv - wu_v_ < bestchange )
                 {
@@ -476,7 +452,7 @@ HeurTabuSearch_solve ( instance *problem )
 
     for ( size_t tenure = 10;
           elapsedtime + 1e-3 < conf.heurtime;
-          tenure = ( tenure + ( TENURE_MAX - TENURE_MIN ) / 100 + 1 ) % ( TENURE_MAX - TENURE_MIN ) + TENURE_MIN )
+          tenure = ( tenure + ( TENURE_MAX - TENURE_MIN ) / 50 + 1 ) % ( TENURE_MAX - TENURE_MIN ) + TENURE_MIN )
     {
         /*
          * The value of tenure will repetedly increase and decrease to enable both diversification and intensification.
@@ -507,6 +483,9 @@ HeurTabuSearch_solve ( instance *problem )
         log_debug( "Tabu search completed with tenure = %zu. Still %.3lf seconds remaining.",
             tenure, conf.heurtime - elapsedtime );
     }
+
+    /* Compute the cost once again */
+    problem->solcost = compute_solution_cost( problem );
 
     /* Free `currentsol`.  */
     for ( size_t i = 0; i < problem->nnodes; ++i )  free( currentsol[i] );
