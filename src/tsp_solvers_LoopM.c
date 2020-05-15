@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/timeb.h>
+#include <time.h>
 
 #include <cplex.h>
 
@@ -229,8 +229,8 @@ LoopM_model ( instance *problem )
     }
 
     int visitednodes = 0;
-    struct timeb start, end;
-    ftime( &start );
+    struct timespec start, end;
+    clock_gettime( CLOCK_MONOTONIC, &start );
 
     // Galloping mode
     double epgap   = .3;
@@ -256,7 +256,7 @@ LoopM_model ( instance *problem )
                 exit( EXIT_FAILURE );
             }
 
-            ftime( &end );
+            clock_gettime( CLOCK_MONOTONIC, &end );
 
             visitednodes += CPXgetnodecnt( env, lp ) + 1;
             CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
@@ -265,7 +265,7 @@ LoopM_model ( instance *problem )
             log_debug( "g-mode: Iteration %zu",                           iter );
             log_debug( "g-mode:     - Components: %zu",                 ncomps );
             log_debug( "g-mode:     - Elapsed:    %lfs",
-                ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+                ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000. );
 
             _add_LoopM_subtour_constraints( problem, env, lp, next, comps, ncomps );
         }
@@ -292,7 +292,7 @@ LoopM_model ( instance *problem )
             exit( EXIT_FAILURE );
         }
 
-        ftime( &end );
+        clock_gettime( CLOCK_MONOTONIC, &end );
 
         visitednodes += CPXgetnodecnt( env, lp ) + 1;
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
@@ -301,19 +301,19 @@ LoopM_model ( instance *problem )
         log_info( "e-mode: Iteration %zu",                            iter );
         log_info( "e-mode:     - Components: %zu",                  ncomps );
         log_info( "e-mode:     - Elapsed:    %lfs",
-            ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+            ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000. );
 
         _add_LoopM_subtour_constraints( problem, env, lp, next, comps, ncomps );
     }
 
-    ftime( &end );
+    clock_gettime( CLOCK_MONOTONIC, &end );
 
     log_info( "Retrieving final solution." );
     _xopt2solution( xopt, problem, &_LoopM_xpos );
 
     free( xopt );
 
-    problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    problem->elapsedtime  = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
     problem->visitednodes = visitednodes;
     problem->solcost      = compute_solution_cost( problem );
 

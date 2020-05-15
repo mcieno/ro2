@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/timeb.h>
+#include <time.h>
 
 #include <cplex.h>
 
@@ -298,8 +298,8 @@ LazyFlow1_model ( instance *problem )
     /* CPLEX PARAMETERS */
     tspconf_apply( env );
 
-    struct timeb start, end;
-    ftime( &start );
+    struct timespec start, end;
+    clock_gettime( CLOCK_MONOTONIC, &start );
 
     log_info( "Starting solver." );
     if ( CPXmipopt( env, lp ) ) {
@@ -307,7 +307,7 @@ LazyFlow1_model ( instance *problem )
         exit( EXIT_FAILURE );
     }
 
-    ftime( &end );
+    clock_gettime( CLOCK_MONOTONIC, &end );
 
     log_info( "Retrieving final solution." );
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
@@ -323,7 +323,7 @@ LazyFlow1_model ( instance *problem )
 
     free( xopt );
 
-    problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    problem->elapsedtime  = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
     problem->visitednodes = CPXgetnodecnt( env, lp );
     problem->solcost      = compute_solution_cost( problem );
 

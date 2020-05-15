@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/timeb.h>
+#include <time.h>
 
 #include "tsp_solvers.h"
 #include "logging.h"
@@ -143,17 +143,17 @@ HeurInsertion_model ( instance *problem )
     __SEED = conf.seed;
 
     double elapsedtime = 0;
-    struct timeb start, end;
+    struct timespec start, end;
 
     /* Start searching for the best solution */
-    ftime( &start );
+    clock_gettime( CLOCK_MONOTONIC, &start );
     problem->solcost = __DBL_MAX__;
 
     for ( size_t j = 0; elapsedtime + 1e-3 < conf.heurtime; ++j ) {
         HeurInsertion_solve( problem );
 
-        ftime( &end );
-        elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+        clock_gettime( CLOCK_MONOTONIC, &end );
+        elapsedtime = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
 
         log_debug( "Found heuristic solution #%zu. Still %.3lf seconds remaining.",
                    j + 1, conf.heurtime - elapsedtime );

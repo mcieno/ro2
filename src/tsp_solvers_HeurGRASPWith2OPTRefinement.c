@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/timeb.h>
+#include <time.h>
 
 #include "tsp_solvers.h"
 #include "logging.h"
@@ -155,7 +155,7 @@ _2opt_refine_HeurGRASPWith2OPTRefinement( size_t **currentsol, instance *problem
 void
 HeurGRASPWith2OPTRefinement_solve ( instance *problem )
 {
-    struct timeb start, end;
+    struct timespec start, end;
 
     size_t nedges = ( problem->nnodes * ( problem->nnodes + 1 ) ) / 2 - problem->nnodes;
 
@@ -182,13 +182,13 @@ HeurGRASPWith2OPTRefinement_solve ( instance *problem )
     }
 
     log_debug( "Sorting edges by cost." );
-    ftime( &start );
+    clock_gettime( CLOCK_MONOTONIC, &start );
 
     qsort( edges, nedges, sizeof( *edges ), _cmp_HeurGRASPWith2OPTRefinement );
 
-    ftime( &end );
+    clock_gettime( CLOCK_MONOTONIC, &end );
     log_debug( "Done sorting in %.3lf seconds.",
-               ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+               ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000. );
 
     /* `currentsol` will contain the solution obtained starting the nearest
      * neighbor heuristic from `startnode`.  */
@@ -209,7 +209,7 @@ HeurGRASPWith2OPTRefinement_solve ( instance *problem )
 
     double elapsedtime = 0;
     size_t from;
-    ftime( &start );
+    clock_gettime( CLOCK_MONOTONIC, &start );
 
     /* Multiple runs starting from i-th node will find different solutions
      * due to randomization. Hence, this loop is worth running for the whole
@@ -261,9 +261,9 @@ HeurGRASPWith2OPTRefinement_solve ( instance *problem )
 
         _2opt_refine_HeurGRASPWith2OPTRefinement( currentsol, problem );
 
-        ftime( &end );
+        clock_gettime( CLOCK_MONOTONIC, &end );
 
-        elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+        elapsedtime = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
         log_debug( "Found heuristic solution #%zu/%zu. Still %.3lf seconds remaining.",
                    startnode + 1, problem->nnodes, conf.heurtime - elapsedtime );
 
@@ -295,15 +295,15 @@ HeurGRASPWith2OPTRefinement_solve ( instance *problem )
 void
 HeurGRASPWith2OPTRefinement_model ( instance *problem )
 {
-    struct timeb start, end;
-    ftime( &start );
+    struct timespec start, end;
+    clock_gettime( CLOCK_MONOTONIC, &start );
     __SEED = conf.seed;
 
     log_debug( "Starting solver." );
     HeurGRASPWith2OPTRefinement_solve( problem );
 
-    ftime( &end );
+    clock_gettime( CLOCK_MONOTONIC, &end );
 
-    problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    problem->elapsedtime  = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
     problem->visitednodes = 0;
 }
