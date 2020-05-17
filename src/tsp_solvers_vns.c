@@ -82,6 +82,66 @@ invert_array(size_t *ordered_nodes, size_t a, size_t b, instance *problem)
 
 }
 
+//Swap the positions of two block in the array.
+//Swap block from index a-b with block from index c to d mantaining overall order
+void
+swap_blocks(size_t *ordered_nodes, size_t a, size_t b, size_t c, size_t d, instance *problem){ //DA VELOCIZZARE
+
+    if(a==c && b==d){
+        return;
+    }
+
+    if(b==c){
+        return;
+    }
+
+    size_t *supp_array = calloc( problem->nnodes, sizeof( *supp_array ) );
+    for(int i=0; i<problem->nnodes;i++){
+        supp_array[i]=ordered_nodes[i];
+    }
+
+    size_t iter =0;
+    if(c>d){
+        iter = (d+problem->nnodes)-c+1;
+    }else{
+        iter = d-c+1;
+    }
+
+    size_t index =a;
+    for(size_t i=0; i<iter;i++){
+        ordered_nodes[index%problem->nnodes]=supp_array[(c+i)%problem->nnodes];
+        index++;
+    }
+
+    if(b>c){
+        iter = (c+problem->nnodes)-b-1;
+    }else{
+        iter = c-b-1;
+    }
+   
+    for(size_t i=0; i<iter;i++){
+        ordered_nodes[index%problem->nnodes]=supp_array[(b+i+1)%problem->nnodes];
+        index++;
+    }
+
+
+    if(a>b){
+        iter = (b+problem->nnodes)-a+1;
+    }else{
+        iter = b-a+1;
+    }
+
+   
+    for(size_t i=0; i<iter;i++){
+        ordered_nodes[index%problem->nnodes]=supp_array[(a+i)%problem->nnodes];
+        index++;
+    }
+
+
+
+    free(supp_array);
+}
+
 /**
  * \brief Apply a random 5-OPT MOVE to diversificate the provided solution.
  *
@@ -94,13 +154,9 @@ invert_array(size_t *ordered_nodes, size_t a, size_t b, instance *problem)
 void
 _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
 {
-    int num_opt = 3; //num of optimality, running with m=5-opt right now
+    int num_opt = 5; //num of optimality, running with m=5-opt right now
 
-    fprintf(stderr, "INITIAL SOLUTION\n");
-    for(int i=0; i<problem->nnodes;i++){
-        fprintf(stderr, "edge: %lu %lu\n", currentsol[i][0]+1, currentsol[i][1]+1);
-    }
-   
+
     //select index of m random edges of the solution to be diversified
     size_t replaced_m_edges =0;// index of the next edge that will be replaced in the solution
     size_t *ind_m_edges = calloc( num_opt, sizeof( *ind_m_edges ) );
@@ -136,10 +192,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
 
     }
     
-    fprintf(stderr, "SELECTED EDGES TO BE REASSIGNED\n");
-    for(int i=0; i<num_opt; i++){
-        fprintf(stderr, "%lu %lu\n", nodes_m_edges[2*i]+1, nodes_m_edges[2*i+1]+1);
-    }
+
 
     /* Build sequence of nodes of the solution
     // to do so in the process  we convert `currentsol` to `next/prev` representation */
@@ -181,11 +234,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
         pointer = next[pointer];
     }
 
-    fprintf(stderr, "INTIAL ORDERED NODES\n");
-    for(int i=0;i<problem->nnodes; i++){
-        fprintf(stderr, "next: %lu\n",ordered_nodes[i]+1);
-    }
-    
+
     //Order list of m-opt nodes based //THIS IS ACTUALLY NOT NEEDED LET'S SKPI THIS 
 
     //Reconnect the m edges randomly paying attention to not create subtour in the graph
@@ -193,10 +242,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
     while(length_nodes_m_edges>2){
 
 
-        fprintf(stderr, "REMAINING NODES TO BE REASSIGNED\n");
-        for(int i=0; i<length_nodes_m_edges; i++){
-         fprintf(stderr, "%lu \n", nodes_m_edges[i]+1);
-        }
+        
 
         //pick two random nodes from m-opt list
         size_t ind_a = rand_r(&__SEED)%length_nodes_m_edges;
@@ -208,14 +254,17 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
         size_t node_b = nodes_m_edges[ind_b];
         nodes_m_edges[ind_b] = nodes_m_edges[length_nodes_m_edges-1];
         nodes_m_edges[length_nodes_m_edges-1] = node_b;
-        length_nodes_m_edges--;
+        length_nodes_m_edges--; 
 
-        fprintf(stderr, "NODES RANDOMLY SELECTED: a: %lu , b:%lu\n", node_a+1, node_b+1);
+
+
+       
 
         if(node_a == node_b){
             length_nodes_m_edges +=2;
             continue;
         }
+       
 
         //fprintf(stderr, "inda %lu , node_A %lu, ind_b %lu, node_B %lu\n", ind_a, node_a, ind_b, node_b);
         //for(int i=0; i<2*num_opt;i++){
@@ -234,6 +283,23 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             }
         }
 
+        if(ordered_nodes[(ind_a+1)%problem->nnodes]==node_b && length_nodes_m_edges>2){ //special case
+            length_nodes_m_edges +=2;
+       
+            continue;
+        }
+        if(ordered_nodes[(ind_b+1)%problem->nnodes]==node_a && length_nodes_m_edges>2){ //special case
+            length_nodes_m_edges +=2;
+
+            continue;
+        }
+
+        if(length_nodes_m_edges==2 && nodes_m_edges[0]==nodes_m_edges[1]){ //special case
+            
+            length_nodes_m_edges+=2;
+            continue;
+        }
+
         if((ind_a+1)%problem->nnodes == ind_b){ //If yes very important to swap order to avoid bugs when checking if connecting is possible
             size_t ind_temp = ind_b;
             size_t node_temp = node_b;
@@ -241,7 +307,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             node_b = node_a;
             ind_a = ind_temp;
             node_a = node_temp;
-            fprintf(stderr, "SWAPPING NODE_A AND NODE_B\n");
+          
         }
 
         size_t temp_index = ind_a+1;
@@ -266,7 +332,33 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             temp_index++;
         }
 
-        fprintf(stderr, "NEW_EDGE_STATUS: %u\n", new_edge_status);
+        if(new_edge_status==1 && !(length_nodes_m_edges==2 && nodes_m_edges[0]==nodes_m_edges[1])){ //check also opposite direction
+            
+            new_edge_status=-1;
+            temp_index = problem->nnodes+ind_a-1;
+            while(new_edge_status==-1){ 
+
+                for(int i=0; i<length_nodes_m_edges; i++){
+                    if(ordered_nodes[temp_index%problem->nnodes]==nodes_m_edges[i])//We can connect
+                    {
+                        new_edge_status =1;
+                        break;
+                    }
+                }
+                if(ordered_nodes[temp_index%problem->nnodes]==node_b){ //If if find node_b before other nodes of nodes_m_edges then i cannoct connect
+                    //Unless in this same iteration i already found node_b (this means both edges of node_b have been unattached so we can connect)
+                    if(new_edge_status!=1){
+                        new_edge_status=0;
+                    }
+
+                    break;
+                }
+
+                temp_index--;
+            }
+        }
+
+       
 
         if(new_edge_status==0){ //we cannot connect, select another edge
             length_nodes_m_edges +=2;
@@ -275,11 +367,15 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             //update solution with new edge
             currentsol[ind_m_edges[replaced_m_edges]][0] = node_a;
             currentsol[ind_m_edges[replaced_m_edges]][1] = node_b;
-
+            
+            if(length_nodes_m_edges==2){
+                replaced_m_edges++;
+                break;
+            }
             //reorder ordered_nodes appropriately
             //first find index and edges of phantom_edges involved
             size_t  a_y=0,  b_y=0, edge_ind_a=0, edge_ind_b =0; 
-            for(int i=0; i<num_opt;i++){
+            for(int i=replaced_m_edges; i<num_opt;i++){
                 if(phantom_edges[2*i]==node_a){
                     edge_ind_a =i;
                     a_y =phantom_edges[2*i+1];
@@ -300,35 +396,168 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
 
             }
 
+            for(int i=0; i<problem->nnodes; i++){
+               
+            }
+            size_t candidate_a_y = ordered_nodes[(ind_a+1)%problem->nnodes];
+            size_t candidate_b_y = ordered_nodes[(ind_b+1)%problem->nnodes];
+            
+            for(size_t i=0; i<problem->nnodes;i++){
+                int skip =0;
+                for(int j=replaced_m_edges;j<num_opt;j++){
+                    if(i==ind_m_edges[j]){
+                        
+                        skip=1;
+                    }
+                }
+                
+                if(skip==1){
+
+                    continue;
+                }
+                
+                if(currentsol[i][0]==node_a && currentsol[i][1]==candidate_a_y){
+                    candidate_a_y = ordered_nodes[(ind_a-1+problem->nnodes)%problem->nnodes];
+                }
+                if(currentsol[i][1]==node_a && currentsol[i][0]==candidate_a_y){
+                    candidate_a_y = ordered_nodes[(ind_a-1+problem->nnodes)%problem->nnodes];
+                }
+                if(currentsol[i][0]==node_b && currentsol[i][1]==candidate_b_y){
+                    candidate_b_y = ordered_nodes[(ind_b-1+problem->nnodes)%problem->nnodes];
+                   
+                }
+                if(currentsol[i][1]==node_b && currentsol[i][0]==candidate_b_y){
+                    candidate_b_y = ordered_nodes[(ind_b-1+problem->nnodes)%problem->nnodes];
+                   
+                }
+              
+            }
+            a_y = candidate_a_y;
+            b_y = candidate_b_y;
+
+           
+            
+
+            //Get blocks indexes
+            length_nodes_m_edges +=2;
+            size_t blk_a_start=0, blk_a_end=0,blk_b_start=0, blk_b_end=0,blk_next_start=0, blk_next_end=0;
+            int is_start_iteration =0;
+            int status =0;
+            int b_status =0;
+            int is_a_last =0;
+            size_t last =0;
+            int deattached_a_count=0;
+            for(int j=0; j<length_nodes_m_edges;j++){ //check if a is a node with two deattached edges, special case
+                
+                if(ordered_nodes[ind_a%problem->nnodes] == nodes_m_edges[j]){
+                    deattached_a_count++;
+                }
+                if(deattached_a_count==2){
+                    blk_a_start = ind_a;
+                    blk_a_end = ind_a;
+                    status = 1;
+                    is_start_iteration = 1;
+                }
+            }
+            for(int i=ind_a+1; i<ind_a+problem->nnodes;i++){
+                for(int j=0; j<length_nodes_m_edges;j++){
+                    if(ordered_nodes[i%problem->nnodes] == nodes_m_edges[j]){
+                       
+  
+                        if(status==0){ //very start, determine if ind_a is start or end
+                            if(ordered_nodes[i%problem->nnodes]!=a_y){
+                                blk_a_start=ind_a;
+                                blk_a_end = i%problem->nnodes;
+                                status =10;
+                                is_start_iteration =0;
+                            } 
+                            else{
+                                blk_a_end =ind_a;
+                                is_a_last = 1;
+                                blk_next_start=i%problem->nnodes;
+                                status =2;
+                                is_start_iteration =1;
+                            }
+                        }
+                        else if(status==1){//already set blk a, next one is first of block next
+                            blk_next_start = i%problem->nnodes;
+                            status =2;
+                        }
+                        else if(status==2){ //already set start blk next, next one is end blk next
+                            blk_next_end = i%problem->nnodes;
+                            status=3; //No meaning
+                        }
+
+                        if(ordered_nodes[i%problem->nnodes]==node_b && b_status!=4){
+                            if(is_start_iteration){
+                                blk_b_start=i%problem->nnodes;
+                                
+                                b_status=4;
+                                blk_b_end = last;//DEBUG
+                            }else{
+                                
+                                blk_b_end =i%problem->nnodes;
+                                blk_b_start = last;
+                                if(ordered_nodes[last]==b_y){
+                                    blk_b_start=blk_b_end;
+                                    b_status=4;
+                                }
+                            }
+                        }
+                        else if(b_status==4){ //We have to see b end next
+                            if(ordered_nodes[i%problem->nnodes]==b_y){
+                                size_t tmp =blk_b_end;
+                                blk_b_end = blk_b_start;
+                                blk_b_start = tmp;
+                                b_status=3;
+                            }else{
+                            blk_b_end=i%problem->nnodes;
+                            b_status=3;
+                            }
+                        }
+
+                        last = i%problem->nnodes;
+
+                        if(is_start_iteration){ 
+                            is_start_iteration=0;
+                        }else{is_start_iteration=1;}
+                       
+                        
+
+                        //break;
+                    }
+                    
+                }
+                if(status==10){status=1;}
+            }
+            if(is_a_last){
+                blk_a_start=last;
+            }
+
+
+            length_nodes_m_edges-=2;
+
+            
+            if(!is_a_last){
+                invert_array(ordered_nodes, blk_a_start, blk_a_end, problem);
+            }
+            if(ordered_nodes[blk_b_end]==node_b){
+                invert_array(ordered_nodes, blk_b_start, blk_b_end, problem);
+            }
+
+            swap_blocks(ordered_nodes, blk_next_start, blk_next_end, blk_b_start, blk_b_end, problem); 
+
+
             //update phantom_edges
-            phantom_edges[2*edge_ind_b]=a_y;
+            phantom_edges[2*edge_ind_b]=a_y + edge_ind_a;
             phantom_edges[2*edge_ind_b+1]=b_y;
             phantom_edges[2*edge_ind_a]=phantom_edges[2*replaced_m_edges];
             phantom_edges[2*edge_ind_a+1]=phantom_edges[2*replaced_m_edges+1];
+
+
             replaced_m_edges++;
 
-            //perform the inversion on ordered_node
-            size_t inv_ind_a=0, inv_ind_b=0;
-            for(int i=0; i<problem->nnodes;i++){
-                if(ordered_nodes[i]==a_y){
-                    inv_ind_a =i;
-                }
-                if(ordered_nodes[i]==node_b){
-                    inv_ind_b =i;
-                }
-            }
-            
-            fprintf(stderr, "a_y: %lu, node_b %lu\n", a_y+1, node_b+1);
-            fprintf(stderr, "ORDERED_NODES BEFORE ORDERING a: %lu b:%lu\n", inv_ind_a, inv_ind_b);
-            for(int i=0; i<problem->nnodes;i++){
-                fprintf(stderr, "ordered %u: %lu\n ", i, ordered_nodes[i]+1);
-            }
-            invert_array(ordered_nodes, inv_ind_a, inv_ind_b, problem);
-            fprintf(stderr, "ORDERED_NODES AFTER ORDERING a: %lu b:%lu\n", inv_ind_a, inv_ind_b);
-            for(int i=0; i<problem->nnodes;i++){
-                fprintf(stderr, "ordered %u: %lu\n ", i, ordered_nodes[i]+1);
-            }
-            fprintf(stderr, "ORDERED_OVER a: %lu b:%lu\n", inv_ind_a, inv_ind_b);
+          
 
         }
 
@@ -344,10 +573,15 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
 
     //REMEMBER TO REMOVE BREAK IN VNS_SOLVE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     free(ind_m_edges);
+
     free(next);
+
     free(prev);
+
     free(ordered_nodes);
+
     free(nodes_m_edges);
+
 }
 
 /**
@@ -572,7 +806,15 @@ VNS_solve ( instance *problem )
     {
         _5opt_diversificate_VNS(currentsol, problem);   
 
-        //_2opt_refine_VNS( currentsol, problem );
+        fprintf(stderr, "2-opt refine\n");
+        for(int i=0; i<problem->nnodes; i++){
+                fprintf(stderr, "Curr sol: %lu %lu\n", currentsol[i][0]+1, currentsol[i][1]+1);
+            }
+
+        _2opt_refine_VNS( currentsol, problem );
+
+        fprintf(stderr,"qui\n");
+
 
         clock_gettime( CLOCK_MONOTONIC, &end );
 
