@@ -63,33 +63,27 @@ void
 _2opt_refine_HeurGRASPWith2OPTRefinement( size_t **currentsol, instance *problem )
 {
     /* Convert `currentsol` to `next/prev` representation */
-    size_t *next = calloc( problem->nnodes, sizeof( *next ) );
-    size_t *prev = calloc( problem->nnodes, sizeof( *prev ) );
+    size_t *next = malloc( problem->nnodes * sizeof( *next ) );
+    size_t *prev = malloc( problem->nnodes * sizeof( *prev ) );
 
     if ( next == NULL || prev == NULL ) {
         log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
 
-    for ( size_t k = 0; k < problem->nnodes; next[k] = prev[k] = SIZE_MAX, ++k )
-        ;
-
-    size_t u;
-    size_t v;
+    size_t u = currentsol[0][0];
+    size_t v = currentsol[0][1];
     for ( size_t k = 0; k < problem->nnodes; ++k ) {
-        u = currentsol[k][0];
-        v = currentsol[k][1];
+        next[u] = v;
+        prev[v] = u;
 
-        if (prev[v] != SIZE_MAX) {
-            next[v] = u;
-            prev[u] = v;
-        } else {
-            if (next[u] != SIZE_MAX) {
-                next[v] = u;
-                prev[u] = v;
-            } else {
-                next[u] = v;
-                prev[v] = u;
+        for ( size_t kk = 0; kk < problem->nnodes; ++kk ) {
+            if ( (currentsol[kk][0] == v && currentsol[kk][1] != u)
+                 || (currentsol[kk][1] == v && currentsol[kk][0] != u) ) {
+                /* kk-th edge in the solution is the next edge going from v to some other node. */
+                u = v;
+                v ^= currentsol[kk][0] ^ currentsol[kk][1];
+                break;
             }
         }
     }
