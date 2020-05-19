@@ -39,6 +39,7 @@
 #define TSP_SOLVER_HeurGRASPWith2OPTRefinement      26U  /*!< GRASP heuristic method with 2-OPT refinement method.  */
 
 #define TSP_SOLVER_HeurTabuSearch                   28U  /*!< Tabu Search on starting from a refined GRASP solution.  */
+#define TSP_SOLVER_HeurSimulatedAnnealing           29U  /*!< Repeatedly run Simulated Annealing.  */
 
 typedef unsigned model_t;
 
@@ -437,5 +438,13 @@ HeurGRASPWith2OPTRefinement_model ( instance *problem );
 void
 HeurTabuSearch_model ( instance *problem );
 
+/*!
+ * \brief Repeatedly run Simulated Annealing.
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurSimulatedAnnealing_model ( instance *problem );
 
 #endif

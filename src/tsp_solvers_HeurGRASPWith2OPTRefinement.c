@@ -121,7 +121,7 @@ _2opt_refine_HeurGRASPWith2OPTRefinement( size_t **currentsol, instance *problem
                 if ( wuu_ + wvv_ < wuv + wu_v_ )
                 {
                     log_trace( "2-OPT MOVE: (%zu, %zu) X (%zu, %zu)", u, v, u_, v_ );
-                    /* Swap all the rout from v to u_ */
+                    /* Swap all the route from v to u_ */
                     for ( size_t vv = v, t = next[next[vv]]; vv != u_; vv = prev[t], t = next[t] ) {
                         prev[vv] = prev[t];
                         next[prev[t]] = vv;
