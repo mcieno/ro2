@@ -283,9 +283,9 @@ main ( int argc, char *argv[] )
             HeurTabuSearch_model( &problem );
             break;
 
-        case TSP_SOLVER_VNS:
+        case TSP_SOLVER_HeurVNS:
             log_info( "Solving with VNS heuristic method." );
-            VNS_model(&problem );
+            HeurVNS_model( &problem );
             break;
 
         default:
@@ -453,8 +453,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else if ( !strcasecmp( "HeurTabuSearch", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurTabuSearch;
 
-            } else if ( !strcasecmp( "vns", arg ) ) {
-                conf.solving_method = TSP_SOLVER_VNS;
+            } else if ( !strcasecmp( "HeurVNS", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurVNS;
 
             } else {
                 argp_error(

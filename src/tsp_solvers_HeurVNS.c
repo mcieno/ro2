@@ -118,7 +118,7 @@ swap_blocks(size_t *ordered_nodes, size_t a, size_t b, size_t c, size_t d, insta
     }else{
         iter = c-b-1;
     }
-   
+
     for(size_t i=0; i<iter;i++){
         ordered_nodes[index%problem->nnodes]=supp_array[(b+i+1)%problem->nnodes];
         index++;
@@ -131,7 +131,7 @@ swap_blocks(size_t *ordered_nodes, size_t a, size_t b, size_t c, size_t d, insta
         iter = b-a+1;
     }
 
-   
+
     for(size_t i=0; i<iter;i++){
         ordered_nodes[index%problem->nnodes]=supp_array[(a+i)%problem->nnodes];
         index++;
@@ -170,7 +170,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
     for(size_t i=0; i<num_opt; i++){
         int found =0;
         while (found==0)
-        {    
+        {
         int unique=1;
         size_t e = rand_r(&__SEED)%problem->nnodes;
         for(size_t j=0; j<i;j++){
@@ -185,49 +185,43 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
                 nodes_m_edges[2*i+1] = currentsol[e][1];
                 phantom_edges[2*i] = currentsol[e][0];
                 phantom_edges[2*i+1] = currentsol[e][1];
-            }  
+            }
         }
-        
-        
+
+
 
     }
-    
 
 
+
+    size_t *ordered_nodes = calloc( problem->nnodes, sizeof( *ordered_nodes ) );
     /* Build sequence of nodes of the solution
     // to do so in the process  we convert `currentsol` to `next/prev` representation */
-    size_t *next = calloc( problem->nnodes, sizeof( *next ) );
-    size_t *prev = calloc( problem->nnodes, sizeof( *prev ) );
-    size_t *ordered_nodes = calloc( problem->nnodes, sizeof( *ordered_nodes ) );
+    size_t *next = malloc( problem->nnodes * sizeof( *next ) );
+    size_t *prev = malloc( problem->nnodes * sizeof( *prev ) );
 
     if ( next == NULL || prev == NULL ) {
         log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
 
-    for ( size_t k = 0; k < problem->nnodes; next[k] = prev[k] = SIZE_MAX, ++k )
-        ;
-
-    size_t u;
-    size_t v;
+    size_t u = currentsol[0][0];
+    size_t v = currentsol[0][1];
     for ( size_t k = 0; k < problem->nnodes; ++k ) {
-        u = currentsol[k][0];
-        v = currentsol[k][1];
+        next[u] = v;
+        prev[v] = u;
 
-        if (prev[v] != SIZE_MAX) {
-            next[v] = u;
-            prev[u] = v;
-        } else {
-            if (next[u] != SIZE_MAX) {
-                next[v] = u;
-                prev[u] = v;
-            } else {
-                next[u] = v;
-                prev[v] = u;
+        for ( size_t kk = 0; kk < problem->nnodes; ++kk ) {
+            if ( (currentsol[kk][0] == v && currentsol[kk][1] != u)
+                 || (currentsol[kk][1] == v && currentsol[kk][0] != u) ) {
+                /* kk-th edge in the solution is the next edge going from v to some other node. */
+                u = v;
+                v ^= currentsol[kk][0] ^ currentsol[kk][1];
+                break;
             }
         }
     }
-    
+
     size_t pointer = 0;
     for(int i=0;i<problem->nnodes; i++){
         ordered_nodes[i] = next[pointer];
@@ -235,14 +229,14 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
     }
 
 
-    //Order list of m-opt nodes based //THIS IS ACTUALLY NOT NEEDED LET'S SKPI THIS 
+    //Order list of m-opt nodes based //THIS IS ACTUALLY NOT NEEDED LET'S SKPI THIS
 
     //Reconnect the m edges randomly paying attention to not create subtour in the graph
     size_t length_nodes_m_edges = 2*num_opt;
     while(length_nodes_m_edges>2){
 
 
-        
+
 
         //pick two random nodes from m-opt list
         size_t ind_a = rand_r(&__SEED)%length_nodes_m_edges;
@@ -254,17 +248,17 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
         size_t node_b = nodes_m_edges[ind_b];
         nodes_m_edges[ind_b] = nodes_m_edges[length_nodes_m_edges-1];
         nodes_m_edges[length_nodes_m_edges-1] = node_b;
-        length_nodes_m_edges--; 
+        length_nodes_m_edges--;
 
 
 
-       
+
 
         if(node_a == node_b){
             length_nodes_m_edges +=2;
             continue;
         }
-       
+
 
         //fprintf(stderr, "inda %lu , node_A %lu, ind_b %lu, node_B %lu\n", ind_a, node_a, ind_b, node_b);
         //for(int i=0; i<2*num_opt;i++){
@@ -285,7 +279,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
 
         if(ordered_nodes[(ind_a+1)%problem->nnodes]==node_b && length_nodes_m_edges>2){ //special case
             length_nodes_m_edges +=2;
-       
+
             continue;
         }
         if(ordered_nodes[(ind_b+1)%problem->nnodes]==node_a && length_nodes_m_edges>2){ //special case
@@ -295,7 +289,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
         }
 
         if(length_nodes_m_edges==2 && nodes_m_edges[0]==nodes_m_edges[1]){ //special case
-            
+
             length_nodes_m_edges+=2;
             continue;
         }
@@ -307,11 +301,11 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             node_b = node_a;
             ind_a = ind_temp;
             node_a = node_temp;
-          
+
         }
 
         size_t temp_index = ind_a+1;
-        while(new_edge_status==-1){ 
+        while(new_edge_status==-1){
 
             for(int i=0; i<length_nodes_m_edges; i++){
                 if(ordered_nodes[temp_index%problem->nnodes]==nodes_m_edges[i])//We can connect
@@ -333,10 +327,10 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
         }
 
         if(new_edge_status==1 && !(length_nodes_m_edges==2 && nodes_m_edges[0]==nodes_m_edges[1])){ //check also opposite direction
-            
+
             new_edge_status=-1;
             temp_index = problem->nnodes+ind_a-1;
-            while(new_edge_status==-1){ 
+            while(new_edge_status==-1){
 
                 for(int i=0; i<length_nodes_m_edges; i++){
                     if(ordered_nodes[temp_index%problem->nnodes]==nodes_m_edges[i])//We can connect
@@ -358,7 +352,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             }
         }
 
-       
+
 
         if(new_edge_status==0){ //we cannot connect, select another edge
             length_nodes_m_edges +=2;
@@ -372,14 +366,14 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
                 currentsol[ind_m_edges[replaced_m_edges]][0] = node_b;
                 currentsol[ind_m_edges[replaced_m_edges]][1] = node_a;
             }
-            
+
             if(length_nodes_m_edges==2){
                 replaced_m_edges++;
                 break;
             }
             //reorder ordered_nodes appropriately
             //first find index and edges of phantom_edges involved
-            size_t  a_y=0,  b_y=0, edge_ind_a=0, edge_ind_b =0; 
+            size_t  a_y=0,  b_y=0, edge_ind_a=0, edge_ind_b =0;
             for(int i=replaced_m_edges; i<num_opt;i++){
                 if(phantom_edges[2*i]==node_a){
                     edge_ind_a =i;
@@ -402,25 +396,25 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             }
 
             for(int i=0; i<problem->nnodes; i++){
-               
+
             }
             size_t candidate_a_y = ordered_nodes[(ind_a+1)%problem->nnodes];
             size_t candidate_b_y = ordered_nodes[(ind_b+1)%problem->nnodes];
-            
+
             for(size_t i=0; i<problem->nnodes;i++){
                 int skip =0;
                 for(int j=replaced_m_edges;j<num_opt;j++){
                     if(i==ind_m_edges[j]){
-                        
+
                         skip=1;
                     }
                 }
-                
+
                 if(skip==1){
 
                     continue;
                 }
-                
+
                 if(currentsol[i][0]==node_a && currentsol[i][1]==candidate_a_y){
                     candidate_a_y = ordered_nodes[(ind_a-1+problem->nnodes)%problem->nnodes];
                 }
@@ -429,19 +423,19 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
                 }
                 if(currentsol[i][0]==node_b && currentsol[i][1]==candidate_b_y){
                     candidate_b_y = ordered_nodes[(ind_b-1+problem->nnodes)%problem->nnodes];
-                   
+
                 }
                 if(currentsol[i][1]==node_b && currentsol[i][0]==candidate_b_y){
                     candidate_b_y = ordered_nodes[(ind_b-1+problem->nnodes)%problem->nnodes];
-                   
+
                 }
-              
+
             }
             a_y = candidate_a_y;
             b_y = candidate_b_y;
 
-           
-            
+
+
 
             //Get blocks indexes
             length_nodes_m_edges +=2;
@@ -453,7 +447,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             size_t last =0;
             int deattached_a_count=0;
             for(int j=0; j<length_nodes_m_edges;j++){ //check if a is a node with two deattached edges, special case
-                
+
                 if(ordered_nodes[ind_a%problem->nnodes] == nodes_m_edges[j]){
                     deattached_a_count++;
                 }
@@ -467,15 +461,15 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             for(int i=ind_a+1; i<ind_a+problem->nnodes;i++){
                 for(int j=0; j<length_nodes_m_edges;j++){
                     if(ordered_nodes[i%problem->nnodes] == nodes_m_edges[j]){
-                       
-  
+
+
                         if(status==0){ //very start, determine if ind_a is start or end
                             if(ordered_nodes[i%problem->nnodes]!=a_y){
                                 blk_a_start=ind_a;
                                 blk_a_end = i%problem->nnodes;
                                 status =10;
                                 is_start_iteration =0;
-                            } 
+                            }
                             else{
                                 blk_a_end =ind_a;
                                 is_a_last = 1;
@@ -496,11 +490,11 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
                         if(ordered_nodes[i%problem->nnodes]==node_b && b_status!=4){
                             if(is_start_iteration){
                                 blk_b_start=i%problem->nnodes;
-                                
+
                                 b_status=4;
                                 blk_b_end = last;//DEBUG
                             }else{
-                                
+
                                 blk_b_end =i%problem->nnodes;
                                 blk_b_start = last;
                                 if(ordered_nodes[last]==b_y){
@@ -523,15 +517,15 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
 
                         last = i%problem->nnodes;
 
-                        if(is_start_iteration){ 
+                        if(is_start_iteration){
                             is_start_iteration=0;
                         }else{is_start_iteration=1;}
-                       
-                        
+
+
 
                         //break;
                     }
-                    
+
                 }
                 if(status==10){status=1;}
             }
@@ -542,7 +536,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
 
             length_nodes_m_edges-=2;
 
-            
+
             if(!is_a_last){
                 invert_array(ordered_nodes, blk_a_start, blk_a_end, problem);
             }
@@ -550,7 +544,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
                 invert_array(ordered_nodes, blk_b_start, blk_b_end, problem);
             }
 
-            swap_blocks(ordered_nodes, blk_next_start, blk_next_end, blk_b_start, blk_b_end, problem); 
+            swap_blocks(ordered_nodes, blk_next_start, blk_next_end, blk_b_start, blk_b_end, problem);
 
 
             //update phantom_edges
@@ -562,7 +556,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
 
             replaced_m_edges++;
 
-          
+
 
         }
 
@@ -579,18 +573,14 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
         currentsol[ind_m_edges[replaced_m_edges]][1] = nodes_m_edges[0];
     }
 
-    
 
-    //REMEMBER TO REMOVE BREAK IN VNS_SOLVE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    free(ind_m_edges);
 
-    free(next);
+    free( next );
+    free( prev );
 
-    free(prev);
-
-    free(ordered_nodes);
-
-    free(nodes_m_edges);
+    free( ind_m_edges   );
+    free( ordered_nodes );
+    free( nodes_m_edges );
 
 }
 
@@ -607,32 +597,27 @@ void
 _2opt_refine_VNS( size_t **currentsol, instance *problem )
 {
     /* Convert `currentsol` to `next/prev` representation */
-    size_t *next = calloc( problem->nnodes, sizeof( *next ) );
-    size_t *prev = calloc( problem->nnodes, sizeof( *prev ) );
+    size_t *next = malloc( problem->nnodes * sizeof( *next ) );
+    size_t *prev = malloc( problem->nnodes * sizeof( *prev ) );
 
     if ( next == NULL || prev == NULL ) {
         log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
 
-    for ( size_t k = 0; k < problem->nnodes; next[k] = prev[k] = SIZE_MAX, ++k );
-
-    size_t u;
-    size_t v;
+    size_t u = currentsol[0][0];
+    size_t v = currentsol[0][1];
     for ( size_t k = 0; k < problem->nnodes; ++k ) {
-        u = currentsol[k][0];
-        v = currentsol[k][1];
+        next[u] = v;
+        prev[v] = u;
 
-        if (prev[v] != SIZE_MAX) {
-            next[v] = u;
-            prev[u] = v;
-        } else {
-            if (next[u] != SIZE_MAX) {
-                next[v] = u;
-                prev[u] = v;
-            } else {
-                next[u] = v;
-                prev[v] = u;
+        for ( size_t kk = 0; kk < problem->nnodes; ++kk ) {
+            if ( (currentsol[kk][0] == v && currentsol[kk][1] != u)
+                 || (currentsol[kk][1] == v && currentsol[kk][0] != u) ) {
+                /* kk-th edge in the solution is the next edge going from v to some other node. */
+                u = v;
+                v ^= currentsol[kk][0] ^ currentsol[kk][1];
+                break;
             }
         }
     }
@@ -700,7 +685,7 @@ _2opt_refine_VNS( size_t **currentsol, instance *problem )
 
 
 void
-VNS_solve ( instance *problem )
+HeurVNS_solve ( instance *problem )
 {
     struct timespec start, end;
 
@@ -737,7 +722,7 @@ VNS_solve ( instance *problem )
     log_debug( "Done sorting in %.3lf seconds.",
                ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000. );
 
-    size_t from;           
+    size_t from;
 
     /* `currentsol` will contain the solution obtained starting the nearest
      * neighbor heuristic from `startnode`.  */
@@ -758,7 +743,7 @@ VNS_solve ( instance *problem )
 
 
     double elapsedtime = 0;
-    
+
     clock_gettime( CLOCK_MONOTONIC, &start );
 
     /* Initialize our solution starting from a solution computed with the neirest neighborood method  */
@@ -804,7 +789,7 @@ VNS_solve ( instance *problem )
     //for ( pos = 0; pos < nedges; ++pos ) {
     //    edges[pos].available = 1;
     //}
-    
+
     for(int i=0; i<problem->nnodes;i++){
         //fprintf(stderr, "%lu %lu \n", problem->solution[i][0], problem->solution[i][1]);
         //fprintf(stderr, "%lu %lu \n", currentsol[i][0], currentsol[i][1]);
@@ -819,7 +804,7 @@ VNS_solve ( instance *problem )
         for(int i=0; i<problem->nnodes; i++){
                 fprintf(stderr, "Curr sol: %lu %lu\n", currentsol[i][0]+1, currentsol[i][1]+1);
             }
-        _5opt_diversificate_VNS(currentsol, problem);   
+        _5opt_diversificate_VNS(currentsol, problem);
 
         fprintf(stderr, "5-opt refine\n");
         for(int i=0; i<problem->nnodes; i++){
@@ -852,10 +837,6 @@ VNS_solve ( instance *problem )
             bestsol    = problem->solution;
             bestcost   = problem->solcost;
         }
-
-        break; //REMEMEBR TO REMOVE THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
     }
 
     problem->solution = bestsol;
@@ -868,14 +849,14 @@ VNS_solve ( instance *problem )
 
 
 void
-VNS_model ( instance *problem )
+HeurVNS_model ( instance *problem )
 {
     struct timespec start, end;
     clock_gettime( CLOCK_MONOTONIC, &start );
     __SEED = conf.seed;
 
     log_debug( "Starting solver." );
-    VNS_solve( problem );
+    HeurVNS_solve( problem );
 
     clock_gettime( CLOCK_MONOTONIC, &end );
 
