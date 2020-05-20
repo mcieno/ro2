@@ -288,6 +288,11 @@ main ( int argc, char *argv[] )
             HeurVNS_model( &problem );
             break;
 
+        case TSP_SOLVER_GeneticAlgorithm:
+            log_info( "Solving with VNS heuristic method." );
+            GeneticAlgorithm_model(&problem );
+            break;
+
         default:
             log_error( "No model specified. Exit..." );
             exit( EXIT_FAILURE );
@@ -456,6 +461,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else if ( !strcasecmp( "HeurVNS", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurVNS;
 
+            } else if ( !strcasecmp( "GA", arg ) ) {
+                conf.solving_method = TSP_SOLVER_GeneticAlgorithm;
             } else {
                 argp_error(
                     state,

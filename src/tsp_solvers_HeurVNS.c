@@ -373,27 +373,7 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             }
             //reorder ordered_nodes appropriately
             //first find index and edges of phantom_edges involved
-            size_t  a_y=0,  b_y=0, edge_ind_a=0, edge_ind_b =0;
-            for(int i=replaced_m_edges; i<num_opt;i++){
-                if(phantom_edges[2*i]==node_a){
-                    edge_ind_a =i;
-                    a_y =phantom_edges[2*i+1];
-                }
-                else if(phantom_edges[2*i+1]==node_a){
-                    edge_ind_a =i;
-                    a_y =phantom_edges[2*i];
-                }
-
-                if(phantom_edges[2*i]==node_b){
-                    edge_ind_b =i;
-                    b_y =phantom_edges[2*i+1];
-                }
-                else if(phantom_edges[2*i+1]==node_b){
-                    edge_ind_b =i;
-                    b_y =phantom_edges[2*i];
-                }
-
-            }
+            size_t  a_y=0,  b_y=0;
 
             for(int i=0; i<problem->nnodes; i++){
 
@@ -545,13 +525,6 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             }
 
             swap_blocks(ordered_nodes, blk_next_start, blk_next_end, blk_b_start, blk_b_end, problem);
-
-
-            //update phantom_edges
-            phantom_edges[2*edge_ind_b]=a_y + edge_ind_a;
-            phantom_edges[2*edge_ind_b+1]=b_y;
-            phantom_edges[2*edge_ind_a]=phantom_edges[2*replaced_m_edges];
-            phantom_edges[2*edge_ind_a+1]=phantom_edges[2*replaced_m_edges+1];
 
 
             replaced_m_edges++;
@@ -800,23 +773,10 @@ HeurVNS_solve ( instance *problem )
     /* Run iteratively 2-opt and a random 5-opt jump */
     for ( size_t iter = 0; elapsedtime + 1e-3 < conf.heurtime; iter++ )
     {
-        fprintf(stderr, "start refine\n");
-        for(int i=0; i<problem->nnodes; i++){
-                fprintf(stderr, "Curr sol: %lu %lu\n", currentsol[i][0]+1, currentsol[i][1]+1);
-            }
+
         _5opt_diversificate_VNS(currentsol, problem);
 
-        fprintf(stderr, "5-opt refine\n");
-        for(int i=0; i<problem->nnodes; i++){
-                fprintf(stderr, "Curr sol: %lu %lu\n", currentsol[i][0]+1, currentsol[i][1]+1);
-            }
-
         _2opt_refine_VNS( currentsol, problem );
-
-        fprintf(stderr,"qui after 2-opt refine\n");
-         for(int i=0; i<problem->nnodes; i++){
-                fprintf(stderr, "Curr sol: %lu %lu\n", currentsol[i][0]+1, currentsol[i][1]+1);
-            }
 
 
         clock_gettime( CLOCK_MONOTONIC, &end );
