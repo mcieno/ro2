@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/timeb.h>
+#include <time.h>
 
 #include <cplex.h>
 

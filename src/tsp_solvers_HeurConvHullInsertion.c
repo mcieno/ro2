@@ -9,13 +9,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/timeb.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "tsp_solvers.h"
 #include "logging.h"
 #include "tsp.h"
 #include "tspconf.h"
-#include "tspplot.h"
 
 
 static unsigned int __SEED;
@@ -301,7 +301,7 @@ HeurConvHullInsertion_model ( instance *problem )
     __SEED = conf.seed;
 
     double elapsedtime = 0;
-    struct timeb start, end;
+    struct timespec start, end;
 
     node_t *nodes = malloc( problem->nnodes * sizeof( *nodes ) );
     size_t *P     = malloc( problem->nnodes * sizeof( *P     ) );
@@ -313,7 +313,7 @@ HeurConvHullInsertion_model ( instance *problem )
     }
 
     /* Sort the nodes and put their indices in P.  */
-    ftime( &start );
+    clock_gettime( CLOCK_MONOTONIC, &start );
     log_debug( "Sorting nodes by X-coordinates..." );
 
     for ( size_t i = 0; i < problem->nnodes; ++i ) {
@@ -326,29 +326,29 @@ HeurConvHullInsertion_model ( instance *problem )
         P[i] = nodes[i].index;
     }
 
-    ftime( &end );
+    clock_gettime( CLOCK_MONOTONIC, &end );
     log_debug( "Done sorting in %.3lf seconds.",
-               ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+               ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000. );
 
     /* Compute the convex hull.  */
-    ftime( &start );
+    clock_gettime( CLOCK_MONOTONIC, &start );
     log_debug( "Finding the convex hull..." );
 
     size_t k = chainHull_2D( P, problem->nnodes, H, problem );
 
-    ftime( &end );
+    clock_gettime( CLOCK_MONOTONIC, &end );
     log_info( "Convex hull found in %.3lf seconds. It contains %zu nodes.",
-              ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000., k );
+              ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000., k );
 
     /* Start searching for the best solution */
-    ftime( &start );
+    clock_gettime( CLOCK_MONOTONIC, &start );
     problem->solcost = __DBL_MAX__;
 
     for ( size_t j = 0; elapsedtime + 1e-3 < conf.heurtime; ++j ) {
         HeurConvHullInsertion_solve( problem, H, k );
 
-        ftime( &end );
-        elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+        clock_gettime( CLOCK_MONOTONIC, &end );
+        elapsedtime = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
 
         log_debug( "Found heuristic solution #%zu. Still %.3lf seconds remaining.",
                    j + 1, conf.heurtime - elapsedtime );

@@ -37,6 +37,9 @@
 #define TSP_SOLVER_HeurInsertion                    24U  /*!< Insertion Heuristic.  */
 #define TSP_SOLVER_HeurConvHullInsertion            25U  /*!< Convex Hull Insertion Heuristic.  */
 #define TSP_SOLVER_HeurGRASPWith2OPTRefinement      26U  /*!< GRASP heuristic method with 2-OPT refinement method.  */
+#define TSP_SOLVER_HeurVNS                          27U  /*!< VNS heuristic method.  */
+#define TSP_SOLVER_HeurTabuSearch                   28U  /*!< Tabu Search on starting from a refined GRASP solution.  */
+#define TSP_SOLVER_HeurSimulatedAnnealing           29U  /*!< Repeatedly run Simulated Annealing.  */
 
 typedef unsigned model_t;
 
@@ -420,5 +423,43 @@ HeurConvHullInsertion_model ( instance *problem );
 void
 HeurGRASPWith2OPTRefinement_model ( instance *problem );
 
+/*!
+ * \brief Tabu Search starting from a refined GRASP solution.
+ *
+ * This model applies the Tabu Search metaheuristc technique for locally
+ * improving a GRASP solution.
+ * It uses 2-OPT moves for moving around the neighborhood of the current
+ * solution.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurTabuSearch_model ( instance *problem );
+
+/*!
+ * \brief VNS heuristic method.
+ *
+ * This model applies the VNS heuristic.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurVNS_model(instance *problem);
+
+/*!
+ * \brief Repeatedly run Simulated Annealing.
+ *
+ * This model runs a simulated annealing multiple times and accumulates the
+ * best solution it finds during the iterations.
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurSimulatedAnnealing_model ( instance *problem );
 
 #endif

@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/timeb.h>
+#include <time.h>
 
 #include <cplex.h>
 
@@ -21,8 +21,8 @@
 void
 Random_model ( instance *problem )
 {
-    struct timeb start, end;
-    ftime( &start );
+    struct timespec start, end;
+    clock_gettime( CLOCK_MONOTONIC, &start );
 
     for ( size_t i = 0; i < problem->nnodes; ++i )
     {
@@ -32,9 +32,9 @@ Random_model ( instance *problem )
 
     problem->solution[problem->nnodes - 1][1] = 0;
 
-    ftime( &end );
+    clock_gettime( CLOCK_MONOTONIC, &end );
 
-    problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    problem->elapsedtime  = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
     problem->visitednodes = 0;
     problem->solcost      = compute_solution_cost( problem );
 }

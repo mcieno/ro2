@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/timeb.h>
+#include <time.h>
 
 #include <cplex.h>
 
@@ -235,7 +235,7 @@ _lazyconstraintcallback_LegacyConcordeShallow ( CPXCENVptr env, void *cbdata, in
     if ( x     == NULL ||
          next  == NULL ||
          comps == NULL  ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 
@@ -324,7 +324,7 @@ _concorde_callback_LegacyConcordeShallow( double val, int cutcount, int *cut, vo
     if ( CPXcutcallbackadd( ccinfo->env, ccinfo->cbdata, ccinfo->wherefrom,
                             nzcnt, rhs, sense, cutind, cutval, purgeable ) )
     {
-        log_fatal( "CPXcutcallbackadd");
+        log_fatal( "CPXcutcallbackadd" );
         exit( EXIT_FAILURE );
     }
 
@@ -348,7 +348,7 @@ _usercutcallback_LegacyConcordeShallow( CPXCENVptr env,
     int status  = CPXgetcallbacknodeinfo( env, cbdata, wherefrom, 0, CPX_CALLBACK_INFO_NODE_DEPTH_LONG, &nodedepth );
 
     if ( status ) {
-        log_fatal( "CPXgetcallbacknodeinfo");
+        log_fatal( "CPXgetcallbacknodeinfo" );
         return status;
     }
 
@@ -373,7 +373,7 @@ _usercutcallback_LegacyConcordeShallow( CPXCENVptr env,
                              + info->ncols           * sizeof( *x          ) );
 
     if ( memchunk == NULL ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 
@@ -500,8 +500,8 @@ LegacyConcordeShallow_model ( instance *problem )
     tspconf_apply( env );
     CPXsetintparam( env, CPXPARAM_MIP_Strategy_CallbackReducedLP, CPX_OFF );
 
-    struct timeb start, end;
-    ftime( &start );
+    struct timespec start, end;
+    clock_gettime( CLOCK_MONOTONIC, &start );
 
     log_info( "Starting solver." );
     if ( CPXmipopt( env, lp ) ) {
@@ -509,7 +509,7 @@ LegacyConcordeShallow_model ( instance *problem )
         exit( EXIT_FAILURE );
     }
 
-    ftime( &end );
+    clock_gettime( CLOCK_MONOTONIC, &end );
 
     log_info( "Retrieving final solution." );
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
@@ -524,7 +524,7 @@ LegacyConcordeShallow_model ( instance *problem )
 
     free( xopt );
 
-    problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    problem->elapsedtime  = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
     problem->visitednodes = CPXgetnodecnt( env, lp );
     problem->solcost      = compute_solution_cost( problem );
 

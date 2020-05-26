@@ -24,6 +24,7 @@ models=(
     HeurInsertion
     HeurConvHullInsertion
     HeurGRASPWith2OPTRefinement
+    HeurTabuSearch
 )
 
 testbed=(

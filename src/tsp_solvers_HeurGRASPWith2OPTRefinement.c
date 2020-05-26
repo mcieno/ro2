@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/timeb.h>
+#include <time.h>
 
 #include "tsp_solvers.h"
 #include "logging.h"
@@ -63,33 +63,27 @@ void
 _2opt_refine_HeurGRASPWith2OPTRefinement( size_t **currentsol, instance *problem )
 {
     /* Convert `currentsol` to `next/prev` representation */
-    size_t *next = calloc( problem->nnodes, sizeof( *next ) );
-    size_t *prev = calloc( problem->nnodes, sizeof( *prev ) );
+    size_t *next = malloc( problem->nnodes * sizeof( *next ) );
+    size_t *prev = malloc( problem->nnodes * sizeof( *prev ) );
 
     if ( next == NULL || prev == NULL ) {
         log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
 
-    for ( size_t k = 0; k < problem->nnodes; next[k] = prev[k] = SIZE_MAX, ++k )
-        ;
-
-    size_t u;
-    size_t v;
+    size_t u = currentsol[0][0];
+    size_t v = currentsol[0][1];
     for ( size_t k = 0; k < problem->nnodes; ++k ) {
-        u = currentsol[k][0];
-        v = currentsol[k][1];
+        next[u] = v;
+        prev[v] = u;
 
-        if (prev[v] != SIZE_MAX) {
-            next[v] = u;
-            prev[u] = v;
-        } else {
-            if (next[u] != SIZE_MAX) {
-                next[v] = u;
-                prev[u] = v;
-            } else {
-                next[u] = v;
-                prev[v] = u;
+        for ( size_t kk = 0; kk < problem->nnodes; ++kk ) {
+            if ( (currentsol[kk][0] == v && currentsol[kk][1] != u)
+                 || (currentsol[kk][1] == v && currentsol[kk][0] != u) ) {
+                /* kk-th edge in the solution is the next edge going from v to some other node. */
+                u = v;
+                v ^= currentsol[kk][0] ^ currentsol[kk][1];
+                break;
             }
         }
     }
@@ -121,7 +115,7 @@ _2opt_refine_HeurGRASPWith2OPTRefinement( size_t **currentsol, instance *problem
                 if ( wuu_ + wvv_ < wuv + wu_v_ )
                 {
                     log_trace( "2-OPT MOVE: (%zu, %zu) X (%zu, %zu)", u, v, u_, v_ );
-                    /* Swap all the rout from v to u_ */
+                    /* Swap all the route from v to u_ */
                     for ( size_t vv = v, t = next[next[vv]]; vv != u_; vv = prev[t], t = next[t] ) {
                         prev[vv] = prev[t];
                         next[prev[t]] = vv;
@@ -149,13 +143,16 @@ _2opt_refine_HeurGRASPWith2OPTRefinement( size_t **currentsol, instance *problem
     }
     currentsol[k][0] = u;
     currentsol[k][1] = v;
+
+    free( prev );
+    free( next );
 }
 
 
 void
 HeurGRASPWith2OPTRefinement_solve ( instance *problem )
 {
-    struct timeb start, end;
+    struct timespec start, end;
 
     size_t nedges = ( problem->nnodes * ( problem->nnodes + 1 ) ) / 2 - problem->nnodes;
 
@@ -182,13 +179,13 @@ HeurGRASPWith2OPTRefinement_solve ( instance *problem )
     }
 
     log_debug( "Sorting edges by cost." );
-    ftime( &start );
+    clock_gettime( CLOCK_MONOTONIC, &start );
 
     qsort( edges, nedges, sizeof( *edges ), _cmp_HeurGRASPWith2OPTRefinement );
 
-    ftime( &end );
+    clock_gettime( CLOCK_MONOTONIC, &end );
     log_debug( "Done sorting in %.3lf seconds.",
-               ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+               ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000. );
 
     /* `currentsol` will contain the solution obtained starting the nearest
      * neighbor heuristic from `startnode`.  */
@@ -209,7 +206,7 @@ HeurGRASPWith2OPTRefinement_solve ( instance *problem )
 
     double elapsedtime = 0;
     size_t from;
-    ftime( &start );
+    clock_gettime( CLOCK_MONOTONIC, &start );
 
     /* Multiple runs starting from i-th node will find different solutions
      * due to randomization. Hence, this loop is worth running for the whole
@@ -261,9 +258,9 @@ HeurGRASPWith2OPTRefinement_solve ( instance *problem )
 
         _2opt_refine_HeurGRASPWith2OPTRefinement( currentsol, problem );
 
-        ftime( &end );
+        clock_gettime( CLOCK_MONOTONIC, &end );
 
-        elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+        elapsedtime = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
         log_debug( "Found heuristic solution #%zu/%zu. Still %.3lf seconds remaining.",
                    startnode + 1, problem->nnodes, conf.heurtime - elapsedtime );
 
@@ -289,21 +286,22 @@ HeurGRASPWith2OPTRefinement_solve ( instance *problem )
     /* Free `currentsol`, which may have been swapped in the mean time.  */
     for ( size_t i = 0; i < problem->nnodes; ++i )  free( currentsol[i] );
     free( currentsol );
+    free( edges );
 }
 
 
 void
 HeurGRASPWith2OPTRefinement_model ( instance *problem )
 {
-    struct timeb start, end;
-    ftime( &start );
+    struct timespec start, end;
+    clock_gettime( CLOCK_MONOTONIC, &start );
     __SEED = conf.seed;
 
     log_debug( "Starting solver." );
     HeurGRASPWith2OPTRefinement_solve( problem );
 
-    ftime( &end );
+    clock_gettime( CLOCK_MONOTONIC, &end );
 
-    problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    problem->elapsedtime  = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
     problem->visitednodes = 0;
 }

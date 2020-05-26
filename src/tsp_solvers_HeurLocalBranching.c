@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/timeb.h>
+#include <time.h>
 
 #include <cplex.h>
 
@@ -224,7 +224,7 @@ _candidatecutcallback_HeurLocalBranching ( CPXCALLBACKCONTEXTptr context, CPXLON
     size_t *comps = calloc( info->problem->nnodes, sizeof( *comps ) );
 
     if ( x == NULL || next == NULL || comps == NULL  ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 
@@ -341,7 +341,7 @@ _relaxationcutcallback_HeurLocalBranching ( CPXCALLBACKCONTEXTptr context, CPXLO
     int status = CPXcallbackgetinfolong( context, CPXCALLBACKINFO_NODEDEPTH, &nodedepth );
 
     if ( status ) {
-        log_fatal( "CPXcallbackgetinfolong");
+        log_fatal( "CPXcallbackgetinfolong" );
         return status;
     }
 
@@ -367,7 +367,7 @@ _relaxationcutcallback_HeurLocalBranching ( CPXCALLBACKCONTEXTptr context, CPXLO
                              + info->ncols           * sizeof( *x          ) );
 
     if ( memchunk == NULL ) {
-        log_fatal( "Out of memory.");
+        log_fatal( "Out of memory." );
         goto TERMINATE;
     }
 
@@ -499,15 +499,15 @@ _callbackfunc_HeurLocalBranching ( CPXCALLBACKCONTEXTptr context, CPXLONG contex
 void
 HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double *xopt )
 {
-    struct timeb start, end;
+    struct timespec start, end;
 
-    ftime( &start );
+    clock_gettime( CLOCK_MONOTONIC, &start );
 
     int solntype = CPX_NO_SOLN;
     for ( long nlim = 1L; solntype == CPX_NO_SOLN; ++nlim )
     {
         CPXsetdblparam( env, CPXPARAM_TimeLimit, conf.timelimit -
-            ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+            ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000. );
 
         log_debug( "Searching initial solution with nodelimit of %d.", nlim );
 
@@ -521,9 +521,9 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
             exit( EXIT_FAILURE );
         }
 
-        ftime( &end );
+        clock_gettime( CLOCK_MONOTONIC, &end );
 
-        if ( ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. + 1e-4 > conf.timelimit) {
+        if ( ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000. + 1e-4 > conf.timelimit) {
             break;
         }
     }
@@ -540,7 +540,7 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
 
     } else {
         log_debug( "Feasible solution found in %.3lf seconds.",
-            ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000. );
+            ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000. );
 
         CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL );
         _xopt2solution( xopt, problem, _HeurLocalBranching_xpos );
@@ -559,7 +559,7 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
     int    lbrow;
 
     double elapsedtime = 0;
-    ftime( &start );
+    clock_gettime( CLOCK_MONOTONIC, &start );
 
     for ( size_t k = 0; elapsedtime + 1e-3 < conf.heurtime; ++k )
     {
@@ -611,15 +611,15 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
         }
 
         /* Update elapsed time */
-        ftime( &end );
-        elapsedtime = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+        clock_gettime( CLOCK_MONOTONIC, &end );
+        elapsedtime = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
 
         log_debug( "Found #%d heuristic solution. Still %.3lf seconds remaining.",
             k + 1, conf.heurtime - elapsedtime );
 
         /* Undo the fixing */
         if ( CPXdelrows( env, lp, lbrow, lbrow ) ) {
-            log_fatal( "CPXdelrows");
+            log_fatal( "CPXdelrows" );
             exit( EXIT_FAILURE );
         }
     }
@@ -649,8 +649,8 @@ HeurLocalBranching_model ( instance *problem )
     CPXsetintparam( env, CPXPARAM_MIP_Strategy_CallbackReducedLP, CPX_OFF );
 
 
-    struct timeb start, end;
-    ftime( &start );
+    struct timespec start, end;
+    clock_gettime( CLOCK_MONOTONIC, &start );
 
     double *xopt = malloc( CPXgetnumcols( env, lp ) * sizeof( *xopt ) );
 
@@ -662,12 +662,12 @@ HeurLocalBranching_model ( instance *problem )
     log_debug( "Starting heuristic loop." );
     HeurLocalBranching_solve( env, lp, problem, xopt );
 
-    ftime( &end );
+    clock_gettime( CLOCK_MONOTONIC, &end );
 
     /* Retrieve final solution */
     CPXsolution( env, lp, NULL, NULL, xopt, NULL, NULL, NULL);
     _xopt2solution( xopt, problem, &_HeurLocalBranching_xpos );
-    problem->elapsedtime  = ( 1000. * ( end.time - start.time ) + end.millitm - start.millitm ) / 1000.;
+    problem->elapsedtime  = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
     problem->visitednodes = CPXgetnodecnt( env, lp );
     problem->solcost      = compute_solution_cost( problem );
 
