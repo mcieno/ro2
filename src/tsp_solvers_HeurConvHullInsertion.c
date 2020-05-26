@@ -16,7 +16,6 @@
 #include "logging.h"
 #include "tsp.h"
 #include "tspconf.h"
-#include "tspplot.h"
 
 
 static unsigned int __SEED;

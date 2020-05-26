@@ -64,33 +64,27 @@ void
 _2opt_refine_HeurTabuSearch( size_t **currentsol, instance *problem )
 {
     /* Convert `currentsol` to `next/prev` representation */
-    size_t *next = calloc( problem->nnodes, sizeof( *next ) );
-    size_t *prev = calloc( problem->nnodes, sizeof( *prev ) );
+    size_t *next = malloc( problem->nnodes * sizeof( *next ) );
+    size_t *prev = malloc( problem->nnodes * sizeof( *prev ) );
 
     if ( next == NULL || prev == NULL ) {
         log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
 
-    for ( size_t k = 0; k < problem->nnodes; next[k] = prev[k] = SIZE_MAX, ++k )
-        ;
-
-    size_t u;
-    size_t v;
+    size_t u = currentsol[0][0];
+    size_t v = currentsol[0][1];
     for ( size_t k = 0; k < problem->nnodes; ++k ) {
-        u = currentsol[k][0];
-        v = currentsol[k][1];
+        next[u] = v;
+        prev[v] = u;
 
-        if (prev[v] != SIZE_MAX) {
-            next[v] = u;
-            prev[u] = v;
-        } else {
-            if (next[u] != SIZE_MAX) {
-                next[v] = u;
-                prev[u] = v;
-            } else {
-                next[u] = v;
-                prev[v] = u;
+        for ( size_t kk = 0; kk < problem->nnodes; ++kk ) {
+            if ( (currentsol[kk][0] == v && currentsol[kk][1] != u)
+                 || (currentsol[kk][1] == v && currentsol[kk][0] != u) ) {
+                /* kk-th edge in the solution is the next edge going from v to some other node. */
+                u = v;
+                v ^= currentsol[kk][0] ^ currentsol[kk][1];
+                break;
             }
         }
     }
@@ -258,30 +252,6 @@ _tabu_search_HeurTabuSearch( size_t **currentsol, double *currentcost_p, size_t 
                 /* Calculate cost of 2-OPT move, paying attention to not disconnecting the graph */
                 wuu_ = _euclidean_distance( problem->xcoord[u], problem->ycoord[u], problem->xcoord[u_], problem->ycoord[u_] );
                 wvv_ = _euclidean_distance( problem->xcoord[v], problem->ycoord[v], problem->xcoord[v_], problem->ycoord[v_] );
-
-                /* If the new cost is improving the incumbent, then update regardless of the Tabu List */
-                if ( *currentcost_p - ( wuv + wu_v_ ) + ( wuu_ + wvv_ ) < problem->solcost - 1e-5 )
-                {
-                    /* Swap all the rout from v to u_ */
-                    log_trace( "2-OPT MOVE improves incumbent: (%zu, %zu) X (%zu, %zu)", u, v, u_, v_ );
-                    for ( size_t r = 0; r < problem->nnodes; ++r ) {
-                        if ( problem->solution[r][0] == u || problem->solution[r][1] == u ) {
-                            if ( problem->solution[r][0] == v || problem->solution[r][1] == v ) {
-                                problem->solution[r][0] = u;
-                                problem->solution[r][1] = u_;
-                            }
-                        }
-                        else if ( problem->solution[r][0] == u_ || problem->solution[r][1] == u_ ) {
-                            if ( problem->solution[r][0] == v_ || problem->solution[r][1] == v_ ) {
-                                problem->solution[r][0] = v_;
-                                problem->solution[r][1] = v;
-                            }
-                        }
-                    }
-
-                    problem->solcost = compute_solution_cost( problem );
-                    break;
-                }
 
                 /* Check if this improvement/degratation is better than the best known so far */
                 if ( wuu_ + wvv_ - wuv - wu_v_ < bestchange )
@@ -476,7 +446,7 @@ HeurTabuSearch_solve ( instance *problem )
 
     for ( size_t tenure = 10;
           elapsedtime + 1e-3 < conf.heurtime;
-          tenure = ( tenure + ( TENURE_MAX - TENURE_MIN ) / 100 + 1 ) % ( TENURE_MAX - TENURE_MIN ) + TENURE_MIN )
+          tenure = ( tenure + ( TENURE_MAX - TENURE_MIN ) / 50 + 1 ) % ( TENURE_MAX - TENURE_MIN ) + TENURE_MIN )
     {
         /*
          * The value of tenure will repetedly increase and decrease to enable both diversification and intensification.
@@ -507,6 +477,9 @@ HeurTabuSearch_solve ( instance *problem )
         log_debug( "Tabu search completed with tenure = %zu. Still %.3lf seconds remaining.",
             tenure, conf.heurtime - elapsedtime );
     }
+
+    /* Compute the cost once again */
+    problem->solcost = compute_solution_cost( problem );
 
     /* Free `currentsol`.  */
     for ( size_t i = 0; i < problem->nnodes; ++i )  free( currentsol[i] );

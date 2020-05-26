@@ -18,8 +18,6 @@
 #include "tsp.h"
 #include "tspconf.h"
 
-#include "tspplot.h"
-
 
 typedef struct
 {

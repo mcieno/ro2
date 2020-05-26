@@ -17,7 +17,6 @@
 #include "logging.h"
 #include "tsp.h"
 #include "tspconf.h"
-#include "tspplot.h"
 
 
 static unsigned int __SEED;
@@ -63,17 +62,17 @@ _cmp_VNS( const void *a, const void *b ) {
 void
 invert_array(size_t *ordered_nodes, size_t a, size_t b, instance *problem)
 {
-    if(a==b){
+    if ( a == b ) {
         return;
     }
     size_t iter;
-    if(a>b){
+    if ( a>b ) {
         iter = ((b+problem->nnodes)-a+1)/2;
     }else{ iter = (b-a+1)/2;}
 
-    for(int i=0; i<iter;i++){
-        if(a>b){
-            b=b+problem->nnodes;
+    for ( int i = 0; i<iter; ++i ) {
+        if ( a>b ) {
+            b = b+problem->nnodes;
         }
         size_t temp = ordered_nodes[(a+i)%problem->nnodes];
         ordered_nodes[(a+i)%problem->nnodes] = ordered_nodes[(b-i)%problem->nnodes];
@@ -82,58 +81,56 @@ invert_array(size_t *ordered_nodes, size_t a, size_t b, instance *problem)
 
 }
 
-//Swap the positions of two block in the array.
-//Swap block from index a-b with block from index c to d mantaining overall order
 void
-swap_blocks(size_t *ordered_nodes, size_t a, size_t b, size_t c, size_t d, instance *problem){ //DA VELOCIZZARE
+swap_blocks(size_t *ordered_nodes, size_t a, size_t b, size_t c, size_t d, instance *problem){
 
-    if(a==c && b==d){
+    if ( a == c && b == d ) {
         return;
     }
 
-    if(b==c){
+    if ( b == c ) {
         return;
     }
 
     size_t *supp_array = calloc( problem->nnodes, sizeof( *supp_array ) );
-    for(int i=0; i<problem->nnodes;i++){
-        supp_array[i]=ordered_nodes[i];
+    for ( int i = 0; i<problem->nnodes; ++i ) {
+        supp_array[i] = ordered_nodes[i];
     }
 
-    size_t iter =0;
-    if(c>d){
+    size_t iter = 0;
+    if ( c>d ) {
         iter = (d+problem->nnodes)-c+1;
     }else{
         iter = d-c+1;
     }
 
-    size_t index =a;
-    for(size_t i=0; i<iter;i++){
-        ordered_nodes[index%problem->nnodes]=supp_array[(c+i)%problem->nnodes];
+    size_t index = a;
+    for ( size_t i = 0; i<iter; ++i ) {
+        ordered_nodes[index%problem->nnodes] = supp_array[(c+i)%problem->nnodes];
         index++;
     }
 
-    if(b>c){
+    if ( b>c ) {
         iter = (c+problem->nnodes)-b-1;
     }else{
         iter = c-b-1;
     }
 
-    for(size_t i=0; i<iter;i++){
-        ordered_nodes[index%problem->nnodes]=supp_array[(b+i+1)%problem->nnodes];
+    for ( size_t i = 0; i<iter; ++i ) {
+        ordered_nodes[index%problem->nnodes] = supp_array[(b+i+1)%problem->nnodes];
         index++;
     }
 
 
-    if(a>b){
+    if ( a>b ) {
         iter = (b+problem->nnodes)-a+1;
     }else{
         iter = b-a+1;
     }
 
 
-    for(size_t i=0; i<iter;i++){
-        ordered_nodes[index%problem->nnodes]=supp_array[(a+i)%problem->nnodes];
+    for ( size_t i = 0; i<iter; ++i ) {
+        ordered_nodes[index%problem->nnodes] = supp_array[(a+i)%problem->nnodes];
         index++;
     }
 
@@ -151,69 +148,69 @@ swap_blocks(size_t *ordered_nodes, size_t a, size_t b, size_t c, size_t d, insta
  *
  * \warning The value of \p currentsol must be a feasible solution.
  */
-void
-_5opt_diversificate_VNS( size_t **currentsol, instance *problem )
+void _5opt_diversificate_VNS(size_t **currentsol, instance *problem)
 {
-    int num_opt = 5; //num of optimality, running with m=5-opt right now
+    int num_opt = 5;
 
-
-    //select index of m random edges of the solution to be diversified
-    size_t replaced_m_edges =0;// index of the next edge that will be replaced in the solution
-    size_t *ind_m_edges = calloc( num_opt, sizeof( *ind_m_edges ) );
-    size_t *nodes_m_edges = calloc( 2*num_opt, sizeof( *nodes_m_edges ) );
-    size_t *phantom_edges = calloc( 2*num_opt, sizeof( *phantom_edges ) );
-    if ( ind_m_edges == NULL  ) {
-        log_fatal( "Out of memory." );
-        exit( EXIT_FAILURE );
+    size_t replaced_m_edges = 0;
+    size_t *ind_m_edges = calloc(num_opt, sizeof(*ind_m_edges));
+    size_t *nodes_m_edges = calloc(2 * num_opt, sizeof(*nodes_m_edges));
+    size_t *phantom_edges = calloc(2 * num_opt, sizeof(*phantom_edges));
+    if ( ind_m_edges == NULL )
+    {
+        log_fatal("Out of memory.");
+        exit(EXIT_FAILURE);
     }
 
-    for(size_t i=0; i<num_opt; i++){
-        int found =0;
-        while (found==0)
+    for ( size_t i = 0; i < num_opt; ++i )
+    {
+        int found = 0;
+        while ( found == 0 )
         {
-        int unique=1;
-        size_t e = rand_r(&__SEED)%problem->nnodes;
-        for(size_t j=0; j<i;j++){
-                if(ind_m_edges[j]==e){
-                    unique=0;
+            int unique = 1;
+            size_t e = rand_r(&__SEED) % problem->nnodes;
+            for ( size_t j = 0; j < i; ++j )
+            {
+                if ( ind_m_edges[j] == e )
+                {
+                    unique = 0;
                 }
             }
-        if(unique==1){
-                found=1;
-                ind_m_edges[i]=e;
-                nodes_m_edges[2*i] = currentsol[e][0];
-                nodes_m_edges[2*i+1] = currentsol[e][1];
-                phantom_edges[2*i] = currentsol[e][0];
-                phantom_edges[2*i+1] = currentsol[e][1];
+            if ( unique == 1 )
+            {
+                found = 1;
+                ind_m_edges[i] = e;
+                nodes_m_edges[2 * i] = currentsol[e][0];
+                nodes_m_edges[2 * i + 1] = currentsol[e][1];
+                phantom_edges[2 * i] = currentsol[e][0];
+                phantom_edges[2 * i + 1] = currentsol[e][1];
             }
         }
-
-
-
     }
 
+    size_t *ordered_nodes = calloc(problem->nnodes, sizeof(*ordered_nodes));
+    /* Build sequence of nodes of the solution to do so in the process, we
+     * convert `currentsol` to `next/prev` representation */
+    size_t *next = malloc(problem->nnodes * sizeof(*next));
+    size_t *prev = malloc(problem->nnodes * sizeof(*prev));
 
-
-    size_t *ordered_nodes = calloc( problem->nnodes, sizeof( *ordered_nodes ) );
-    /* Build sequence of nodes of the solution
-    // to do so in the process  we convert `currentsol` to `next/prev` representation */
-    size_t *next = malloc( problem->nnodes * sizeof( *next ) );
-    size_t *prev = malloc( problem->nnodes * sizeof( *prev ) );
-
-    if ( next == NULL || prev == NULL ) {
-        log_fatal( "Out of memory." );
-        exit( EXIT_FAILURE );
+    if ( next == NULL || prev == NULL )
+    {
+        log_fatal("Out of memory.");
+        exit(EXIT_FAILURE);
     }
 
     size_t u = currentsol[0][0];
     size_t v = currentsol[0][1];
-    for ( size_t k = 0; k < problem->nnodes; ++k ) {
+    for ( size_t k = 0; k < problem->nnodes; ++k )
+    {
         next[u] = v;
         prev[v] = u;
 
-        for ( size_t kk = 0; kk < problem->nnodes; ++kk ) {
-            if ( (currentsol[kk][0] == v && currentsol[kk][1] != u)
-                 || (currentsol[kk][1] == v && currentsol[kk][0] != u) ) {
+        for ( size_t kk = 0; kk < problem->nnodes; ++kk )
+        {
+            if ( (currentsol[kk][0] == v && currentsol[kk][1] != u ) || (currentsol[kk][1] == v && currentsol[kk][0] != u))
+            {
                 /* kk-th edge in the solution is the next edge going from v to some other node. */
                 u = v;
                 v ^= currentsol[kk][0] ^ currentsol[kk][1];
@@ -223,101 +220,98 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
     }
 
     size_t pointer = 0;
-    for(int i=0;i<problem->nnodes; i++){
+    for ( int i = 0; i < problem->nnodes; ++i )
+    {
         ordered_nodes[i] = next[pointer];
         pointer = next[pointer];
     }
 
+    size_t length_nodes_m_edges = 2 * num_opt;
+    while ( length_nodes_m_edges > 2 )
+    {
 
-    //Order list of m-opt nodes based //THIS IS ACTUALLY NOT NEEDED LET'S SKPI THIS
-
-    //Reconnect the m edges randomly paying attention to not create subtour in the graph
-    size_t length_nodes_m_edges = 2*num_opt;
-    while(length_nodes_m_edges>2){
-
-
-
-
-        //pick two random nodes from m-opt list
-        size_t ind_a = rand_r(&__SEED)%length_nodes_m_edges;
+        /* Pick two random nodes from m-opt list */
+        size_t ind_a = rand_r(&__SEED) % length_nodes_m_edges;
         size_t node_a = nodes_m_edges[ind_a];
-        nodes_m_edges[ind_a] = nodes_m_edges[length_nodes_m_edges-1];
-        nodes_m_edges[length_nodes_m_edges-1] = node_a;
+        nodes_m_edges[ind_a] = nodes_m_edges[length_nodes_m_edges - 1];
+        nodes_m_edges[length_nodes_m_edges - 1] = node_a;
         length_nodes_m_edges--;
-        size_t ind_b = rand_r(&__SEED)%length_nodes_m_edges;
+        size_t ind_b = rand_r(&__SEED) % length_nodes_m_edges;
         size_t node_b = nodes_m_edges[ind_b];
-        nodes_m_edges[ind_b] = nodes_m_edges[length_nodes_m_edges-1];
-        nodes_m_edges[length_nodes_m_edges-1] = node_b;
+        nodes_m_edges[ind_b] = nodes_m_edges[length_nodes_m_edges - 1];
+        nodes_m_edges[length_nodes_m_edges - 1] = node_b;
         length_nodes_m_edges--;
 
-
-
-
-
-        if(node_a == node_b){
-            length_nodes_m_edges +=2;
+        if ( node_a == node_b )
+        {
+            length_nodes_m_edges += 2;
             continue;
         }
 
-
-        //fprintf(stderr, "inda %lu , node_A %lu, ind_b %lu, node_B %lu\n", ind_a, node_a, ind_b, node_b);
-        //for(int i=0; i<2*num_opt;i++){
-        //    fprintf(stderr, "nodes_m_edges %lu\n", nodes_m_edges[i]);
-        //}
-        //fprintf(stderr, "length_nodes_m_edges %lu\n", length_nodes_m_edges);
-
-        //Check if connecting these 2 nodes we form  a subtour
-        int new_edge_status=-1; //1 we can connect, 0 we cannot
-        for(int i=0; i<problem->nnodes;i++){ //first find the index of the node in the ordered list
-            if(ordered_nodes[i]==node_a){
+        int new_edge_status = -1;
+        for ( int i = 0; i < problem->nnodes; ++i )
+        {
+            if ( ordered_nodes[i] == node_a )
+            {
                 ind_a = i;
             }
-            if(ordered_nodes[i]==node_b){
+            if ( ordered_nodes[i] == node_b )
+            {
                 ind_b = i;
             }
         }
 
-        if(ordered_nodes[(ind_a+1)%problem->nnodes]==node_b && length_nodes_m_edges>2){ //special case
-            length_nodes_m_edges +=2;
+        if ( ordered_nodes[(ind_a + 1 ) % problem->nnodes] == node_b && length_nodes_m_edges > 2)
+        {
+            length_nodes_m_edges += 2;
 
             continue;
         }
-        if(ordered_nodes[(ind_b+1)%problem->nnodes]==node_a && length_nodes_m_edges>2){ //special case
-            length_nodes_m_edges +=2;
+        if ( ordered_nodes[(ind_b + 1 ) % problem->nnodes] == node_a && length_nodes_m_edges > 2)
+        {
+            length_nodes_m_edges += 2;
 
             continue;
         }
 
-        if(length_nodes_m_edges==2 && nodes_m_edges[0]==nodes_m_edges[1]){ //special case
+        if ( length_nodes_m_edges == 2 && nodes_m_edges[0] == nodes_m_edges[1] )
+        {
 
-            length_nodes_m_edges+=2;
+            length_nodes_m_edges += 2;
             continue;
         }
 
-        if((ind_a+1)%problem->nnodes == ind_b){ //If yes very important to swap order to avoid bugs when checking if connecting is possible
+        if ( (ind_a + 1 ) % problem->nnodes == ind_b)
+        {
             size_t ind_temp = ind_b;
             size_t node_temp = node_b;
             ind_b = ind_a;
             node_b = node_a;
             ind_a = ind_temp;
             node_a = node_temp;
-
         }
 
-        size_t temp_index = ind_a+1;
-        while(new_edge_status==-1){
+        size_t temp_index = ind_a + 1;
+        while ( new_edge_status == -1 )
+        {
 
-            for(int i=0; i<length_nodes_m_edges; i++){
-                if(ordered_nodes[temp_index%problem->nnodes]==nodes_m_edges[i])//We can connect
+            for ( int i = 0; i < length_nodes_m_edges; ++i )
+            {
+                if ( ordered_nodes[temp_index % problem->nnodes] == nodes_m_edges[i] )
                 {
-                    new_edge_status =1;
+                    new_edge_status = 1;
                     break;
                 }
             }
-            if(ordered_nodes[temp_index%problem->nnodes]==node_b){ //If if find node_b before other nodes of nodes_m_edges then i cannoct connect
-                //Unless in this same iteration i already found node_b (this means both edges of node_b have been unattached so we can connect)
-                if(new_edge_status!=1){
-                    new_edge_status=0;
+            if ( ordered_nodes[temp_index % problem->nnodes] == node_b )
+            {
+                /* If find node_b before other nodes of nodes_m_edges then we
+                 * cannot connect, except in this same iteration the node_b
+                 * was found. This means both edges of node_b have been
+                 * unattached so we can connect.  */
+                if ( new_edge_status != 1 )
+                {
+                    new_edge_status = 0;
                 }
 
                 break;
@@ -326,23 +320,31 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             temp_index++;
         }
 
-        if(new_edge_status==1 && !(length_nodes_m_edges==2 && nodes_m_edges[0]==nodes_m_edges[1])){ //check also opposite direction
+        if ( new_edge_status == 1 && !(length_nodes_m_edges == 2 && nodes_m_edges[0] == nodes_m_edges[1] ) )
+        {
 
-            new_edge_status=-1;
-            temp_index = problem->nnodes+ind_a-1;
-            while(new_edge_status==-1){
+            new_edge_status = -1;
+            temp_index = problem->nnodes + ind_a - 1;
+            while ( new_edge_status == -1 )
+            {
 
-                for(int i=0; i<length_nodes_m_edges; i++){
-                    if(ordered_nodes[temp_index%problem->nnodes]==nodes_m_edges[i])//We can connect
+                for ( int i = 0; i < length_nodes_m_edges; ++i )
+                {
+                    if ( ordered_nodes[temp_index % problem->nnodes] == nodes_m_edges[i] )
                     {
-                        new_edge_status =1;
+                        new_edge_status = 1;
                         break;
                     }
                 }
-                if(ordered_nodes[temp_index%problem->nnodes]==node_b){ //If if find node_b before other nodes of nodes_m_edges then i cannoct connect
-                    //Unless in this same iteration i already found node_b (this means both edges of node_b have been unattached so we can connect)
-                    if(new_edge_status!=1){
-                        new_edge_status=0;
+                if ( ordered_nodes[temp_index % problem->nnodes] == node_b )
+                {
+                    /* If find node_b before other nodes of nodes_m_edges then we
+                     * cannot connect, except in this same iteration the node_b
+                     * was found. This means both edges of node_b have been
+                     * unattached so we can connect.  */
+                    if ( new_edge_status != 1 )
+                    {
+                        new_edge_status = 0;
                     }
 
                     break;
@@ -352,236 +354,266 @@ _5opt_diversificate_VNS( size_t **currentsol, instance *problem )
             }
         }
 
+        if ( new_edge_status == 0 )
+        {
+            length_nodes_m_edges += 2;
+        }
+        else
+        {
 
-
-        if(new_edge_status==0){ //we cannot connect, select another edge
-            length_nodes_m_edges +=2;
-        }else{ //We can connect this edge in this m-opt move
-
-            //update solution with new edge
-            if(node_a<node_b){
-            currentsol[ind_m_edges[replaced_m_edges]][0] = node_a;
-            currentsol[ind_m_edges[replaced_m_edges]][1] = node_b;
-            }else{
+            if ( node_a < node_b )
+            {
+                currentsol[ind_m_edges[replaced_m_edges]][0] = node_a;
+                currentsol[ind_m_edges[replaced_m_edges]][1] = node_b;
+            }
+            else
+            {
                 currentsol[ind_m_edges[replaced_m_edges]][0] = node_b;
                 currentsol[ind_m_edges[replaced_m_edges]][1] = node_a;
             }
 
-            if(length_nodes_m_edges==2){
+            if ( length_nodes_m_edges == 2 )
+            {
                 replaced_m_edges++;
                 break;
             }
-            //reorder ordered_nodes appropriately
-            //first find index and edges of phantom_edges involved
-            size_t  a_y=0,  b_y=0, edge_ind_a=0, edge_ind_b =0;
-            for(int i=replaced_m_edges; i<num_opt;i++){
-                if(phantom_edges[2*i]==node_a){
-                    edge_ind_a =i;
-                    a_y =phantom_edges[2*i+1];
+
+            /* reorder ordered_nodes appropriately first find index and edges
+             * of phantom_edges involved */
+            size_t a_y = 0, b_y = 0, edge_ind_a = 0, edge_ind_b = 0;
+            for ( int i = replaced_m_edges; i < num_opt; ++i )
+            {
+                if ( phantom_edges[2 * i] == node_a )
+                {
+                    edge_ind_a = i;
+                    a_y = phantom_edges[2 * i + 1];
                 }
-                else if(phantom_edges[2*i+1]==node_a){
-                    edge_ind_a =i;
-                    a_y =phantom_edges[2*i];
+                else if ( phantom_edges[2 * i + 1] == node_a )
+                {
+                    edge_ind_a = i;
+                    a_y = phantom_edges[2 * i];
                 }
 
-                if(phantom_edges[2*i]==node_b){
-                    edge_ind_b =i;
-                    b_y =phantom_edges[2*i+1];
+                if ( phantom_edges[2 * i] == node_b )
+                {
+                    edge_ind_b = i;
+                    b_y = phantom_edges[2 * i + 1];
                 }
-                else if(phantom_edges[2*i+1]==node_b){
-                    edge_ind_b =i;
-                    b_y =phantom_edges[2*i];
+                else if ( phantom_edges[2 * i + 1] == node_b )
+                {
+                    edge_ind_b = i;
+                    b_y = phantom_edges[2 * i];
                 }
-
             }
 
-            for(int i=0; i<problem->nnodes; i++){
-
+            for ( int i = 0; i < problem->nnodes; ++i )
+            {
             }
-            size_t candidate_a_y = ordered_nodes[(ind_a+1)%problem->nnodes];
-            size_t candidate_b_y = ordered_nodes[(ind_b+1)%problem->nnodes];
+            size_t candidate_a_y = ordered_nodes[(ind_a + 1) % problem->nnodes];
+            size_t candidate_b_y = ordered_nodes[(ind_b + 1) % problem->nnodes];
 
-            for(size_t i=0; i<problem->nnodes;i++){
-                int skip =0;
-                for(int j=replaced_m_edges;j<num_opt;j++){
-                    if(i==ind_m_edges[j]){
+            for ( size_t i = 0; i < problem->nnodes; ++i )
+            {
+                int skip = 0;
+                for ( int j = replaced_m_edges; j < num_opt; ++j )
+                {
+                    if ( i == ind_m_edges[j] )
+                    {
 
-                        skip=1;
+                        skip = 1;
                     }
                 }
 
-                if(skip==1){
+                if ( skip == 1 )
+                {
 
                     continue;
                 }
 
-                if(currentsol[i][0]==node_a && currentsol[i][1]==candidate_a_y){
-                    candidate_a_y = ordered_nodes[(ind_a-1+problem->nnodes)%problem->nnodes];
+                if ( currentsol[i][0] == node_a && currentsol[i][1] == candidate_a_y )
+                {
+                    candidate_a_y = ordered_nodes[(ind_a - 1 + problem->nnodes) % problem->nnodes];
                 }
-                if(currentsol[i][1]==node_a && currentsol[i][0]==candidate_a_y){
-                    candidate_a_y = ordered_nodes[(ind_a-1+problem->nnodes)%problem->nnodes];
+                if ( currentsol[i][1] == node_a && currentsol[i][0] == candidate_a_y )
+                {
+                    candidate_a_y = ordered_nodes[(ind_a - 1 + problem->nnodes) % problem->nnodes];
                 }
-                if(currentsol[i][0]==node_b && currentsol[i][1]==candidate_b_y){
-                    candidate_b_y = ordered_nodes[(ind_b-1+problem->nnodes)%problem->nnodes];
-
+                if ( currentsol[i][0] == node_b && currentsol[i][1] == candidate_b_y )
+                {
+                    candidate_b_y = ordered_nodes[(ind_b - 1 + problem->nnodes) % problem->nnodes];
                 }
-                if(currentsol[i][1]==node_b && currentsol[i][0]==candidate_b_y){
-                    candidate_b_y = ordered_nodes[(ind_b-1+problem->nnodes)%problem->nnodes];
-
+                if ( currentsol[i][1] == node_b && currentsol[i][0] == candidate_b_y )
+                {
+                    candidate_b_y = ordered_nodes[(ind_b - 1 + problem->nnodes) % problem->nnodes];
                 }
-
             }
+
             a_y = candidate_a_y;
             b_y = candidate_b_y;
 
+            length_nodes_m_edges += 2;
 
+            size_t blk_a_start = 0, blk_a_end = 0, blk_b_start = 0, blk_b_end = 0, blk_next_start = 0, blk_next_end = 0;
+            int is_start_iteration = 0;
+            int status = 0;
+            int b_status = 0;
+            int is_a_last = 0;
+            size_t last = 0;
+            int deattached_a_count = 0;
 
+            /* Check if a is a node with two deattached edges, special case */
+            for ( int j = 0; j < length_nodes_m_edges; ++j )
+            {
 
-            //Get blocks indexes
-            length_nodes_m_edges +=2;
-            size_t blk_a_start=0, blk_a_end=0,blk_b_start=0, blk_b_end=0,blk_next_start=0, blk_next_end=0;
-            int is_start_iteration =0;
-            int status =0;
-            int b_status =0;
-            int is_a_last =0;
-            size_t last =0;
-            int deattached_a_count=0;
-            for(int j=0; j<length_nodes_m_edges;j++){ //check if a is a node with two deattached edges, special case
-
-                if(ordered_nodes[ind_a%problem->nnodes] == nodes_m_edges[j]){
+                if ( ordered_nodes[ind_a % problem->nnodes] == nodes_m_edges[j] )
+                {
                     deattached_a_count++;
                 }
-                if(deattached_a_count==2){
+                if ( deattached_a_count == 2 )
+                {
                     blk_a_start = ind_a;
                     blk_a_end = ind_a;
                     status = 1;
                     is_start_iteration = 1;
                 }
             }
-            for(int i=ind_a+1; i<ind_a+problem->nnodes;i++){
-                for(int j=0; j<length_nodes_m_edges;j++){
-                    if(ordered_nodes[i%problem->nnodes] == nodes_m_edges[j]){
+            for ( int i = ind_a + 1; i < ind_a + problem->nnodes; ++i )
+            {
+                for ( int j = 0; j < length_nodes_m_edges; ++j )
+                {
+                    if ( ordered_nodes[i % problem->nnodes] == nodes_m_edges[j] )
+                    {
 
-
-                        if(status==0){ //very start, determine if ind_a is start or end
-                            if(ordered_nodes[i%problem->nnodes]!=a_y){
-                                blk_a_start=ind_a;
-                                blk_a_end = i%problem->nnodes;
-                                status =10;
-                                is_start_iteration =0;
+                        /* Determine if ind_a is start or end */
+                        if ( status == 0 )
+                        {
+                            if ( ordered_nodes[i % problem->nnodes] != a_y )
+                            {
+                                blk_a_start = ind_a;
+                                blk_a_end = i % problem->nnodes;
+                                status = 10;
+                                is_start_iteration = 0;
                             }
-                            else{
-                                blk_a_end =ind_a;
+                            else
+                            {
+                                blk_a_end = ind_a;
                                 is_a_last = 1;
-                                blk_next_start=i%problem->nnodes;
-                                status =2;
-                                is_start_iteration =1;
+                                blk_next_start = i % problem->nnodes;
+                                status = 2;
+                                is_start_iteration = 1;
                             }
                         }
-                        else if(status==1){//already set blk a, next one is first of block next
-                            blk_next_start = i%problem->nnodes;
-                            status =2;
+                        else if ( status == 1 )
+                        {
+                            blk_next_start = i % problem->nnodes;
+                            status = 2;
                         }
-                        else if(status==2){ //already set start blk next, next one is end blk next
-                            blk_next_end = i%problem->nnodes;
-                            status=3; //No meaning
+                        else if ( status == 2 )
+                        {
+                            blk_next_end = i % problem->nnodes;
+                            status = 3;
                         }
 
-                        if(ordered_nodes[i%problem->nnodes]==node_b && b_status!=4){
-                            if(is_start_iteration){
-                                blk_b_start=i%problem->nnodes;
+                        if ( ordered_nodes[i % problem->nnodes] == node_b && b_status != 4 )
+                        {
+                            if ( is_start_iteration )
+                            {
+                                blk_b_start = i % problem->nnodes;
 
-                                b_status=4;
-                                blk_b_end = last;//DEBUG
-                            }else{
+                                b_status = 4;
+                                blk_b_end = last;
+                            }
+                            else
+                            {
 
-                                blk_b_end =i%problem->nnodes;
+                                blk_b_end = i % problem->nnodes;
                                 blk_b_start = last;
-                                if(ordered_nodes[last]==b_y){
-                                    blk_b_start=blk_b_end;
-                                    b_status=4;
+                                if ( ordered_nodes[last] == b_y )
+                                {
+                                    blk_b_start = blk_b_end;
+                                    b_status = 4;
                                 }
                             }
                         }
-                        else if(b_status==4){ //We have to see b end next
-                            if(ordered_nodes[i%problem->nnodes]==b_y){
-                                size_t tmp =blk_b_end;
+                        else if ( b_status == 4 )
+                        {
+                            if ( ordered_nodes[i % problem->nnodes] == b_y )
+                            {
+                                size_t tmp = blk_b_end;
                                 blk_b_end = blk_b_start;
                                 blk_b_start = tmp;
-                                b_status=3;
-                            }else{
-                            blk_b_end=i%problem->nnodes;
-                            b_status=3;
+                                b_status = 3;
+                            }
+                            else
+                            {
+                                blk_b_end = i % problem->nnodes;
+                                b_status = 3;
                             }
                         }
 
-                        last = i%problem->nnodes;
+                        last = i % problem->nnodes;
 
-                        if(is_start_iteration){
-                            is_start_iteration=0;
-                        }else{is_start_iteration=1;}
-
-
-
-                        //break;
+                        if ( is_start_iteration )
+                        {
+                            is_start_iteration = 0;
+                        }
+                        else
+                        {
+                            is_start_iteration = 1;
+                        }
                     }
-
                 }
-                if(status==10){status=1;}
+                if ( status == 10 )
+                {
+                    status = 1;
+                }
             }
-            if(is_a_last){
-                blk_a_start=last;
+            if ( is_a_last )
+            {
+                blk_a_start = last;
             }
 
+            length_nodes_m_edges -= 2;
 
-            length_nodes_m_edges-=2;
-
-
-            if(!is_a_last){
+            if ( !is_a_last )
+            {
                 invert_array(ordered_nodes, blk_a_start, blk_a_end, problem);
             }
-            if(ordered_nodes[blk_b_end]==node_b){
+            if ( ordered_nodes[blk_b_end] == node_b )
+            {
                 invert_array(ordered_nodes, blk_b_start, blk_b_end, problem);
             }
 
             swap_blocks(ordered_nodes, blk_next_start, blk_next_end, blk_b_start, blk_b_end, problem);
 
-
-            //update phantom_edges
-            phantom_edges[2*edge_ind_b]=a_y + edge_ind_a;
-            phantom_edges[2*edge_ind_b+1]=b_y;
-            phantom_edges[2*edge_ind_a]=phantom_edges[2*replaced_m_edges];
-            phantom_edges[2*edge_ind_a+1]=phantom_edges[2*replaced_m_edges+1];
-
+            /* Update phantom_edges */
+            phantom_edges[2 * edge_ind_b] = a_y + edge_ind_a;
+            phantom_edges[2 * edge_ind_b + 1] = b_y;
+            phantom_edges[2 * edge_ind_a] = phantom_edges[2 * replaced_m_edges];
+            phantom_edges[2 * edge_ind_a + 1] = phantom_edges[2 * replaced_m_edges + 1];
 
             replaced_m_edges++;
-
-
-
         }
-
-
-
     }
 
-    //connect the last remaining edge
-    if(nodes_m_edges[0]<nodes_m_edges[1]){
+    /* Connect the last remaining edge */
+    if ( nodes_m_edges[0] < nodes_m_edges[1] )
+    {
         currentsol[ind_m_edges[replaced_m_edges]][0] = nodes_m_edges[0];
         currentsol[ind_m_edges[replaced_m_edges]][1] = nodes_m_edges[1];
-    }else{
+    }
+    else
+    {
         currentsol[ind_m_edges[replaced_m_edges]][0] = nodes_m_edges[1];
         currentsol[ind_m_edges[replaced_m_edges]][1] = nodes_m_edges[0];
     }
 
+    free(next);
+    free(prev);
 
-
-    free( next );
-    free( prev );
-
-    free( ind_m_edges   );
-    free( ordered_nodes );
-    free( nodes_m_edges );
-
+    free(ind_m_edges);
+    free(ordered_nodes);
+    free(nodes_m_edges);
 }
 
 /**
@@ -612,7 +644,7 @@ _2opt_refine_VNS( size_t **currentsol, instance *problem )
         prev[v] = u;
 
         for ( size_t kk = 0; kk < problem->nnodes; ++kk ) {
-            if ( (currentsol[kk][0] == v && currentsol[kk][1] != u)
+            if ( (currentsol[kk][0] == v && currentsol[kk][1] != u )
                  || (currentsol[kk][1] == v && currentsol[kk][0] != u) ) {
                 /* kk-th edge in the solution is the next edge going from v to some other node. */
                 u = v;
@@ -668,7 +700,7 @@ _2opt_refine_VNS( size_t **currentsol, instance *problem )
             }
         }
 
-    } while( wasrefined );
+    } while ( wasrefined ) ;
 
     /* Update solution */
     size_t k;
@@ -733,7 +765,7 @@ HeurVNS_solve ( instance *problem )
         log_fatal( "Out of memory." );
         exit( EXIT_FAILURE );
     }
-    for (size_t i = 0; i < problem->nnodes; ++i) {
+    for ( size_t i = 0; i < problem->nnodes; ++i ) {
         currentsol[i] = malloc( 2 * sizeof( *currentsol[i] ) );
         if ( currentsol[i] == NULL ) {
             log_fatal( "Out of memory." );
@@ -747,12 +779,12 @@ HeurVNS_solve ( instance *problem )
     clock_gettime( CLOCK_MONOTONIC, &start );
 
     /* Initialize our solution starting from a solution computed with the neirest neighborood method  */
-    size_t startnode=rand_r(&__SEED) % problem->nnodes;
+    size_t startnode = rand_r(&__SEED) % problem->nnodes;
     from = startnode;
     for ( size_t k = 0; k < problem->nnodes - 1; ++k )
     {
         /* Search the almost-shortest edge where `from` occurs.  */
-        for ( pos = 0;  ; pos = (pos + 1) % nedges ) {
+        for ( pos = 0; ; pos = (pos + 1 ) % nedges ) {
             /* Flip a coin and decide whether to stop here or keep going.
              * If we run out of edges prior to successfull coinflip,
              * simply restart the loop. Note that this method terminates
@@ -785,14 +817,7 @@ HeurVNS_solve ( instance *problem )
     currentsol[problem->nnodes - 1][0] = from;
     currentsol[problem->nnodes - 1][1] = startnode;
 
-    /* Reset all edges availability to properly start next iteration.  */
-    //for ( pos = 0; pos < nedges; ++pos ) {
-    //    edges[pos].available = 1;
-    //}
-
-    for(int i=0; i<problem->nnodes;i++){
-        //fprintf(stderr, "%lu %lu \n", problem->solution[i][0], problem->solution[i][1]);
-        //fprintf(stderr, "%lu %lu \n", currentsol[i][0], currentsol[i][1]);
+    for ( int i = 0; i<problem->nnodes; ++i ) {
         problem->solution[i][0] = currentsol[i][0];
         problem->solution[i][1] = currentsol[i][1];
     }
@@ -800,24 +825,11 @@ HeurVNS_solve ( instance *problem )
     /* Run iteratively 2-opt and a random 5-opt jump */
     for ( size_t iter = 0; elapsedtime + 1e-3 < conf.heurtime; iter++ )
     {
-        fprintf(stderr, "start refine\n");
-        for(int i=0; i<problem->nnodes; i++){
-                fprintf(stderr, "Curr sol: %lu %lu\n", currentsol[i][0]+1, currentsol[i][1]+1);
-            }
+        log_debug( "Applying 5-OPT refinement" );
         _5opt_diversificate_VNS(currentsol, problem);
 
-        fprintf(stderr, "5-opt refine\n");
-        for(int i=0; i<problem->nnodes; i++){
-                fprintf(stderr, "Curr sol: %lu %lu\n", currentsol[i][0]+1, currentsol[i][1]+1);
-            }
-
+        log_debug( "Applying 2-OPT refinement" );
         _2opt_refine_VNS( currentsol, problem );
-
-        fprintf(stderr,"qui after 2-opt refine\n");
-         for(int i=0; i<problem->nnodes; i++){
-                fprintf(stderr, "Curr sol: %lu %lu\n", currentsol[i][0]+1, currentsol[i][1]+1);
-            }
-
 
         clock_gettime( CLOCK_MONOTONIC, &end );
 
@@ -827,7 +839,6 @@ HeurVNS_solve ( instance *problem )
          * accordingly.  */
         problem->solution = currentsol;
         problem->solcost = compute_solution_cost( problem );
-        //fprintf(stderr, "%f \n", problem->solcost);
 
         if ( problem->solcost < bestcost ) {
             /* Swap `currentsol` and `bestsol`, so we can reuse the arrays
@@ -843,7 +854,7 @@ HeurVNS_solve ( instance *problem )
     problem->solcost  = bestcost;
 
     /* Free `currentsol`, which may have been swapped in the mean time.  */
-    for ( size_t i = 0; i < problem->nnodes; ++i )  free( currentsol[i] );
+    for ( size_t i = 0; i < problem->nnodes; ++i ) free( currentsol[i] );
     free( currentsol );
 }
 

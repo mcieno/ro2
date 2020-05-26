@@ -86,7 +86,8 @@ static struct argp_option options[]  =
                                                           "HeurNearestNeighbor, HeurGRASP, "
                                                           "HeurInsertion, HeurConvHullInsertion, "
                                                           "HeurGRASPWith2OPTRefinement "
-                                                          "HeurTabuSearch. "
+                                                          "HeurTabuSearch, HeurVNS, "
+                                                          "HeurSimulatedAnnealing. "
                                                           "Default: Generic."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
@@ -283,10 +284,18 @@ main ( int argc, char *argv[] )
             HeurTabuSearch_model( &problem );
             break;
 
+
         case TSP_SOLVER_HeurVNS:
             log_info( "Solving with VNS heuristic method." );
             HeurVNS_model( &problem );
             break;
+
+
+        case TSP_SOLVER_HeurSimulatedAnnealing:
+            log_info( "Solving with Simulated Annealing heuristic." );
+            HeurSimulatedAnnealing_model( &problem );
+            break;
+
 
         default:
             log_error( "No model specified. Exit..." );
@@ -455,6 +464,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcasecmp( "HeurVNS", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurVNS;
+
+            } else if ( !strcasecmp( "HeurSimulatedAnnealing", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurSimulatedAnnealing;
 
             } else {
                 argp_error(

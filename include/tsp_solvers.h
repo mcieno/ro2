@@ -39,6 +39,7 @@
 #define TSP_SOLVER_HeurGRASPWith2OPTRefinement      26U  /*!< GRASP heuristic method with 2-OPT refinement method.  */
 #define TSP_SOLVER_HeurVNS                          27U  /*!< VNS heuristic method.  */
 #define TSP_SOLVER_HeurTabuSearch                   28U  /*!< Tabu Search on starting from a refined GRASP solution.  */
+#define TSP_SOLVER_HeurSimulatedAnnealing           29U  /*!< Repeatedly run Simulated Annealing.  */
 
 typedef unsigned model_t;
 
@@ -438,7 +439,7 @@ void
 HeurTabuSearch_model ( instance *problem );
 
 /*!
- * \brief Vns heuristic method.
+ * \brief VNS heuristic method.
  *
  * This model applies the VNS heuristic.
  *
@@ -449,5 +450,16 @@ HeurTabuSearch_model ( instance *problem );
 void
 HeurVNS_model(instance *problem);
 
+/*!
+ * \brief Repeatedly run Simulated Annealing.
+ *
+ * This model runs a simulated annealing multiple times and accumulates the
+ * best solution it finds during the iterations.
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurSimulatedAnnealing_model ( instance *problem );
 
 #endif

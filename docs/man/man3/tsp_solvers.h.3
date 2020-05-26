@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Mon May 11 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Tue May 26 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -92,6 +92,15 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .br
 .ti -1c
 .RI "#define \fBTSP_SOLVER_HeurGRASPWith2OPTRefinement\fP   26U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_HeurVNS\fP   27U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_HeurTabuSearch\fP   28U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_HeurSimulatedAnnealing\fP   29U"
 .br
 .in -1c
 .SS "Typedefs"
@@ -216,6 +225,18 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .RI "void \fBHeurGRASPWith2OPTRefinement_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "GRASP heuristic method with 2-OPT refinement method\&. "
+.ti -1c
+.RI "void \fBHeurTabuSearch_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Tabu Search starting from a refined GRASP solution\&. "
+.ti -1c
+.RI "void \fBHeurVNS_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "VNS heuristic method\&. "
+.ti -1c
+.RI "void \fBHeurSimulatedAnnealing_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Repeatedly run Simulated Annealing\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -259,6 +280,12 @@ Insertion Heuristic\&.
 LocalBranching Heuristic\&. 
 .SS "#define TSP_SOLVER_HeurNearestNeighbor   22U"
 Nearest Neighbor Heuristic\&. 
+.SS "#define TSP_SOLVER_HeurSimulatedAnnealing   29U"
+Repeatedly run Simulated Annealing\&. 
+.SS "#define TSP_SOLVER_HeurTabuSearch   28U"
+Tabu Search on starting from a refined GRASP solution\&. 
+.SS "#define TSP_SOLVER_HeurVNS   27U"
+VNS heuristic method\&. 
 .SS "#define TSP_SOLVER_LazyFlow1   6U"
 Single Commodity Flow model with lazy constraints\&. 
 .SS "#define TSP_SOLVER_LazyMTZ   5U"
@@ -475,6 +502,39 @@ Solve with Local Branching heuristic\&. This model uses the Local Branching for 
 
 .PP
 Solve with Nearest Neighbor heuristic\&. This model repeatedly applies the Nearest Neighbor heuristic starting from various nodes and accumulating the best solution\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void HeurSimulatedAnnealing_model (\fBinstance\fP * problem)"
+
+.PP
+Repeatedly run Simulated Annealing\&. This model runs a simulated annealing multiple times and accumulates the best solution it finds during the iterations\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void HeurTabuSearch_model (\fBinstance\fP * problem)"
+
+.PP
+Tabu Search starting from a refined GRASP solution\&. This model applies the Tabu Search metaheuristc technique for locally improving a GRASP solution\&. It uses 2-OPT moves for moving around the neighborhood of the current solution\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void HeurVNS_model (\fBinstance\fP * problem)"
+
+.PP
+VNS heuristic method\&. This model applies the VNS heuristic\&.
 .PP
 \fBParameters:\fP
 .RS 4
