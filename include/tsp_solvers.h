@@ -37,7 +37,7 @@
 #define TSP_SOLVER_HeurInsertion                    24U  /*!< Insertion Heuristic.  */
 #define TSP_SOLVER_HeurConvHullInsertion            25U  /*!< Convex Hull Insertion Heuristic.  */
 #define TSP_SOLVER_HeurGRASPWith2OPTRefinement      26U  /*!< GRASP heuristic method with 2-OPT refinement method.  */
-
+#define TSP_SOLVER_HeurVNS                          27U  /*!< VNS heuristic method.  */
 #define TSP_SOLVER_HeurTabuSearch                   28U  /*!< Tabu Search on starting from a refined GRASP solution.  */
 
 typedef unsigned model_t;
@@ -436,6 +436,18 @@ HeurGRASPWith2OPTRefinement_model ( instance *problem );
  */
 void
 HeurTabuSearch_model ( instance *problem );
+
+/*!
+ * \brief Vns heuristic method.
+ *
+ * This model applies the VNS heuristic.
+ *
+ *
+ * \param problem
+ *     Pointer to the instance structure.
+ */
+void
+HeurVNS_model(instance *problem);
 
 
 #endif
