@@ -87,7 +87,7 @@ static struct argp_option options[]  =
                                                           "HeurInsertion, HeurConvHullInsertion, "
                                                           "HeurGRASPWith2OPTRefinement "
                                                           "HeurTabuSearch, HeurVNS, "
-                                                          "HeurSimulatedAnnealing. "
+                                                          "HeurSimulatedAnnealing, HeurGenetic. "
                                                           "Default: Generic."                       },
     { "name",      0xBB1,     "TSPNAME", OPTION_NO_USAGE, "Name to assign to this problem."         },
     { "tmpfile",   0xAA1,     "TMPFILE", OPTION_HIDDEN,   "Set custom temporary file."              },
@@ -297,9 +297,9 @@ main ( int argc, char *argv[] )
             break;
 
 
-        case TSP_SOLVER_HeurGeneticAlgorithm:
+        case TSP_SOLVER_HeurGenetic:
             log_info( "Solving with Genetic Algorithm heuristic method." );
-            HeurGeneticAlgorithm_model( &problem );
+            HeurGenetic_model( &problem );
             break;
 
         default:
@@ -473,8 +473,8 @@ parse_opt ( int key, char *arg, struct argp_state *state )
             } else if ( !strcasecmp( "HeurSimulatedAnnealing", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurSimulatedAnnealing;
 
-            } else if ( !strcasecmp( "HeurGA", arg ) ) {
-                conf.solving_method = TSP_SOLVER_HeurGeneticAlgorithm;
+            } else if ( !strcasecmp( "HeurGenetic", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurGenetic;
 
             } else {
                 argp_error(

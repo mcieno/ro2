@@ -1,4 +1,4 @@
-.TH "include/tsp_solvers.h" 3 "Tue May 26 2020" "TSP Solver" \" -*- nroff -*-
+.TH "include/tsp_solvers.h" 3 "Wed May 27 2020" "TSP Solver" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -101,6 +101,9 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .br
 .ti -1c
 .RI "#define \fBTSP_SOLVER_HeurSimulatedAnnealing\fP   29U"
+.br
+.ti -1c
+.RI "#define \fBTSP_SOLVER_HeurGenetic\fP   30U"
 .br
 .in -1c
 .SS "Typedefs"
@@ -237,6 +240,10 @@ include/tsp_solvers.h \- Methods for solving a TSP problem\&.
 .RI "void \fBHeurSimulatedAnnealing_model\fP (\fBinstance\fP *problem)"
 .br
 .RI "Repeatedly run Simulated Annealing\&. "
+.ti -1c
+.RI "void \fBHeurGenetic_model\fP (\fBinstance\fP *problem)"
+.br
+.RI "Genetic Algorithm method\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -268,6 +275,8 @@ Like GenericConcordeRand but provides CPLEX with heuristic solutions obtained wi
 Like GenericConcorde but only cuts nodes close to the root\&. 
 .SS "#define TSP_SOLVER_HeurConvHullInsertion   25U"
 Convex Hull Insertion Heuristic\&. 
+.SS "#define TSP_SOLVER_HeurGenetic   30U"
+Genetic Algorithm\&. 
 .SS "#define TSP_SOLVER_HeurGRASP   23U"
 GRASP Heuristic\&. 
 .SS "#define TSP_SOLVER_HeurGRASPWith2OPTRefinement   26U"
@@ -436,6 +445,17 @@ Like GenericConcorde but only cuts nodes close to the root\&.
 
 .PP
 Solve with Convex Hull Insertion heuristic\&. This model uses the convex hull insertion method to find an heuristic solution\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIproblem\fP Pointer to the instance structure\&. 
+.RE
+.PP
+
+.SS "void HeurGenetic_model (\fBinstance\fP * problem)"
+
+.PP
+Genetic Algorithm method\&. This model applies a genetic algorithm to TSP\&.
 .PP
 \fBParameters:\fP
 .RS 4

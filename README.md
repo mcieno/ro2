@@ -50,7 +50,9 @@ Solve a Traveling Salesman Problem instance.
                              GenericConcordeRand,
                              GenericConcordeRandWithPatching, HeurHardfix,
                              HeurLocalBranching, HeurNearestNeighbor,
-                             HeurGRASP, HeurInsertion, HeurConvHullInsertion.
+                             HeurGRASP, HeurInsertion, HeurConvHullInsertion,
+                             HeurGRASPWith2OPTRefinement HeurTabuSearch,
+                             HeurVNS, HeurSimulatedAnnealing, HeurGenetic.
                              Default: Generic.
   -n, --nodelimit=NODES      MIP node limit.
       --name=TSPNAME         Name to assign to this problem.
@@ -106,6 +108,7 @@ Available heuristics are:
 - `HeurTabuSearch`
 - `HeurVNS`
 - `HeurSimulatedAnnealing`
+- `HeurGA`
 
 Default model is `Generic`, i.e., branch and cut model with generic "candidate cut" callback.
 

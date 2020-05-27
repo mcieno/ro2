@@ -297,7 +297,7 @@ tournament_selection( double *fit_population, size_t **population, double *fit_o
 }
 
 void
-HeurGeneticAlgorithm_solve ( instance *problem )
+HeurGenetic_solve ( instance *problem )
 {
     struct timespec start, end;
 
@@ -377,14 +377,14 @@ HeurGeneticAlgorithm_solve ( instance *problem )
 }
 
 void
-HeurGeneticAlgorithm_model ( instance *problem )
+HeurGenetic_model ( instance *problem )
 {
     struct timespec start, end;
     clock_gettime( CLOCK_MONOTONIC, &start );
     __SEED = conf.seed;
 
     log_debug( "Starting solver." );
-    HeurGeneticAlgorithm_solve( problem );
+    HeurGenetic_solve( problem );
 
     clock_gettime( CLOCK_MONOTONIC, &end );
 

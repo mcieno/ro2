@@ -142,6 +142,8 @@ Macros</h2></td></tr>
 <tr class="separator:a620b84c67ed9dc5b46064a89d4dc6ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39c73e89f3995d9c56a51a9fb23b6a3d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a39c73e89f3995d9c56a51a9fb23b6a3d">TSP_SOLVER_HeurSimulatedAnnealing</a>&#160;&#160;&#160;29U</td></tr>
 <tr class="separator:a39c73e89f3995d9c56a51a9fb23b6a3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acada08146429258279675831dc7ce627"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#acada08146429258279675831dc7ce627">TSP_SOLVER_HeurGenetic</a>&#160;&#160;&#160;30U</td></tr>
+<tr class="separator:acada08146429258279675831dc7ce627"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -244,6 +246,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a7c492a605501a3650b986236ed95f500"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a7c492a605501a3650b986236ed95f500">HeurSimulatedAnnealing_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
 <tr class="memdesc:a7c492a605501a3650b986236ed95f500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Repeatedly run Simulated Annealing.  <a href="#a7c492a605501a3650b986236ed95f500">More...</a><br /></td></tr>
 <tr class="separator:a7c492a605501a3650b986236ed95f500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19b910c3052693c073a5f9f6d2086083"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tsp__solvers_8h.html#a19b910c3052693c073a5f9f6d2086083">HeurGenetic_model</a> (<a class="el" href="structinstance.html">instance</a> *problem)</td></tr>
+<tr class="memdesc:a19b910c3052693c073a5f9f6d2086083"><td class="mdescLeft">&#160;</td><td class="mdescRight">Genetic Algorithm method.  <a href="#a19b910c3052693c073a5f9f6d2086083">More...</a><br /></td></tr>
+<tr class="separator:a19b910c3052693c073a5f9f6d2086083"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Methods for solving a TSP problem. </p>
@@ -366,6 +371,21 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Convex Hull Insertion Heuristic. </p>
+
+</div>
+</div>
+<a id="acada08146429258279675831dc7ce627"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acada08146429258279675831dc7ce627">&#9670;&nbsp;</a></span>TSP_SOLVER_HeurGenetic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSP_SOLVER_HeurGenetic&#160;&#160;&#160;30U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Genetic Algorithm. </p>
 
 </div>
 </div>
@@ -998,6 +1018,33 @@ Functions</h2></td></tr>
 
 <p>Solve with Convex Hull Insertion heuristic. </p>
 <p>This model uses the convex hull insertion method to find an heuristic solution.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a19b910c3052693c073a5f9f6d2086083"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19b910c3052693c073a5f9f6d2086083">&#9670;&nbsp;</a></span>HeurGenetic_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HeurGenetic_model </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structinstance.html">instance</a> *&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Genetic Algorithm method. </p>
+<p>This model applies a genetic algorithm to TSP.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">problem</td><td>Pointer to the instance structure. </td></tr>

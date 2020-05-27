@@ -40,7 +40,7 @@
 #define TSP_SOLVER_HeurVNS                          27U  /*!< VNS heuristic method.  */
 #define TSP_SOLVER_HeurTabuSearch                   28U  /*!< Tabu Search on starting from a refined GRASP solution.  */
 #define TSP_SOLVER_HeurSimulatedAnnealing           29U  /*!< Repeatedly run Simulated Annealing.  */
-#define TSP_SOLVER_HeurGeneticAlgorithm             30U  /*!< Genetic Algorithm.  */
+#define TSP_SOLVER_HeurGenetic                      30U  /*!< Genetic Algorithm.  */
 
 typedef unsigned model_t;
 
@@ -473,6 +473,6 @@ HeurSimulatedAnnealing_model ( instance *problem );
  *     Pointer to the instance structure.
  */
 void
-HeurGeneticAlgorithm_model ( instance *problem );
+HeurGenetic_model ( instance *problem );
 
 #endif
