@@ -378,37 +378,9 @@ void _5opt_diversificate_VNS(size_t **currentsol, instance *problem)
                 break;
             }
 
-            /* reorder ordered_nodes appropriately first find index and edges
-             * of phantom_edges involved */
-            size_t a_y = 0, b_y = 0, edge_ind_a = 0, edge_ind_b = 0;
-            for ( int i = replaced_m_edges; i < num_opt; ++i )
-            {
-                if ( phantom_edges[2 * i] == node_a )
-                {
-                    edge_ind_a = i;
-                    a_y = phantom_edges[2 * i + 1];
-                }
-                else if ( phantom_edges[2 * i + 1] == node_a )
-                {
-                    edge_ind_a = i;
-                    a_y = phantom_edges[2 * i];
-                }
 
-                if ( phantom_edges[2 * i] == node_b )
-                {
-                    edge_ind_b = i;
-                    b_y = phantom_edges[2 * i + 1];
-                }
-                else if ( phantom_edges[2 * i + 1] == node_b )
-                {
-                    edge_ind_b = i;
-                    b_y = phantom_edges[2 * i];
-                }
-            }
+            size_t  a_y=0,  b_y=0;
 
-            for ( int i = 0; i < problem->nnodes; ++i )
-            {
-            }
             size_t candidate_a_y = ordered_nodes[(ind_a + 1) % problem->nnodes];
             size_t candidate_b_y = ordered_nodes[(ind_b + 1) % problem->nnodes];
 
@@ -585,12 +557,6 @@ void _5opt_diversificate_VNS(size_t **currentsol, instance *problem)
             }
 
             swap_blocks(ordered_nodes, blk_next_start, blk_next_end, blk_b_start, blk_b_end, problem);
-
-            /* Update phantom_edges */
-            phantom_edges[2 * edge_ind_b] = a_y + edge_ind_a;
-            phantom_edges[2 * edge_ind_b + 1] = b_y;
-            phantom_edges[2 * edge_ind_a] = phantom_edges[2 * replaced_m_edges];
-            phantom_edges[2 * edge_ind_a + 1] = phantom_edges[2 * replaced_m_edges + 1];
 
             replaced_m_edges++;
         }
@@ -843,7 +809,7 @@ HeurVNS_solve ( instance *problem )
         if ( problem->solcost < bestcost ) {
             /* Swap `currentsol` and `bestsol`, so we can reuse the arrays
              * during the next itaration.  */
-            log_info( "Heuristic solution improved at #%d (%.3e < %.3e).", startnode + 1, problem->solcost, bestcost );
+            log_info( "Heuristic solution improved at #%d (%.3e < %.3e).", iter + 1, problem->solcost, bestcost );
             currentsol = bestsol;
             bestsol    = problem->solution;
             bestcost   = problem->solcost;

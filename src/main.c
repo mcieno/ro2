@@ -297,6 +297,11 @@ main ( int argc, char *argv[] )
             break;
 
 
+        case TSP_SOLVER_HeurGeneticAlgorithm:
+            log_info( "Solving with Genetic Algorithm heuristic method." );
+            HeurGeneticAlgorithm_model( &problem );
+            break;
+
         default:
             log_error( "No model specified. Exit..." );
             exit( EXIT_FAILURE );
@@ -467,6 +472,9 @@ parse_opt ( int key, char *arg, struct argp_state *state )
 
             } else if ( !strcasecmp( "HeurSimulatedAnnealing", arg ) ) {
                 conf.solving_method = TSP_SOLVER_HeurSimulatedAnnealing;
+
+            } else if ( !strcasecmp( "HeurGA", arg ) ) {
+                conf.solving_method = TSP_SOLVER_HeurGeneticAlgorithm;
 
             } else {
                 argp_error(
