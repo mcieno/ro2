@@ -16,8 +16,7 @@
 #include "tsp.h"
 #include "tspconf.h"
 
-#define TEMPERATURE_MAX 2048.00
-#define TEMPERATURE_MIN 0.00
+#define ANNEAL_ALPHA    .99
 #define ANNEAL_DURATION 1000
 
 static unsigned int __SEED;
@@ -94,8 +93,13 @@ HeurSimulatedAnnealing_annealiate ( instance *problem )
         }
     }
 
-    for ( double T = TEMPERATURE_MAX; T > TEMPERATURE_MIN; T -= ( TEMPERATURE_MAX - TEMPERATURE_MIN ) / ANNEAL_DURATION )
+    double T = 10. * problem->solcost / (double) ANNEAL_DURATION;
+    log_debug( "Annealing starting from T0 = %e", T );
+
+    for ( size_t __ = 0; __ < ANNEAL_DURATION; ++__ )
     {
+        T *= ANNEAL_ALPHA;
+
         /* Make a random move. Accept a bad move with probability 1 - 1 / (T_MAX - T)
          * and a good move with probability 1.  */
         size_t u, v, u_, v_;
@@ -141,7 +145,8 @@ HeurSimulatedAnnealing_annealiate ( instance *problem )
                 moveselected = 1;
             }
 
-            else if ( rand_r( &__SEED ) > INT_MAX * ( 1 - 1 / (TEMPERATURE_MAX - T) - 1e-5 ) ) {
+            /* Metropolis rule.  */
+            else if ( rand_r( &__SEED ) < RAND_MAX * exp( ( - wuu_ - wvv_ + wuv + wu_v_ ) / ( T + 1e-5 ) ) ) {
                 log_trace( "Performing pejorative 2-OPT MOVE: (%zu, %zu) X (%zu, %zu): %e > %e",
                     u, v, u_, v_, wuu_ + wvv_, wuv + wu_v_ );
                 moveselected = 1;
@@ -229,6 +234,12 @@ HeurSimulatedAnnealing_solve ( instance *problem )
         elapsedtime = ( end.tv_sec - start.tv_sec ) + ( end.tv_nsec - start.tv_nsec ) / 1000000000.;
         log_debug( "Simulated Annealing completed. Still %e seconds remaining.", conf.heurtime - elapsedtime );
     }
+
+    /* Make sure problem holds the best solution.  */
+    size_t **tmpsol = problem->solution;
+    problem->solution = bestsol;
+    bestsol = tmpsol;
+    problem->solcost = bestcost;
 
     /* Free `bestsol`, which may have been swapped in the mean time.  */
     for ( size_t i = 0; i < problem->nnodes; ++i )  free( bestsol[i] );
