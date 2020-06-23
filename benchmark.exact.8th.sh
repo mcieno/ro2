@@ -20,10 +20,6 @@ mkdir -p $bmdir || exit 1
 echo "[*] Saving benchmark to $bmsig.th8.[nodes|times].csv"
 
 models=(
-    MTZ
-    Flow1
-    LazyMTZ
-    LazyFlow1
     Legacy
     Generic
     LegacyConcorde
