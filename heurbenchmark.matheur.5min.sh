@@ -181,7 +181,7 @@ done
 
 sleep 1  # let file streams flush
 
-python2 ./perfprof.py        \
+python3 ./perfprof.py        \
     -D ','                   \
     -S 0                     \
     -M 3                     \
