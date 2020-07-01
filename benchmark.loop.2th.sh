@@ -1,36 +1,33 @@
 #!/usr/bin/env sh
 
 echo "[*] Building with make all"
-make -f Makefile all > /dev/null || exit 1
+#make -f Makefile all > /dev/null || exit 1
 
-timelimit=1200      # 20 minutes
+timelimit=2400      # 40 minutes
 nodelimit=1000000   # 1 million nodes
 
 bmdir="benchmarks"
 bmsig="benchmarks/bm_$(date +%F_%T)"
 
-bmfile_nodes="$bmsig.th8.nodes.csv"
-bmfile_times="$bmsig.th8.times.csv"
+bmfile_nodes="$bmsig.loop.2th.nodes.csv"
+bmfile_times="$bmsig.loop.2th.times.csv"
 
-bmfile_nodes_png="$bmsig.th8.nodes.png"
-bmfile_times_png="$bmsig.th8.times.png"
+bmfile_nodes_png="$bmsig.loop.2th.nodes.png"
+bmfile_times_png="$bmsig.loop.2th.times.png"
 
 mkdir -p $bmdir || exit 1
 
-echo "[*] Saving benchmark to $bmsig.th8.[nodes|times].csv"
+echo "[*] Saving benchmark to $bmsig.loop.2th.[nodes|times].csv"
 
 models=(
-    Legacy
-    Generic
-    LegacyConcorde
-    GenericConcorde
-    LegacyConcordeShallow
-    GenericConcordeShallow
-    LegacyConcordeRand
-    GenericConcordeRand
+    Loop
+    LoopF
 )
 
 testbed=(
+    data/burma14.tsp
+    data/ulysses16.tsp
+    data/ulysses22.tsp
     data/att48.tsp
     data/eil51.tsp
     data/berlin52.tsp
@@ -40,32 +37,37 @@ testbed=(
     data/gr96.tsp
     data/rat99.tsp
     data/kroA100.tsp
+    data/kroB100.tsp
+    data/kroC100.tsp
+    data/kroD100.tsp
+    data/kroE100.tsp
+    data/rd100.tsp
+    data/eil101.tsp
     data/lin105.tsp
     data/pr107.tsp
     data/pr124.tsp
     data/bier127.tsp
     data/ch130.tsp
+    data/pr136.tsp
+    data/gr137.tsp
+    data/pr144.tsp
+    data/ch150.tsp
+    data/kroA150.tsp
+    data/kroB150.tsp
+    data/pr152.tsp
     data/u159.tsp
+    data/rat195.tsp
     data/d198.tsp
     data/kroA200.tsp
     data/kroB200.tsp
-    data/gr202.tsp
-    data/pr264.tsp
-    data/a280.tsp
-    data/pr299.tsp
-    data/lin318.tsp
-    data/linhp318.tsp
-    data/rd400.tsp
 )
 
 # Check if seeds are provided as command line args
 if [ "$#" -eq 0 ]; then
     seeds=(
-        91824
-        71826
-        11924
-        27389
-        40652
+        91820
+        74125
+        80478
     )
 else
     seeds=( $@ )
@@ -86,7 +88,7 @@ for file in "${testbed[@]}"; do
         echo -n "$file:$seed" >> $bmfile_nodes
 
         for model in "${models[@]}"; do
-            testresult=( $(timeout $timelimit ./bin/tsp $file --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit -j8 --noplot --quiet) )
+            testresult=( $(timeout $timelimit ./bin/tsp $file --model=$model --seed $seed --timelimit $timelimit --nodelimit $nodelimit -j2 --noplot --quiet) )
 
             if [ $? -ne 0 ]; then
                 testresult=( $timelimit $nodelimit )
@@ -116,7 +118,7 @@ python3 ./perfprof.py        \
     -M 5                     \
     $bmfile_times            \
     $bmfile_times_png        \
-    -P "Times 8th, shift 1s"     > /dev/null
+    -P "Times 2th, shift 1s"     > /dev/null
 
 python3 ./perfprof.py        \
     -D ','                   \
@@ -125,6 +127,6 @@ python3 ./perfprof.py        \
     -M 5                     \
     $bmfile_nodes            \
     $bmfile_nodes_png        \
-    -P "Nodes 8th, shift 100"    > /dev/null
+    -P "Nodes 2th, shift 100"    > /dev/null
 
 echo -e "\n\n[+] All done"

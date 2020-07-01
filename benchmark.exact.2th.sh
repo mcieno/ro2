@@ -109,7 +109,7 @@ done
 
 sleep 1  # let file streams flush
 
-python2 ./perfprof.py        \
+python3 ./perfprof.py        \
     -D ','                   \
     -T $timelimit            \
     -S 1                     \
@@ -118,7 +118,7 @@ python2 ./perfprof.py        \
     $bmfile_times_png        \
     -P "Times 2th, shift 1s"     > /dev/null
 
-python2 ./perfprof.py        \
+python3 ./perfprof.py        \
     -D ','                   \
     -T $nodelimit            \
     -S 100                   \
