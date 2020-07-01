@@ -23,50 +23,6 @@ models=(
 )
 
 testbed=(
-    data/att48.tsp
-    data/eil51.tsp
-    data/berlin52.tsp
-    data/st70.tsp
-    data/eil76.tsp
-    data/pr76.tsp
-    data/gr96.tsp
-    data/rat99.tsp
-    data/kroA100.tsp
-    data/kroB100.tsp
-    data/kroC100.tsp
-    data/kroD100.tsp
-    data/kroE100.tsp
-    data/rd100.tsp
-    data/eil101.tsp
-    data/lin105.tsp
-    data/pr107.tsp
-    data/pr124.tsp
-    data/bier127.tsp
-    data/ch130.tsp
-    data/pr136.tsp
-    data/gr137.tsp
-    data/pr144.tsp
-    data/ch150.tsp
-    data/kroA150.tsp
-    data/kroB150.tsp
-    data/pr152.tsp
-    data/u159.tsp
-    data/rat195.tsp
-    data/d198.tsp
-    data/kroA200.tsp
-    data/kroB200.tsp
-    data/gr202.tsp
-    data/pr264.tsp
-    data/a280.tsp
-    data/pr299.tsp
-    data/lin318.tsp
-    data/rd400.tsp
-    data/fl417.tsp
-    data/gr431.tsp
-    data/pr439.tsp
-    data/pcb442.tsp
-    data/d493.tsp
-    data/att532.tsp
     data/ali535.tsp
     data/u574.tsp
     data/rat575.tsp
