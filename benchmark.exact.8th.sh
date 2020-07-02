@@ -28,6 +28,7 @@ models=(
     GenericConcordeShallow
     LegacyConcordeRand
     GenericConcordeRand
+    GenericConcordeRandWithPatching
 )
 
 testbed=(

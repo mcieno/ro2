@@ -60,4 +60,4 @@ dkms.conf
 
 # CPLEX
 *.lp
-perfprof.py
+perfprof.*

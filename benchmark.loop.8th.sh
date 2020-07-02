@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 echo "[*] Building with make all"
-make -f Makefile all > /dev/null || exit 1
+#make -f Makefile all > /dev/null || exit 1
 
 timelimit=2400      # 40 minutes
 nodelimit=1000000   # 1 million nodes

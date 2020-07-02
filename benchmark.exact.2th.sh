@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 echo "[*] Building with make all"
-make -f Makefile all > /dev/null || exit 1
+#make -f Makefile all > /dev/null || exit 1
 
 timelimit=1200      # 20 minutes
 nodelimit=1000000   # 1 million nodes
@@ -20,14 +20,15 @@ mkdir -p $bmdir || exit 1
 echo "[*] Saving benchmark to $bmsig.th2.[nodes|times].csv"
 
 models=(
-    Legacy
-    Generic
-    LegacyConcorde
-    GenericConcorde
-    LegacyConcordeShallow
-    GenericConcordeShallow
-    LegacyConcordeRand
-    GenericConcordeRand
+    #Legacy
+    #Generic
+    #LegacyConcorde
+    #GenericConcorde
+    #LegacyConcordeShallow
+    #GenericConcordeShallow
+    #LegacyConcordeRand
+    #GenericConcordeRand
+    GenericConcordeRandWithPatching
 )
 
 testbed=(

@@ -569,7 +569,7 @@ HeurLocalBranching_solve ( CPXENVptr env, CPXLPptr lp, instance *problem, double
             : conf.heurtime - elapsedtime
         );
 
-        /* Soft fix ~90/80/70% of the edges, depending on the remaining time. */
+        /* Soft fix ~90/70/50% of the edges, depending on the remaining time. */
         if ( conf.heurtime - elapsedtime < conf.heurtime / 3. ) {
             log_debug( "Fixing ~50%% of the edges." );
             rhs = .5 * problem->nnodes;

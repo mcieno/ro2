@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 echo "[*] Building with make all"
-make -f Makefile all > /dev/null || exit 1
+#make -f Makefile all > /dev/null || exit 1
 
 timelimit=900       # 15 minutes for finding the first solution
 heurtime=600        # 10 minutes for optimizing the initial solution
