@@ -20,14 +20,14 @@ mkdir -p $bmdir || exit 1
 echo "[*] Saving benchmark to $bmsig.th1.[nodes|times].csv"
 
 models=(
-    #Legacy
-    #Generic
-    #LegacyConcorde
-    #GenericConcorde
-    #LegacyConcordeShallow
-    #GenericConcordeShallow
-    #LegacyConcordeRand
-    #GenericConcordeRand
+    Legacy
+    Generic
+    LegacyConcorde
+    GenericConcorde
+    LegacyConcordeShallow
+    GenericConcordeShallow
+    LegacyConcordeRand
+    GenericConcordeRand
     GenericConcordeRandWithPatching
 )
 
